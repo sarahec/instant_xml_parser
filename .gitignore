@@ -11,3 +11,6 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+
+# Mac OS finder metadata
+.DS_Store
