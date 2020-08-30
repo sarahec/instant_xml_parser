@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+    xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    xmlns:w10="urn:schemas-microsoft-com:office:word"
+    xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
+    xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
+    xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" mc:Ignorable="w14">
+    <w:body>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Body"/>
+                <w:bidi w:val="0"/>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                    <w:rtl w:val="0"/>
+                </w:rPr>
+                <w:t xml:space="preserve">Plain </w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:b w:val="1"/>
+                    <w:bCs w:val="1"/>
+                    <w:rtl w:val="0"/>
+                    <w:lang w:val="en-US"/>
+                </w:rPr>
+                <w:t>bold</w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:rtl w:val="0"/>
+                </w:rPr>
+                <w:t xml:space="preserve"></w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:i w:val="1"/>
+                    <w:iCs w:val="1"/>
+                    <w:rtl w:val="0"/>
+                    <w:lang w:val="en-US"/>
+                </w:rPr>
+                <w:t>italic</w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:rtl w:val="0"/>
+                </w:rPr>
+                <w:t xml:space="preserve"></w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:u w:val="single"/>
+                    <w:rtl w:val="0"/>
+                    <w:lang w:val="en-US"/>
+                </w:rPr>
+                <w:t>underline</w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:rtl w:val="0"/>
+                </w:rPr>
+                <w:t xml:space="preserve"></w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:strike w:val="1"/>
+                    <w:dstrike w:val="0"/>
+                    <w:rtl w:val="0"/>
+                    <w:lang w:val="en-US"/>
+                </w:rPr>
+                <w:t>strikethrough</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Body"/>
+                <w:bidi w:val="0"/>
+            </w:pPr>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Body"/>
+                <w:bidi w:val="0"/>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                    <w:b w:val="1"/>
+                    <w:bCs w:val="1"/>
+                    <w:i w:val="1"/>
+                    <w:iCs w:val="1"/>
+                    <w:rtl w:val="0"/>
+                    <w:lang w:val="en-US"/>
+                </w:rPr>
+                <w:t>bold-italic</w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:rtl w:val="0"/>
+                </w:rPr>
+                <w:t xml:space="preserve"></w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:b w:val="1"/>
+                    <w:bCs w:val="1"/>
+                    <w:strike w:val="1"/>
+                    <w:dstrike w:val="0"/>
+                    <w:u w:val="single"/>
+                    <w:rtl w:val="0"/>
+                    <w:lang w:val="en-US"/>
+                </w:rPr>
+                <w:t>bold-underline-strikethrough</w:t>
+            </w:r>
+            <w:r/>
+        </w:p>
+        <w:sectPr>
+            <w:headerReference w:type="default" r:id="rId4"/>
+            <w:footerReference w:type="default" r:id="rId5"/>
+            <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
+            <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="864"/>
+            <w:bidi w:val="0"/>
+        </w:sectPr>
+    </w:body>
+</w:document>
