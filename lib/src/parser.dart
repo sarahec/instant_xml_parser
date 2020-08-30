@@ -11,7 +11,8 @@ class Parser {
   @visibleForTesting
   FutureOr<TextRun> extractTextRun(Stream<XmlEvent> stream) async {
     var content;
-    var capture;
+    var capture = false;
+    var preserveWhitespace = false;
     await for (var event in stream) {
       if (event is XmlStartElementEvent &&
           event.name == TextRun.qualifiedName) {
@@ -19,18 +20,20 @@ class Parser {
         capture = false;
         content = <String>[];
       } else if (event is XmlStartElementEvent && event.name == 'w:t') {
+        preserveWhitespace = event.attributes.any((attribute) =>
+            attribute.name == 'xml:space' && attribute.value == 'preserve');
         capture = true;
       } else if (event is XmlEndElementEvent && event.name == 'w:t') {
         capture = false;
+        preserveWhitespace = false;
       } else if (capture && event is XmlTextEvent) {
-        content.add(event.text);
+        content.add(preserveWhitespace ? event.text : event.text.trim());
       } else if (event is XmlEndElementEvent &&
           event.name == TextRun.qualifiedName) {
         break;
       }
     }
-    return TextRun(
-        content == null ? '' : content.map((s) => s.trim()).join(' '));
+    return TextRun(content == null ? '' : content.join(' '));
   }
 
   Stream<List<XmlEvent>> generateEventStream({String xml, File file}) {

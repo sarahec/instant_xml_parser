@@ -3,16 +3,32 @@ import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 
 void main() {
-  group('Text runs', () {
-    final docXML = '''<w:document>
-    <w:body>
+  group('extract text run', () {
+    final helloXML = '''
         <w:p>
             <w:r>
                 <w:t>Hello, World</w:t>
             </w:r>
-        </w:p>
-    </w:body>
-</w:document>''';
+        </w:p>''';
+    final splitHelloXML = '''
+        <w:p>
+            <w:r>
+                <w:t>Hello,</w:t>
+                <w:t>World</w:t>
+            </w:r>
+        </w:p>''';
+    final helloXMLWithSpace = '''
+        <w:p>
+            <w:r>
+                <w:t>Hello, World </w:t>
+            </w:r>
+        </w:p>''';
+    final helloXMLWithPreservedSpace = '''
+        <w:p>
+            <w:r>
+                <w:t xml:space="preserve">Hello, World </w:t>
+            </w:r>
+        </w:p>''';
 
     Parser parser;
 
@@ -20,12 +36,28 @@ void main() {
       parser = Parser();
     });
 
-    test('Extract text run', () async {
-      var stream = parser.generateEventStream(xml: docXML);
-      var result = await parser.extractTextRun(stream
-          .selectSubtreeEvents((e) => e.name == TextRun.qualifiedName)
-          .flatten());
+    test('single', () async {
+      var stream = parser.generateEventStream(xml: helloXML);
+      var result = await parser.extractTextRun(stream.flatten());
       expect(result.text, equals('Hello, World'));
+    });
+
+    test('two-part', () async {
+      var stream = parser.generateEventStream(xml: splitHelloXML);
+      var result = await parser.extractTextRun(stream.flatten());
+      expect(result.text, equals('Hello, World'));
+    });
+
+    test('trims whitespace', () async {
+      var stream = parser.generateEventStream(xml: helloXMLWithSpace);
+      var result = await parser.extractTextRun(stream.flatten());
+      expect(result.text, equals('Hello, World'));
+    });
+
+    test('preserves whitespace', () async {
+      var stream = parser.generateEventStream(xml: helloXMLWithPreservedSpace);
+      var result = await parser.extractTextRun(stream.flatten());
+      expect(result.text, equals('Hello, World '));
     });
   });
 }
