@@ -1,5 +1,3 @@
-import 'package:xml/xml_events.dart';
-
 mixin DocElement {
   static String qualifiedName;
   String get tag;
