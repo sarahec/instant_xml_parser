@@ -9,7 +9,35 @@ import 'elements.dart';
 
 class Parser {
   @visibleForTesting
-  FutureOr<TextRun> extractTextRun(Stream<XmlEvent> stream) async {
+  Future<TextRun> extractTextRun(Stream<XmlEvent> stream) async {
+    var content;
+    var capture = false;
+    var preserveWhitespace = false;
+    await for (var event in stream) {
+      if (event is XmlStartElementEvent &&
+          event.name == TextRun.qualifiedName) {
+        // Initialize
+        capture = false;
+        content = <String>[];
+      } else if (event is XmlStartElementEvent && event.name == 'w:t') {
+        preserveWhitespace = event.attributes.any((attribute) =>
+            attribute.name == 'xml:space' && attribute.value == 'preserve');
+        capture = true;
+      } else if (event is XmlEndElementEvent && event.name == 'w:t') {
+        capture = false;
+        preserveWhitespace = false;
+      } else if (capture && event is XmlTextEvent) {
+        content.add(preserveWhitespace ? event.text : event.text.trim());
+      } else if (event is XmlEndElementEvent &&
+          event.name == TextRun.qualifiedName) {
+        break;
+      }
+    }
+    return TextRun(content == null ? '' : content.join(' '));
+  }
+
+  @visibleForTesting
+  Future<TextRun> extractParagraph(Stream<XmlEvent> stream) async {
     var content;
     var capture = false;
     var preserveWhitespace = false;

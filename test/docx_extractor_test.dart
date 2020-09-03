@@ -3,33 +3,40 @@ import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 
 void main() {
-  group('extract text run', () {
-    final helloXML = '''
+  final helloXML = '''
         <w:p>
             <w:r>
                 <w:t>Hello, World</w:t>
             </w:r>
         </w:p>''';
-    final splitHelloXML = '''
+  final splitHelloXML = '''
         <w:p>
             <w:r>
                 <w:t>Hello,</w:t>
                 <w:t>World</w:t>
             </w:r>
         </w:p>''';
-    final helloXMLWithSpace = '''
+  final multiRunHello = '''
+        <w:p>
+            <w:r>
+                <w:t>Hello,</w:t>
+                <w:t>World</w:t>
+            </w:r>
+        </w:p>''';
+  final helloXMLWithSpace = '''
         <w:p>
             <w:r>
                 <w:t>Hello, World </w:t>
             </w:r>
         </w:p>''';
-    final helloXMLWithPreservedSpace = '''
+  final helloXMLWithPreservedSpace = '''
         <w:p>
             <w:r>
                 <w:t xml:space="preserve">Hello, World </w:t>
             </w:r>
         </w:p>''';
 
+  group('extract text run', () {
     Parser parser;
 
     setUp(() {
