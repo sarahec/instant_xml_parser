@@ -1,14 +1,17 @@
 mixin DocElement {
   static String qualifiedName;
-  String get tag;
+}
+
+class Paragraph with DocElement {
+  static String qualifiedName = 'w:p';
+  final List<TextRun> textRuns;
+
+  Paragraph(this.textRuns);
 }
 
 class TextRun with DocElement {
   static String qualifiedName = 'w:r';
   final String text;
-
-  @override
-  final String tag = 'tr';
 
   TextRun(this.text);
 }
