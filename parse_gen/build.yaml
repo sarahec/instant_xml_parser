@@ -1,0 +1,8 @@
+builders:
+  method:
+    import: "package:parse_gen/builder.dart"
+    builder_factories: ["parseMethodBuilder"]
+    build_extensions: {".dart": [".method.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]
