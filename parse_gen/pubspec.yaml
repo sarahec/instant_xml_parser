@@ -10,6 +10,8 @@ dependencies:
   analyzer: "0.39.14" # Pin the analyzer version to work around a generation failure
   build: ^1.3.0
   build_config: ^0.4.0
+  code_builder: ^3.4.0
+  recase: ^3.0.0
   source_gen: ^0.9.6
   xml: ^4.4.1
   docx_extractor:
