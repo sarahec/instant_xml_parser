@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:build/build.dart';
-import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:docx_extractor/annotations.dart';
+import 'package:parse_tools/annotations.dart';
 import 'package:recase/recase.dart';
 import 'package:source_gen/source_gen.dart';
 
+const asyncPackage = 'dart:async';
+
 class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
-  final emitter = DartEmitter(Allocator.simplePrefixing());
   final formatter = DartFormatter();
 
   @override
@@ -18,24 +18,35 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
       Element element, ConstantReader annotation, BuildStep buildStep) {
     final info = _StructVisitor();
     final tag = tagOf(annotation);
-    print(tag); // <<<
     element.visitChildren(info);
     var method = _method(info.className, tag, info.fields);
-    var code = method.accept(emitter).toString();
-    return formatter.format(code);
+    return formatter.format(method);
   }
 
   String tagOf(annotation) => annotation.read('tag').literalValue as String;
 
-  Method _method(className, tag, fields) {
-    final vars = fields.map((f) => 'var ${f.name};').join();
-    return Method((b) => b
-      ..name = ReCase(className).camelCase
-      ..returns = refer(className)
-      ..body = _constructor(className).returned.statement);
-  }
+  String _method(className, tag, fields) {
+    // final vars = fields.map((f) => 'var ${f.name};').join();
+    var methodName = ReCase(className).camelCase;
+    return '''
+      FutureOr<$className> $methodName(StreamQueue<XmlEvent> events) async {
+        const tag = '$tag';
+        // <<< Other field declarations
+        if (!(await hasStartTag(events, withName: tag))) {
+          return Future.error('Expected <$tag> at start');
+        }
+        var startTag = await events.next;
+        // Extract any attributes you need from this tag
 
-  Expression _constructor(className) => refer(className).newInstance([]);
+        while (await hasChildOf(events, startTag)) {
+          var probe = await events.next;
+          print(probe);
+          // <<< gather fields
+        }
+
+        return $className();
+      }''';
+  }
 }
 
 class _StructVisitor extends SimpleElementVisitor<void> {
