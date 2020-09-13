@@ -19,4 +19,10 @@ void main() {
     var result = await emptyTag(_eventsFrom('<empty />'));
     expect(result, isA<EmptyTag>());
   });
+
+  test('string from implicit attribute', () async {
+    var result = await namedTag(_eventsFrom('<named name="foo" />'));
+    expect(result, isA<NamedTag>());
+    expect(result.name, equals('foo'));
+  });
 }

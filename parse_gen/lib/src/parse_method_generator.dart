@@ -19,24 +19,29 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
     final info = _StructVisitor();
     final tag = tagOf(annotation);
     element.visitChildren(info);
-    var method = _method(info.className, tag, info.fields);
+    var method = _method(info.className, tag, element);
     return formatter.format(method);
   }
 
   String tagOf(annotation) => annotation.read('tag').literalValue as String;
 
-  String _method(className, tag, fields) {
-    // final vars = fields.map((f) => 'var ${f.name};').join();
-    var methodName = ReCase(className).camelCase;
+  String _method(className, tag, element) {
+    final methodName = ReCase(className).camelCase;
+    final fieldNames = element.fields.map((f) => f.name);
+    final varDeclarations = fieldNames.map((f) => 'var $f;').join('\n');
+    final constructorValues = fieldNames.join(',');
+    final fieldsFromAttributes = fieldNames
+        .map((f) => "$f = namedAttribute(startTag, '$f');")
+        .join('\n');
     return '''
       FutureOr<$className> $methodName(StreamQueue<XmlEvent> events) async {
         const tag = '$tag';
-        // <<< Other field declarations
+        $varDeclarations
         if (!(await hasStartTag(events, withName: tag))) {
           return Future.error('Expected <$tag> at start');
         }
         var startTag = await events.next;
-        // Extract any attributes you need from this tag
+        $fieldsFromAttributes
 
         while (await hasChildOf(events, startTag)) {
           var probe = await events.next;
@@ -44,14 +49,13 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
           // <<< gather fields
         }
 
-        return $className();
+        return $className($constructorValues);
       }''';
   }
 }
 
 class _StructVisitor extends SimpleElementVisitor<void> {
   String className;
-  List<FieldElement> fields = [];
 
   @override
   void visitConstructorElement(ConstructorElement element) {
@@ -59,10 +63,5 @@ class _StructVisitor extends SimpleElementVisitor<void> {
       assert(className == null);
       className = element.type.returnType.toString();
     }
-  }
-
-  @override
-  void visitFieldElement(FieldElement element) {
-    fields.add(element);
   }
 }

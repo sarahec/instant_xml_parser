@@ -10,3 +10,10 @@ part 'example.g.dart';
 class EmptyTag {
   EmptyTag();
 }
+
+@FromXML('named')
+class NamedTag {
+  final String name;
+
+  NamedTag(this.name);
+}

@@ -30,3 +30,10 @@ FutureOr<bool> hasChildOf(
   final event = await (consume ? queue.next : queue.peek);
   return startTag == event.parentEvent;
 }
+
+FutureOr<String> namedAttribute(XmlStartElementEvent element, String name) {
+  final result =
+      element.attributes.firstWhere((a) => a.name == name, orElse: () => null);
+  return result?.value ??
+      Future.error("Expected non-null attribute '$name' in <${element.name}>");
+}
