@@ -17,3 +17,13 @@ class NamedTag {
 
   NamedTag(this.name);
 }
+
+@FromXML('attributesTest')
+class AttributesTag {
+  final String name;
+  final int count;
+  final double temperature;
+  final bool active;
+
+  AttributesTag(this.name, this.count, this.temperature, this.active);
+}

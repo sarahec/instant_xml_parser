@@ -28,11 +28,9 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
   String _method(className, tag, element) {
     final methodName = ReCase(className).camelCase;
     final fieldNames = element.fields.map((f) => f.name);
-    final varDeclarations = fieldNames.map((f) => 'var $f;').join('\n');
+    final varDeclarations = _varDeclarations(element);
     final constructorValues = fieldNames.join(',');
-    final fieldsFromAttributes = fieldNames
-        .map((f) => "$f = namedAttribute(startTag, '$f');")
-        .join('\n');
+    final fieldsFromAttributes = _assignFieldsFromAttributes(element);
     return '''
       FutureOr<$className> $methodName(StreamQueue<XmlEvent> events) async {
         const tag = '$tag';
@@ -52,6 +50,27 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
         return $className($constructorValues);
       }''';
   }
+}
+
+String _varDeclarations(element) =>
+    element.fields.map((f) => 'var ${f.name};').join();
+
+String _assignFieldsFromAttributes(element) {
+  return element.fields.map((FieldElement f) {
+    var name = f.name;
+    var fieldType = f.type;
+    if (fieldType.isDartCoreString) {
+      return "$name = namedAttribute(startTag, '$name');";
+    } else if (fieldType.isDartCoreInt) {
+      return "$name = namedAttribute(startTag, '$name', (s) => int.parse(s));";
+    } else if (fieldType.isDartCoreDouble) {
+      return "$name = namedAttribute(startTag, '$name', (s) => double.parse(s));";
+    } else if (fieldType.isDartCoreBool) {
+      return "$name = namedAttribute(startTag, '$name', (s) => s == '1' || s == 'true');";
+    } else {
+      throw ("Cannot support attribute type '$fieldType' on '$name'");
+    }
+  }).join();
 }
 
 class _StructVisitor extends SimpleElementVisitor<void> {
