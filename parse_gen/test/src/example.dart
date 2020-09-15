@@ -27,3 +27,10 @@ class AttributesTag {
 
   AttributesTag(this.name, this.count, this.temperature, this.active);
 }
+
+// @FromXML('wrapper')
+class NamedChildWrapper {
+  final NamedTag child;
+
+  NamedChildWrapper(this.child);
+}

@@ -7,6 +7,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:parse_tools/annotations.dart';
 import 'package:recase/recase.dart';
 import 'package:source_gen/source_gen.dart';
+import 'package:parse_tools/parse_tools.dart';
 
 const asyncPackage = 'dart:async';
 
@@ -27,9 +28,15 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
 
   String _method(className, tag, element) {
     final methodName = ReCase(className).camelCase;
-    final fieldNames = element.fields.map((f) => f.name);
-    final varDeclarations = _varDeclarations(element);
-    final constructorValues = fieldNames.join(',');
+    final fieldEntries = element.fields
+        .map((f) => FieldEntry((b) => b
+          ..name = f.name
+          ..type = f.type))
+        .toList();
+
+    final varDeclarations = fieldEntries.map((fe) => 'var ${fe.name};').join();
+    final constructorValues = fieldEntries.map((fe) => fe.name).join(',');
+    // TODO incorporate field entries here as well
     final fieldsFromAttributes = _assignFieldsFromAttributes(element);
     return '''
       FutureOr<$className> $methodName(StreamQueue<XmlEvent> events) async {
@@ -51,9 +58,6 @@ class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
       }''';
   }
 }
-
-String _varDeclarations(element) =>
-    element.fields.map((f) => 'var ${f.name};').join();
 
 String _assignFieldsFromAttributes(element) {
   return element.fields.map((FieldElement f) {

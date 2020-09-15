@@ -1,7 +1,8 @@
 import 'package:async/async.dart';
-import 'package:example/example.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
+
+import 'src/example.dart';
 
 void main() {
   StreamQueue<XmlEvent> _eventsFrom(String xml) => StreamQueue(Stream.value(xml)

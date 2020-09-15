@@ -1,5 +1,11 @@
+targets:
+  parse_gen:
+    builders:
+      parse_gen|parse_gen:
+        enabled: true
+
 builders:
-  method:
+  parse_gen:
     import: "package:parse_gen/builder.dart"
     builder_factories: ["parseMethodBuilder"]
     build_extensions: {".dart": [".method.g.part"]}
