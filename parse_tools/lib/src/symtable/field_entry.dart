@@ -1,5 +1,3 @@
-library parse_gen.field_entry;
-
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_value/built_value.dart';
 
@@ -19,21 +17,23 @@ abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
 
   DartType get type;
 
-  // TODO add attribute match value or function
+  bool get initVar => tagName == null && attributeName != null;
+
+  bool get useText => attributeName == null && type.isDartCoreString;
+
+  bool get wantsTag => tagName != null;
+
+  bool get useAttribute => attributeName != null;
+
+  bool get callMethod => _callMethod(type);
+
+  bool get buildList => type.isDartCoreIterable;
+
+  bool get callMethodInList =>
+      buildList && _callMethod((type as ParameterizedType).typeArguments.first);
+
+  bool _callMethod(t) => methodName != null && !t.isDartCoreObject;
 
   FieldEntry._();
   factory FieldEntry([void Function(FieldEntryBuilder) updates]) = _$FieldEntry;
 }
-
-// Sources of field values:
-// - method call (needs tag for lookahead)
-// - attribute on start tag (null)
-// - attribute on specific tag
-// - attribute matches value
-// - repeated method calls
-// - repeated attribute selection
-// - CDATA on tag
-
-// Special tag actions
-// - skip
-// - collect contents
