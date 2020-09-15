@@ -1,16 +1,24 @@
 library annotations;
 
-class FromXML {
+class Tag with TagInfo {
   final String tag;
+  final String method;
 
-  const FromXML(this.tag) : assert(tag != null, 'tag required');
+  const Tag(this.tag, {this.method}) : assert(tag != null, 'tag required');
 }
 
-class FieldSource {
+class Attribute with TagInfo {
+  @override
   final String tag;
   final String attribute;
+  @override
   final String method;
   final String match;
 
-  FieldSource({this.tag, this.attribute, this.method, this.match});
+  Attribute(this.attribute, {this.tag, this.method, this.match});
+}
+
+mixin TagInfo {
+  String get tag;
+  String get method;
 }

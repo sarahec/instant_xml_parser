@@ -11,7 +11,7 @@ import 'package:parse_tools/parse_tools.dart';
 
 const asyncPackage = 'dart:async';
 
-class ParseMethodGenerator extends GeneratorForAnnotation<FromXML> {
+class ParseMethodGenerator extends GeneratorForAnnotation<Tag> {
   final formatter = DartFormatter();
 
   @override

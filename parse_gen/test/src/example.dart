@@ -6,19 +6,19 @@ import 'package:xml/xml_events.dart';
 
 part 'example.g.dart';
 
-@FromXML('empty')
+@Tag('empty')
 class EmptyTag {
   EmptyTag();
 }
 
-@FromXML('named')
+@Tag('named')
 class NamedTag {
   final String name;
 
   NamedTag(this.name);
 }
 
-@FromXML('attributesTest')
+@Tag('attributesTest')
 class AttributesTag {
   final String name;
   final int count;
