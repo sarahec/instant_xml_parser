@@ -14,6 +14,3 @@ doc/api/
 
 # Mac OS finder metadata
 .DS_Store
-
-# Generated files
-*.g.dart
