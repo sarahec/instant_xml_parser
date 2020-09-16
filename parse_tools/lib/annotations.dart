@@ -20,6 +20,7 @@ class IgnoreTag {
   final Iterable<String> tags;
 
   IgnoreTag({String tag, Iterable<String> tags})
-      : assert(tag != null || tags != null, 'tag or tag-list required'),
+      : assert(
+            tag != null || tags != null, 'tag or tags (collection) required'),
         tags = tags ?? [tag];
 }
