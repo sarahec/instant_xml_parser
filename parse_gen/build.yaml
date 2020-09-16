@@ -1,8 +1,8 @@
 targets:
-  parse_gen:
+  $default:
     builders:
       parse_gen|parse_gen:
-        enabled: true
+        enabled: false
 
 builders:
   parse_gen:

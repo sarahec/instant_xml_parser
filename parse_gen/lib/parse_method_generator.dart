@@ -28,7 +28,7 @@ class ParseMethodGenerator extends GeneratorForAnnotation<Tag> {
 
   String _method(className, tag, element) {
     final methodName = ReCase(className).camelCase;
-    final fieldEntries = element.fields
+/*    final fieldEntries = element.fields
         .map((f) => FieldEntry((b) => b
           ..name = f.name
           ..type = f.type))
@@ -56,6 +56,8 @@ class ParseMethodGenerator extends GeneratorForAnnotation<Tag> {
 
         return $className($constructorValues);
       }''';
+      */
+    return '// Under construction';
   }
 }
 
