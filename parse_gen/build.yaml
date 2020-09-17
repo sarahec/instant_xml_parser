@@ -1,6 +1,8 @@
 targets:
   $default:
     builders:
+      built_value|built_value:
+        enabled: true
       parse_gen|parse_gen:
         enabled: false
 

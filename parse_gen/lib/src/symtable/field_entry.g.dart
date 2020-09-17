@@ -8,22 +8,35 @@ part of 'field_entry.dart';
 
 class _$FieldEntry extends FieldEntry {
   @override
-  final String tagName;
+  final String tag;
   @override
-  final String attributeName;
+  final String attribute;
   @override
   final String name;
   @override
   final String methodName;
   @override
   final DartType type;
+  @override
+  final String trueIfEquals;
+  @override
+  final RegExp trueIfMatches;
 
   factory _$FieldEntry([void Function(FieldEntryBuilder) updates]) =>
       (new FieldEntryBuilder()..update(updates)).build();
 
   _$FieldEntry._(
-      {this.tagName, this.attributeName, this.name, this.methodName, this.type})
+      {this.tag,
+      this.attribute,
+      this.name,
+      this.methodName,
+      this.type,
+      this.trueIfEquals,
+      this.trueIfMatches})
       : super._() {
+    if (attribute == null) {
+      throw new BuiltValueNullFieldError('FieldEntry', 'attribute');
+    }
     if (name == null) {
       throw new BuiltValueNullFieldError('FieldEntry', 'name');
     }
@@ -43,31 +56,39 @@ class _$FieldEntry extends FieldEntry {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is FieldEntry &&
-        tagName == other.tagName &&
-        attributeName == other.attributeName &&
+        tag == other.tag &&
+        attribute == other.attribute &&
         name == other.name &&
         methodName == other.methodName &&
-        type == other.type;
+        type == other.type &&
+        trueIfEquals == other.trueIfEquals &&
+        trueIfMatches == other.trueIfMatches;
   }
 
   @override
   int get hashCode {
     return $jf($jc(
         $jc(
-            $jc($jc($jc(0, tagName.hashCode), attributeName.hashCode),
-                name.hashCode),
-            methodName.hashCode),
-        type.hashCode));
+            $jc(
+                $jc(
+                    $jc($jc($jc(0, tag.hashCode), attribute.hashCode),
+                        name.hashCode),
+                    methodName.hashCode),
+                type.hashCode),
+            trueIfEquals.hashCode),
+        trueIfMatches.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('FieldEntry')
-          ..add('tagName', tagName)
-          ..add('attributeName', attributeName)
+          ..add('tag', tag)
+          ..add('attribute', attribute)
           ..add('name', name)
           ..add('methodName', methodName)
-          ..add('type', type))
+          ..add('type', type)
+          ..add('trueIfEquals', trueIfEquals)
+          ..add('trueIfMatches', trueIfMatches))
         .toString();
   }
 }
@@ -75,14 +96,13 @@ class _$FieldEntry extends FieldEntry {
 class FieldEntryBuilder implements Builder<FieldEntry, FieldEntryBuilder> {
   _$FieldEntry _$v;
 
-  String _tagName;
-  String get tagName => _$this._tagName;
-  set tagName(String tagName) => _$this._tagName = tagName;
+  String _tag;
+  String get tag => _$this._tag;
+  set tag(String tag) => _$this._tag = tag;
 
-  String _attributeName;
-  String get attributeName => _$this._attributeName;
-  set attributeName(String attributeName) =>
-      _$this._attributeName = attributeName;
+  String _attribute;
+  String get attribute => _$this._attribute;
+  set attribute(String attribute) => _$this._attribute = attribute;
 
   String _name;
   String get name => _$this._name;
@@ -96,15 +116,26 @@ class FieldEntryBuilder implements Builder<FieldEntry, FieldEntryBuilder> {
   DartType get type => _$this._type;
   set type(DartType type) => _$this._type = type;
 
+  String _trueIfEquals;
+  String get trueIfEquals => _$this._trueIfEquals;
+  set trueIfEquals(String trueIfEquals) => _$this._trueIfEquals = trueIfEquals;
+
+  RegExp _trueIfMatches;
+  RegExp get trueIfMatches => _$this._trueIfMatches;
+  set trueIfMatches(RegExp trueIfMatches) =>
+      _$this._trueIfMatches = trueIfMatches;
+
   FieldEntryBuilder();
 
   FieldEntryBuilder get _$this {
     if (_$v != null) {
-      _tagName = _$v.tagName;
-      _attributeName = _$v.attributeName;
+      _tag = _$v.tag;
+      _attribute = _$v.attribute;
       _name = _$v.name;
       _methodName = _$v.methodName;
       _type = _$v.type;
+      _trueIfEquals = _$v.trueIfEquals;
+      _trueIfMatches = _$v.trueIfMatches;
       _$v = null;
     }
     return this;
@@ -127,11 +158,13 @@ class FieldEntryBuilder implements Builder<FieldEntry, FieldEntryBuilder> {
   _$FieldEntry build() {
     final _$result = _$v ??
         new _$FieldEntry._(
-            tagName: tagName,
-            attributeName: attributeName,
+            tag: tag,
+            attribute: attribute,
             name: name,
             methodName: methodName,
-            type: type);
+            type: type,
+            trueIfEquals: trueIfEquals,
+            trueIfMatches: trueIfMatches);
     replace(_$result);
     return _$result;
   }

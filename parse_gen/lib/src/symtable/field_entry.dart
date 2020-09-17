@@ -1,29 +1,43 @@
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_value/built_value.dart';
+import 'package:parse_tools/annotations.dart';
 
 part 'field_entry.g.dart';
 
 abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
+  /// (optional) The child tag to use. If null, looks for an attribute on the parent
   @nullable
-  String get tagName;
+  String get tag;
 
-  @nullable
-  String get attributeName;
+  /// The attribute name to read. Defauts to the field's name
+  String get attribute;
 
+  /// The field name
   String get name;
 
+  /// (optional) If getting a class result from a child tag, this overrides the method's default name
   @nullable
   String get methodName;
 
+  /// Type of this field
   DartType get type;
 
-  bool get initVar => tagName == null && attributeName != null;
+  /// (optional, for Boolean fields only) Evaluates as TRUE if attribute value equals this string
+  @nullable
+  String get trueIfEquals;
 
-  bool get useText => attributeName == null && type.isDartCoreString;
+  /// (optional, for Boolean fields only) Evaluates as TRUE if attribute value matches this Regexp
+  @nullable
+  RegExp get trueIfMatches;
 
-  bool get wantsTag => tagName != null;
+  bool get initVar => tag == null && attribute != null;
 
-  bool get useAttribute => attributeName != null;
+  bool get useText => attribute == null && type.isDartCoreString;
+
+  bool get wantsTag => tag != null;
+
+  bool get useAttribute => attribute != null;
 
   bool get callMethod => _callMethod(type);
 
@@ -36,4 +50,18 @@ abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
 
   FieldEntry._();
   factory FieldEntry([void Function(FieldEntryBuilder) updates]) = _$FieldEntry;
+
+  factory FieldEntry.fromElement(FieldElement element,
+          {UseAttribute annotation, String tag}) =>
+      FieldEntry((b) => b
+        // Annotation's tag overrides the parent's tag unless they match
+        ..tag = (annotation?.tag != null && annotation.tag != tag)
+            ? annotation.tag
+            : null
+        ..name = element.name
+        ..attribute = annotation?.attribute ?? element.name
+        ..methodName = null
+        ..type = element.type
+        ..trueIfEquals = annotation?.equals
+        ..trueIfMatches = annotation?.matches);
 }
