@@ -1,5 +1,5 @@
 import 'package:analyzer/dart/element/type.dart';
-import 'package:parse_gen/src/symtable/field_entry.dart';
+import 'package:generator/src/symtable/field_entry.dart';
 
 String converterFor(FieldEntry entry) {
   final type = entry.type;

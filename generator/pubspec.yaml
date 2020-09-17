@@ -1,4 +1,4 @@
-name: parse_gen
+name: generator
 description: Annotates data classes for XML deserialization
 # version: 1.0.0
 # homepage: https://www.example.com

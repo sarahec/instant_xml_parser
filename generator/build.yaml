@@ -3,12 +3,12 @@ targets:
     builders:
       built_value|built_value:
         enabled: true
-      parse_gen|parse_gen:
+      generator|generator:
         enabled: false
 
 builders:
-  parse_gen:
-    import: "package:parse_gen/builder.dart"
+  generator:
+    import: "package:generator/builder.dart"
     builder_factories: ["parseMethodBuilder"]
     build_extensions: {".dart": [".method.g.part"]}
     auto_apply: dependents

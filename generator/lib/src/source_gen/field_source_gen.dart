@@ -1,6 +1,6 @@
 import 'package:built_value/built_value.dart';
-import 'package:parse_gen/src/source_gen/converter_gen.dart';
-import 'package:parse_gen/src/symtable/field_entry.dart';
+import 'package:generator/src/source_gen/converter_gen.dart';
+import 'package:generator/src/symtable/field_entry.dart';
 
 part 'field_source_gen.g.dart';
 
