@@ -14,7 +14,7 @@ class _$ClassEntry extends ClassEntry {
   @override
   final String tag;
   @override
-  final List<FieldEntry> fields;
+  final Iterable<FieldEntry> fields;
 
   factory _$ClassEntry([void Function(ClassEntryBuilder) updates]) =>
       (new ClassEntryBuilder()..update(updates)).build();
@@ -85,9 +85,9 @@ class ClassEntryBuilder implements Builder<ClassEntry, ClassEntryBuilder> {
   String get tag => _$this._tag;
   set tag(String tag) => _$this._tag = tag;
 
-  List<FieldEntry> _fields;
-  List<FieldEntry> get fields => _$this._fields;
-  set fields(List<FieldEntry> fields) => _$this._fields = fields;
+  Iterable<FieldEntry> _fields;
+  Iterable<FieldEntry> get fields => _$this._fields;
+  set fields(Iterable<FieldEntry> fields) => _$this._fields = fields;
 
   ClassEntryBuilder();
 
