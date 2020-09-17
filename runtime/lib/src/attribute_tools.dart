@@ -1,6 +1,6 @@
 import 'package:xml/xml_events.dart';
 
-typedef Convert = dynamic Function(String s);
+import 'converters.dart';
 
 dynamic namedAttribute(XmlStartElementEvent element, String name,
     [Convert converter]) {
