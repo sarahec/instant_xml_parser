@@ -33,8 +33,6 @@ abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
 
   bool get initVar => tag == null && attribute != null;
 
-  bool get useText => attribute == null && type.isDartCoreString;
-
   bool get wantsTag => tag != null;
 
   bool get useAttribute => attribute != null;
