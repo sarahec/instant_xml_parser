@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_value/built_value.dart';
-import 'package:parse_tools/annotations.dart';
+import 'package:runtime/annotations.dart';
 
 part 'field_entry.g.dart';
 

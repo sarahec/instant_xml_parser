@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:async/async.dart';
-import 'package:parse_tools/annotations.dart';
-import 'package:parse_tools/parse_tools.dart';
+import 'package:runtime/annotations.dart';
+import 'package:runtime/parse_tools.dart';
 import 'package:xml/xml_events.dart';
 
 part 'example.g.dart';

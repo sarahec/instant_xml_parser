@@ -1,7 +1,5 @@
 library annotations;
 
-import 'package:meta/meta.dart';
-
 class Tag {
   final String tag;
   final String method;
@@ -17,7 +15,6 @@ class Tag {
 /// * ```tag``` is optional. If you supply it, the generated code will look for
 ///   that tag as a child and extract the attribute from there.
 /// * Fill in ```equals``` or ```matches``` when annotating a boolean field.
-@immutable
 class UseAttribute {
   /// Name for the attribute to extract
   final String attribute;

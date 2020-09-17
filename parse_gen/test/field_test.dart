@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:mockito/mockito.dart';
-import 'package:parse_tools/annotations.dart';
+import 'package:runtime/annotations.dart';
 import 'package:test/test.dart';
 
 // ignore: avoid_relative_lib_imports, UseAttribute(attributeName)

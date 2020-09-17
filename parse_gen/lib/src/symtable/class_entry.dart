@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:built_value/built_value.dart';
-import 'package:parse_tools/annotations.dart';
+import 'package:runtime/annotations.dart';
 import 'package:recase/recase.dart';
 
 import 'field_entry.dart';
