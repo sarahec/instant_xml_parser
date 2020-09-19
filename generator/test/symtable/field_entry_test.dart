@@ -4,8 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:runtime/annotations.dart';
 import 'package:test/test.dart';
 
-// ignore: avoid_relative_lib_imports, UseAttribute(attributeName)
-import '../lib/src/symtable/field_entry.dart';
+import 'package:generator/src/symtable/field_entry.dart';
 
 void main() {
   const fieldName = 'xyzzy';

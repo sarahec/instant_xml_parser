@@ -11,6 +11,7 @@ abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
   String get tag;
 
   /// The attribute name to read. Defauts to the field's name
+  @nullable
   String get attribute;
 
   /// The field name

@@ -34,9 +34,6 @@ class _$FieldEntry extends FieldEntry {
       this.trueIfEquals,
       this.trueIfMatches})
       : super._() {
-    if (attribute == null) {
-      throw new BuiltValueNullFieldError('FieldEntry', 'attribute');
-    }
     if (name == null) {
       throw new BuiltValueNullFieldError('FieldEntry', 'name');
     }

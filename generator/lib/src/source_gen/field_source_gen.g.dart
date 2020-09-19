@@ -8,16 +8,16 @@ part of 'field_source_gen.dart';
 
 class _$FieldSourceGen extends FieldSourceGen {
   @override
-  final FieldEntry entry;
+  final FieldEntry field;
   String __vardecl;
   String __initializer;
 
   factory _$FieldSourceGen([void Function(FieldSourceGenBuilder) updates]) =>
       (new FieldSourceGenBuilder()..update(updates)).build();
 
-  _$FieldSourceGen._({this.entry}) : super._() {
-    if (entry == null) {
-      throw new BuiltValueNullFieldError('FieldSourceGen', 'entry');
+  _$FieldSourceGen._({this.field}) : super._() {
+    if (field == null) {
+      throw new BuiltValueNullFieldError('FieldSourceGen', 'field');
     }
   }
 
@@ -38,17 +38,17 @@ class _$FieldSourceGen extends FieldSourceGen {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is FieldSourceGen && entry == other.entry;
+    return other is FieldSourceGen && field == other.field;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(0, entry.hashCode));
+    return $jf($jc(0, field.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('FieldSourceGen')..add('entry', entry))
+    return (newBuiltValueToStringHelper('FieldSourceGen')..add('field', field))
         .toString();
   }
 }
@@ -57,15 +57,15 @@ class FieldSourceGenBuilder
     implements Builder<FieldSourceGen, FieldSourceGenBuilder> {
   _$FieldSourceGen _$v;
 
-  FieldEntryBuilder _entry;
-  FieldEntryBuilder get entry => _$this._entry ??= new FieldEntryBuilder();
-  set entry(FieldEntryBuilder entry) => _$this._entry = entry;
+  FieldEntryBuilder _field;
+  FieldEntryBuilder get field => _$this._field ??= new FieldEntryBuilder();
+  set field(FieldEntryBuilder field) => _$this._field = field;
 
   FieldSourceGenBuilder();
 
   FieldSourceGenBuilder get _$this {
     if (_$v != null) {
-      _entry = _$v.entry?.toBuilder();
+      _field = _$v.field?.toBuilder();
       _$v = null;
     }
     return this;
@@ -88,12 +88,12 @@ class FieldSourceGenBuilder
   _$FieldSourceGen build() {
     _$FieldSourceGen _$result;
     try {
-      _$result = _$v ?? new _$FieldSourceGen._(entry: entry.build());
+      _$result = _$v ?? new _$FieldSourceGen._(field: field.build());
     } catch (_) {
       String _$failedField;
       try {
-        _$failedField = 'entry';
-        entry.build();
+        _$failedField = 'field';
+        field.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             'FieldSourceGen', _$failedField, e.toString());

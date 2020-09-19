@@ -1,7 +1,9 @@
 targets:
   $default:
+    sources:
+      exclude: ["test/**"]
     builders:
-      built_value|built_value:
+      built_value_generator:built_value :
         enabled: true
       generator|generator:
         enabled: false

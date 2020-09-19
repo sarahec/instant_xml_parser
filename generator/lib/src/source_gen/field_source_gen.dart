@@ -6,17 +6,20 @@ part 'field_source_gen.g.dart';
 
 abstract class FieldSourceGen
     implements Built<FieldSourceGen, FieldSourceGenBuilder> {
-  FieldEntry get entry;
+  FieldEntry get field;
 
   @memoized
   String get vardecl =>
-      'var ${entry.name} ${entry.initVar ? initializer : ""};';
+      'var ${field.name} ${field.initVar ? initializer : ""};';
 
   @memoized
   String get initializer =>
-      '= namedAttribute(element, \'{$entry.attribute}\', ${converterFor(entry)})';
+      '= namedAttribute(element, \'{$field.attribute}\', ${converterFor(field)})';
 
   FieldSourceGen._();
   factory FieldSourceGen([void Function(FieldSourceGenBuilder) updates]) =
       _$FieldSourceGen;
+
+  factory FieldSourceGen.fromField(FieldEntry fieldEntry) =>
+      FieldSourceGen((b) => b..field = fieldEntry.toBuilder());
 }
