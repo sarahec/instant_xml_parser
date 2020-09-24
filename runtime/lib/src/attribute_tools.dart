@@ -2,9 +2,9 @@ import 'package:xml/xml_events.dart';
 
 import 'converters.dart';
 
-dynamic namedAttribute(XmlStartElementEvent element, String name,
+T namedAttribute<T>(XmlStartElementEvent element, String name,
     [Convert converter]) {
-  final attribute =
+  var attribute =
       element.attributes.firstWhere((a) => a.name == name, orElse: () => null);
   final value = attribute?.value;
 

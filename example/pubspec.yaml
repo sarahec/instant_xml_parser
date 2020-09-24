@@ -4,7 +4,7 @@ description: Annotates data classes for XML deserialization
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.10.0-56.0.dev <3.0.0'
+  sdk: '>=2.8.0 <3.0.0'
 
 dependencies:
   xml: ^4.4.0
