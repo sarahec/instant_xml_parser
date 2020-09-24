@@ -1,36 +1,28 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:built_value/built_value.dart';
+import 'package:meta/meta.dart';
 import 'package:runtime/annotations.dart';
 
-part 'field_entry.g.dart';
-
-abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
+class FieldEntry {
   /// (optional) The child tag to use. If null, looks for an attribute on the parent
-  @nullable
-  String get tag;
+  final String tag;
 
-  /// The attribute name to read. Defauts to the field's name
-  @nullable
-  String get attribute;
+  /// (optional) The attribute name to read. Defauts to the field's name
+  final String attribute;
 
   /// The field name
-  String get name;
+  final String name;
 
   /// (optional) If getting a class result from a child tag, this overrides the method's default name
-  @nullable
-  String get methodName;
+  final String methodName;
 
   /// Type of this field
-  DartType get type;
+  final DartType type;
 
   /// (optional, for Boolean fields only) Evaluates as TRUE if attribute value equals this string
-  @nullable
-  String get trueIfEquals;
+  final String trueIfEquals;
 
-  /// (optional, for Boolean fields only) Evaluates as TRUE if attribute value matches this Regexp
-  @nullable
-  RegExp get trueIfMatches;
+  final RegExp trueIfMatches;
 
   bool get initVar => tag == null && attribute != null;
 
@@ -47,20 +39,25 @@ abstract class FieldEntry implements Built<FieldEntry, FieldEntryBuilder> {
 
   bool _callMethod(t) => methodName != null && !t.isDartCoreObject;
 
-  FieldEntry._();
-  factory FieldEntry([void Function(FieldEntryBuilder) updates]) = _$FieldEntry;
+  FieldEntry.fromElement(FieldElement element,
+      {UseAttribute annotation, String tag})
+      : tag = (annotation?.tag != null && annotation?.tag != tag)
+            ? annotation?.tag
+            : null,
+        name = element.name,
+        methodName = null, // TODO implement method name when appropriate
+        attribute = annotation?.attribute ?? element.name,
+        type = element.type,
+        trueIfEquals = annotation?.equals,
+        trueIfMatches = annotation?.matches;
 
-  factory FieldEntry.fromElement(FieldElement element,
-          {UseAttribute annotation, String tag}) =>
-      FieldEntry((b) => b
-        // Annotation's tag overrides the parent's tag unless they match
-        ..tag = (annotation?.tag != null && annotation.tag != tag)
-            ? annotation.tag
-            : null
-        ..name = element.name
-        ..attribute = annotation?.attribute ?? element.name
-        ..methodName = null
-        ..type = element.type
-        ..trueIfEquals = annotation?.equals
-        ..trueIfMatches = annotation?.matches);
+  @visibleForTesting
+  FieldEntry(
+      {this.tag,
+      this.attribute,
+      this.name,
+      this.methodName,
+      this.type,
+      this.trueIfEquals,
+      this.trueIfMatches});
 }
