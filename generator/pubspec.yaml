@@ -4,10 +4,10 @@ description: Annotates data classes for XML deserialization
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.8.1 <3.0.0'
+  sdk: '>=2.10.0-56.0.dev <3.0.0'
 
 dependencies:
-  analyzer: "0.39.14" # Pin the analyzer version to work around a generation failure
+  analyzer: ^0.39.0
   build: ^1.3.0
   build_config: ^0.4.0
   built_collection: ^4.3.1
