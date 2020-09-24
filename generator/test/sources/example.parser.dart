@@ -1,6 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'example.dart';
+import 'dart:async';
+import 'package:async/async.dart';
+import 'package:runtime/runtime.dart';
+import 'package:xml/xml_events.dart';
+
+import 'example.dart';
 
 // **************************************************************************
 // ParseMethodGenerator
@@ -12,7 +17,7 @@ FutureOr<EmptyTag> emptyTag(StreamQueue<XmlEvent> events) async {
   if (!(await hasStartTag(events, withName: tag))) {
     return Future.error('Expected <empty> at start');
   }
-  var startTag = await events.next;
+  var startTag = await events.next as XmlStartElementEvent;
 
   while (await hasChildOf(events, startTag)) {
     var probe = await events.next;
@@ -29,7 +34,7 @@ FutureOr<NamedTag> namedTag(StreamQueue<XmlEvent> events) async {
   if (!(await hasStartTag(events, withName: tag))) {
     return Future.error('Expected <named> at start');
   }
-  var startTag = await events.next;
+  var startTag = await events.next as XmlStartElementEvent;
   name = namedAttribute(startTag, 'name');
 
   while (await hasChildOf(events, startTag)) {
@@ -50,7 +55,7 @@ FutureOr<AttributesTag> attributesTag(StreamQueue<XmlEvent> events) async {
   if (!(await hasStartTag(events, withName: tag))) {
     return Future.error('Expected <attributesTest> at start');
   }
-  var startTag = await events.next;
+  var startTag = await events.next as XmlStartElementEvent;
   name = namedAttribute(startTag, 'name');
   count = namedAttribute(startTag, 'count', (s) => int.parse(s));
   temperature = namedAttribute(startTag, 'temperature', (s) => double.parse(s));

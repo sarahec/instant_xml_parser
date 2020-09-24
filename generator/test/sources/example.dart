@@ -1,10 +1,4 @@
-import 'dart:async';
-import 'package:async/async.dart';
 import 'package:runtime/annotations.dart';
-import 'package:runtime/runtime.dart';
-import 'package:xml/xml_events.dart';
-
-part 'example.g.dart';
 
 @Tag('empty')
 class EmptyTag {
