@@ -12,7 +12,7 @@ builders:
   generator:
     import: "package:generator/builder.dart"
     builder_factories: ["parseMethodBuilder"]
-    build_extensions: {".dart": [".method.g.part"]}
+    build_extensions: {".dart": [".g.dart"]}
     auto_apply: dependents
-    build_to: cache
-    applies_builders: ["source_gen|combining_builder"]
+    build_to: source
+    applies_builders: ["source_gen|library_builder"]
