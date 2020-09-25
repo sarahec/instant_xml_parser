@@ -10,27 +10,22 @@ bool _hasAnnotation<T>(Element element) =>
     element.metadata != null && element.metadata.whereType<T>().isNotEmpty;
 
 class ClassEntry {
-  final String className;
-  final String method;
-  final String tag;
+  final String name;
+  final Tag annotation;
   final Iterable<FieldEntry> fields;
 
+  MethodEntry get method => MethodEntry.fromClassEntry(this);
+
   @visibleForTesting
-  ClassEntry(
-      {@required this.className,
-      @required this.method,
-      @required this.tag,
-      @required this.fields});
+  ClassEntry(this.name, this.annotation, this.fields);
 
   factory ClassEntry.fromElement(ClassElement element) {
     assert(_hasAnnotation<Tag>(element), '@Tag required');
+    final className = element.getDisplayString(withNullability: false);
     final annotation = _getAnnotation<Tag>(element);
-    return ClassEntry(
-        className: element.getDisplayString(withNullability: false),
-        method: annotation?.method ?? ReCase(element.name).camelCase,
-        tag: annotation?.tag,
-        fields: element.fields.map((f) => FieldEntry.fromElement(f,
-            tag: tag, annotation: _getAnnotation<UseAttribute>(f))));
+    final fields = element.fields.map((f) => FieldEntry.fromElement(f,
+        tag: annotation.tag, annotation: _getAnnotation<UseAttribute>(f)));
+    return ClassEntry(className, annotation, fields);
   }
 }
 
@@ -91,4 +86,17 @@ class FieldEntry {
       this.type,
       this.trueIfEquals,
       this.trueIfMatches});
+}
+
+class MethodEntry {
+  final String name;
+  final String tag;
+
+  @visibleForTesting
+  MethodEntry(this.name, this.tag);
+
+  MethodEntry.fromClassEntry(ClassEntry classEntry)
+      : name =
+            classEntry.annotation.method ?? ReCase(classEntry.name).camelCase,
+        tag = classEntry.annotation.tag;
 }
