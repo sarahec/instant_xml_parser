@@ -1,4 +1,4 @@
-import 'package:generator/src/symtable/field_entry.dart';
+import 'package:generator/src/symtable.dart';
 
 class FieldSourceGen {
   final FieldEntry entry;
