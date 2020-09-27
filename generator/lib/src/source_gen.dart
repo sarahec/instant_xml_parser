@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:generator/src/symtable.dart';
 import 'package:meta/meta.dart';
 
@@ -47,7 +46,7 @@ class MethodSourceGen {
 
   Method get toMethod => Method((b) => b
     ..name = entry.name
-    ..body = literalNull.code
+    ..body = Block.of([requireStartTag])
     ..modifier = MethodModifier.async
     ..requiredParameters.add(parameter)
     ..returns = refer(returnTypeName));
@@ -59,8 +58,10 @@ class MethodSourceGen {
     ..type = Reference('StreamQueue<XmlEvent>'));
 
   @visibleForTesting
-  Code get startingAssertion => Code(
-      "assert(element.name == '${entry.tag}', 'Expected tag: ${entry.tag}')");
+  Code get requireStartTag => Code('''
+  if (!(await hasStartTag(events, withName: '${entry.tag}'))) {
+    return Future.error('Expected <${entry.tag}> at start');"
+  }''');
 
   @visibleForTesting
   Code get attributeAccess => Code(

@@ -6,21 +6,28 @@ import 'package:generator/src/source_gen.dart';
 import 'package:generator/src/symtable.dart';
 
 void main() {
-  group('TestData method', () {
+  group('TestData testData(...)', () {
     var testDataType;
+    var methodEntry;
+    var source;
 
     setUp(() {
       testDataType = MockType.withDisplayString('TestData');
+      methodEntry =
+          MethodEntry(name: 'testData', tag: 'test', returns: testDataType);
+      source = MethodSourceGen(methodEntry).toSource;
     });
 
-    test('method declaration', () {
-      final methodEntry =
-          MethodEntry(name: 'testData', tag: 'test', returns: testDataType);
-      final source = MethodSourceGen(methodEntry).toSource;
+    test('declaration', () {
       expect(
           source,
           startsWith(
               'FutureOr<TestData> testData(StreamQueue<XmlEvent> events) async'));
+    });
+
+    test('tag check', () {
+      print(source);
+      expect(source, contains("await hasStartTag(events, withName: 'test'"));
     });
   });
 }
