@@ -1,6 +1,6 @@
 import 'package:runtime/annotations.dart';
 
-@Tag('empty')
+@Tag('empty', useStrict: true)
 class EmptyTag {
   EmptyTag();
 }
@@ -14,7 +14,9 @@ class NamedTag {
 
 @Tag('attributesTest')
 class AttributesTag {
+  @Attribute(isRequired: true)
   final String name;
+  @Attribute(defaultValue: 0)
   final int count;
   final double temperature;
   final bool active;
