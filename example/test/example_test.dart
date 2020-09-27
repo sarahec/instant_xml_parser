@@ -1,5 +1,6 @@
 import 'package:async/async.dart';
 import 'package:example/example.dart';
+import 'package:runtime/runtime.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 
@@ -10,26 +11,8 @@ void main() {
       .normalizeEvents()
       .flatten());
 
-  group('bare tag', () {
-    test('open-close', () async {
-      var result = await emptyTag(_eventsFrom('<empty></empty>'));
-      expect(result, isA<EmptyTag>());
-    });
-
-    test('self-closing', () async {
-      var result = await emptyTag(_eventsFrom('<empty />'));
-      expect(result, isA<EmptyTag>());
-    });
-  });
-
-  group('implicit attributes', () {
-    test('string from implicit attribute', () async {
-      var result = await namedTag(_eventsFrom('<named name="foo" />'));
-      expect(result, isA<NamedTag>());
-      expect(result.name, equals('foo'));
-    });
-
-    test('values from implicit attribute', () async {
+  group('self-contained tag', () {
+    test('core attributes', () async {
       var result = await attributesTag(_eventsFrom(
           '<attributesTest name="foo" count="999" temperature="22.1" active="1" />'));
       expect(result, isA<AttributesTag>());
@@ -37,6 +20,13 @@ void main() {
       expect(result.count, equals(999), reason: 'extracted int');
       expect(result.temperature, equals(22.1), reason: 'extracted double');
       expect(result.active, isTrue, reason: 'extracted bool');
+    });
+  });
+
+  group('error handling', () {
+    test('missing start tag ', () {
+      var events = _eventsFrom('<badTag />');
+      expect(attributesTag(events), throwsA(TypeMatcher<MissingStartTag>()));
     });
   });
 }

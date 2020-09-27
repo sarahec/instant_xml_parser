@@ -21,3 +21,11 @@ class AttributesTag {
 
   AttributesTag(this.name, this.count, this.temperature, this.active);
 }
+
+@Tag('registration')
+class Registration {
+  final NamedTag person;
+  final int age;
+
+  Registration(this.person, this.age);
+}
