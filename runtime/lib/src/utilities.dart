@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:meta/meta.dart';
 import 'package:xml/xml_events.dart';
 
 import 'converters.dart';
@@ -51,6 +52,26 @@ Future<bool> hasStartTag(StreamQueue<XmlEvent> queue,
       (withName == null || event.name == withName);
 }
 
+Future<XmlStartElementEvent> nextStartTag(StreamQueue<XmlEvent> queue,
+    {@required XmlStartElementEvent parent, discardOthers = true}) async {
+  log.v('nextStartTag:');
+  while (await queue.hasNext) {
+    var event = await queue.peek;
+    if (event.parentEvent != parent) {
+      log.v('exiting due to parent change');
+      return null;
+    }
+    if (event is XmlStartElementEvent) {
+      return event;
+    } else {
+      if (discardOthers) {
+        await queue.next;
+      }
+    }
+  }
+  return null;
+}
+
 T namedAttribute<T>(XmlStartElementEvent element, String attributeName,
     {Converter<T> convert, isRequired = false, T defaultValue}) {
   assert(convert != null || !(T is String),
@@ -67,9 +88,12 @@ T namedAttribute<T>(XmlStartElementEvent element, String attributeName,
       return attribute?.value ?? defaultValue;
     }
   }
-
   return convert == null ? value : convert(value);
 }
+
+void reportUnknownChild(XmlStartElementEvent child,
+        {@required XmlStartElementEvent parent}) =>
+    log.d('Unknown child <${child.name} inside <${parent.name}>');
 
 void requireStartTag(StreamQueue<XmlEvent> events, String tag) async {
   if (!(await hasStartTag(events, withName: tag))) {

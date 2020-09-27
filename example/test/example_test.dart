@@ -13,7 +13,7 @@ void main() {
 
   group('self-contained tag', () {
     test('core attributes', () async {
-      var result = await attributesTag(_eventsFrom(
+      var result = await extractAttributesTag(_eventsFrom(
           '<attributesTest name="foo" count="999" temperature="22.1" active="1" />'));
       expect(result, isA<AttributesTag>());
       expect(result.name, equals('foo'));
@@ -23,8 +23,8 @@ void main() {
     });
 
     test('populates default values', () async {
-      var result =
-          await attributesTag(_eventsFrom('<attributesTest name="foo" />'));
+      var result = await extractAttributesTag(
+          _eventsFrom('<attributesTest name="foo" />'));
       expect(result, isA<AttributesTag>());
       expect(result.name, equals('foo'));
       expect(result.count, equals(0));
@@ -33,20 +33,32 @@ void main() {
     });
   });
 
+  group('nested', () {
+    test('tag', () async {
+      var result = await extractRegistration(_eventsFrom(
+          '<registration age="36"><namedTag name="bar"/></registration>'));
+      expect(result, isA<Registration>());
+      expect(result.person, isNotNull);
+      expect(result.person.name, equals('bar'));
+      expect(result.age, equals(36));
+    });
+  });
+
   group('error handling', () {
     test('missing start tag ', () {
       var events = _eventsFrom('<badTag />');
-      expect(emptyTag(events), throwsA(TypeMatcher<MissingStartTag>()));
+      expect(extractEmptyTag(events), throwsA(TypeMatcher<MissingStartTag>()));
     });
 
     test('unexpected children in strict mode ', () {
       var events = _eventsFrom('<emptyTag><foo/></emptyTag>');
-      expect(emptyTag(events), throwsA(TypeMatcher<UnexpectedChild>()));
+      expect(extractEmptyTag(events), throwsA(TypeMatcher<UnexpectedChild>()));
     });
 
     test('missing required attribute', () async {
       var events = _eventsFrom('<attributesTest />');
-      expect(attributesTag(events), throwsA(TypeMatcher<MissingAttribute>()));
+      expect(extractAttributesTag(events),
+          throwsA(TypeMatcher<MissingAttribute>()));
     });
   });
 }

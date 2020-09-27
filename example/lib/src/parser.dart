@@ -5,7 +5,7 @@ import 'package:xml/xml_events.dart';
 
 import 'structures.dart';
 
-Future<AttributesTag> attributesTag(StreamQueue<XmlEvent> events) async {
+Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
   await requireStartTag(events, 'attributesTest');
 
   final startTag = await events.next as XmlStartElementEvent;
@@ -22,7 +22,7 @@ Future<AttributesTag> attributesTag(StreamQueue<XmlEvent> events) async {
 }
 
 // @Tag('empty', useStrict: true)
-Future<EmptyTag> emptyTag(StreamQueue<XmlEvent> events) async {
+Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events) async {
   await requireStartTag(events, 'emptyTag');
 
   final startTag = await events.next as XmlStartElementEvent;
@@ -30,4 +30,38 @@ Future<EmptyTag> emptyTag(StreamQueue<XmlEvent> events) async {
   await expectNoChildren(events, startTag, shouldThrow: true);
 
   return EmptyTag();
+}
+
+// @Tag('named')
+Future<NamedTag> extractNamedTag(StreamQueue<XmlEvent> events) async {
+  await requireStartTag(events, 'namedTag');
+  final startTag = await events.next as XmlStartElementEvent;
+  final name = namedAttribute(startTag, 'name');
+
+  await expectNoChildren(events, startTag, shouldThrow: true);
+
+  return NamedTag(name);
+}
+
+// @Tag('named')
+Future<Registration> extractRegistration(StreamQueue<XmlEvent> events) async {
+  await requireStartTag(events, 'registration');
+  final tag = await events.next as XmlStartElementEvent;
+  var namedTag;
+  final age = namedAttribute(tag, 'age', convert: Convert.toInt);
+
+  for (;;) {
+    // TODO Wrap nextStartTag as an Iterator
+    var _child = await nextStartTag(events, parent: tag);
+    if (_child == null) break;
+    switch (_child.name) {
+      case 'namedTag':
+        namedTag = await extractNamedTag(events);
+        break;
+      default:
+        reportUnknownChild(_child, parent: tag);
+    }
+  }
+
+  return Registration(namedTag, age);
 }
