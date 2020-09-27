@@ -10,45 +10,73 @@ bool _hasAnnotation<T>(Element element) =>
     element.metadata != null && element.metadata.whereType<T>().isNotEmpty;
 
 class ClassEntry {
-  final String name;
   final Tag annotation;
   final Iterable<FieldEntry> fields;
+  final DartType type;
 
-  MethodEntry get method => MethodEntry.fromClassEntry(this);
+  // Memoize the result of generating a method entry
+  MethodEntry _method;
 
   @visibleForTesting
-  ClassEntry(this.name, this.annotation, this.fields);
+  ClassEntry(
+      {@required this.annotation, @required this.type, @required this.fields});
 
   factory ClassEntry.fromElement(ClassElement element) {
     assert(_hasAnnotation<Tag>(element), '@Tag required');
-    final className = element.getDisplayString(withNullability: false);
     final annotation = _getAnnotation<Tag>(element);
+    final type = element.thisType;
     final fields = element.fields.map((f) => FieldEntry.fromElement(f,
-        tag: annotation.tag, annotation: _getAnnotation<UseAttribute>(f)));
-    return ClassEntry(className, annotation, fields);
+        parentTag: annotation.tag,
+        annotation: _getAnnotation<UseAttribute>(f)));
+    return ClassEntry(annotation: annotation, type: type, fields: fields);
   }
+
+  MethodEntry get method =>
+      _method ?? (_method = MethodEntry.fromClassEntry(this));
+
+  String get name => type.getDisplayString(withNullability: false);
+
+  String get tag => annotation.tag;
 }
 
 class FieldEntry {
-  /// (optional) The child tag to use. If null, looks for an attribute on the parent
-  final String tag;
-
-  /// (optional) The attribute name to read. Defauts to the field's name
-  final String attribute;
-
-  /// The field name
+  final UseAttribute annotation;
   final String name;
-
-  /// (optional) If getting a class result from a child tag, this overrides the method's default name
-  final String methodName;
-
-  /// Type of this field
+  final String trueIfEquals;
+  final RegExp trueIfMatches;
   final DartType type;
 
-  /// (optional, for Boolean fields only) Evaluates as TRUE if attribute value equals this string
-  final String trueIfEquals;
+  /// Tag associated with the enclosing class
+  final String _parentTag;
 
-  final RegExp trueIfMatches;
+  @visibleForTesting
+  FieldEntry(
+      {@required this.annotation,
+      @required this.name,
+      @required this.type,
+      @required this.trueIfEquals,
+      @required this.trueIfMatches,
+      @required parentTag})
+      : _parentTag = parentTag;
+
+  FieldEntry.fromElement(FieldElement element,
+      {UseAttribute annotation, String parentTag})
+      : annotation = annotation,
+        name = element.getDisplayString(withNullability: false),
+        type = element.type,
+        trueIfEquals = annotation?.equals,
+        trueIfMatches = annotation?.matches,
+        _parentTag = parentTag;
+
+  /// The attribute name to read (or null)
+  ///
+  /// Convenience feature: If the annotation exists but doesn't specify a name,
+  /// uses the field name.
+  String get attribute =>
+      annotation != null ? (annotation.attribute ?? name) : null;
+
+  /// The child tag to use, or null if using the parent tag's attribute
+  String get tag => annotation?.tag != _parentTag ? annotation?.tag : null;
 
   bool get initVar => tag == null && attribute != null;
 
@@ -63,40 +91,33 @@ class FieldEntry {
   bool get callMethodInList =>
       buildList && _callMethod((type as ParameterizedType).typeArguments.first);
 
-  bool _callMethod(t) => methodName != null && !t.isDartCoreObject;
-
-  FieldEntry.fromElement(FieldElement element,
-      {UseAttribute annotation, String tag})
-      : tag = (annotation?.tag != null && annotation?.tag != tag)
-            ? annotation?.tag
-            : null,
-        name = element.name,
-        methodName = null, // TODO implement method name when appropriate
-        attribute = annotation?.attribute ?? element.name,
-        type = element.type,
-        trueIfEquals = annotation?.equals,
-        trueIfMatches = annotation?.matches;
-
-  @visibleForTesting
-  FieldEntry(
-      {this.tag,
-      this.attribute,
-      this.name,
-      this.methodName,
-      this.type,
-      this.trueIfEquals,
-      this.trueIfMatches});
+  bool _callMethod(t) => name != null && !t.isDartCoreObject;
 }
 
 class MethodEntry {
+  final String attribute;
   final String name;
+  final DartType returns;
   final String tag;
 
   @visibleForTesting
-  MethodEntry(this.name, this.tag);
+  MethodEntry(
+      {@required this.name,
+      @required this.tag,
+      this.attribute,
+      @required this.returns});
 
   MethodEntry.fromClassEntry(ClassEntry classEntry)
-      : name =
-            classEntry.annotation.method ?? ReCase(classEntry.name).camelCase,
-        tag = classEntry.annotation.tag;
+      : name = ReCase(classEntry.name).camelCase,
+        tag = classEntry.annotation.tag,
+        attribute = null,
+        returns = classEntry.type;
+
+  MethodEntry.fromFieldEntry(FieldEntry entry)
+      : name = 'get${ReCase(entry.name).pascalCase}',
+        tag = entry.tag,
+        attribute = entry.attribute,
+        returns = entry.type;
+
+  String get returnType => returns.getDisplayString(withNullability: false);
 }
