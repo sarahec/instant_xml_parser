@@ -26,8 +26,7 @@ class ClassEntry {
     final annotation = _getAnnotation<Tag>(element);
     final type = element.thisType;
     final fields = element.fields.map((f) => FieldEntry.fromElement(f,
-        parentTag: annotation.tag,
-        annotation: _getAnnotation<UseAttribute>(f)));
+        parentTag: annotation.tag, annotation: _getAnnotation<Attribute>(f)));
     return ClassEntry(annotation: annotation, type: type, fields: fields);
   }
 
@@ -40,7 +39,7 @@ class ClassEntry {
 }
 
 class FieldEntry {
-  final UseAttribute annotation;
+  final Attribute annotation;
   final String name;
   final String trueIfEquals;
   final RegExp trueIfMatches;
@@ -60,7 +59,7 @@ class FieldEntry {
       : _parentTag = parentTag;
 
   FieldEntry.fromElement(FieldElement element,
-      {UseAttribute annotation, String parentTag})
+      {Attribute annotation, String parentTag})
       : annotation = annotation,
         name = element.getDisplayString(withNullability: false),
         type = element.type,

@@ -1,9 +1,16 @@
-typedef Convert = dynamic Function(String s);
+typedef Converter<T> = T Function(String s);
 
-Convert get toDouble => (s) => double.parse(s);
+class Convert {
+  static Converter<String> get identity => (s) => s;
 
-Convert get toInt => (s) => int.parse(s);
+  static Converter<bool> get toBool =>
+      (s) => s == '1' || s == 'true' || s == 'TRUE';
 
-Convert ifEquals(value) => (s) => value == s;
+  static Converter<double> get toDouble => (s) => double.parse(s);
 
-Convert ifMatches(regexp) => (s) => regexp.hasMatch(s);
+  static Converter<int> get toInt => (s) => int.parse(s);
+
+  static Converter<bool> ifEquals(value) => (s) => value == s;
+
+  static Converter<bool> ifMatches(regexp) => (s) => regexp.hasMatch(s);
+}
