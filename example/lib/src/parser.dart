@@ -6,81 +6,57 @@ import 'package:xml/xml_events.dart';
 import 'structures.dart';
 
 Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
-  await requireStartTag(events, 'attributesTest');
+  final startTag = startOf(events, name: 'attributesTest', rejectOthers: true);
 
-  final startTag = await events.next as XmlStartElementEvent;
-  final name = namedAttribute(startTag, 'name', isRequired: true);
-  final count = namedAttribute(startTag, 'count',
+  final name = await namedAttribute(startTag, 'name', isRequired: true);
+  final count = await namedAttribute(startTag, 'count',
       convert: Convert.toInt, defaultValue: 0);
   final temperature =
-      namedAttribute(startTag, 'temperature', convert: Convert.toDouble);
-  final active = namedAttribute(startTag, 'active', convert: Convert.toBool);
+      await namedAttribute(startTag, 'temperature', convert: Convert.toDouble);
+  final active =
+      await namedAttribute(startTag, 'active', convert: Convert.toBool);
 
-  await expectNoChildren(events, startTag);
-
+  await endOf(startTag, events);
   return AttributesTag(name, count, temperature, active);
 }
 
 // @Tag('empty', useStrict: true)
 Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events) async {
-  await requireStartTag(events, 'emptyTag');
-
-  final startTag = await events.next as XmlStartElementEvent;
-
-  await expectNoChildren(events, startTag, shouldThrow: true);
-
+  final startTag = startOf(events, name: 'emptyTag', rejectOthers: true);
+  await endOf(startTag, events);
   return EmptyTag();
 }
 
 // @Tag('identification')
 Future<NameTag> extractNameTag(StreamQueue<XmlEvent> events) async {
-  await requireStartTag(events, 'identification');
-  final startTag = await events.next as XmlStartElementEvent;
-  final name = namedAttribute(startTag, 'name');
-
-  await expectNoChildren(events, startTag, shouldThrow: true);
-
-  return NameTag(name);
+  final startTag = startOf(events, name: 'identification', rejectOthers: true);
+  final name = await namedAttribute(startTag, 'name');
+  await endOf(startTag, events);
+  return NameTag(await name);
 }
 
+/*
 // @Tag('registration')
 Future<Registration> extractRegistration(StreamQueue<XmlEvent> events) async {
-  await requireStartTag(events, 'registration');
-  final tag = await events.next as XmlStartElementEvent;
-  var nameTag;
-  var contact;
-  final age = namedAttribute(tag, 'age', convert: Convert.toInt);
+  final startTag = startOf(events, name: 'registration', rejectOthers: true);
 
-  for (;;) {
-    var _child = await nextStartTag(events, parent: tag);
-    if (_child == null) break;
-    switch (_child.name) {
-      case 'identification':
-        nameTag = await extractNameTag(events);
-        break;
+  var nameTag =
+      childOf(startTag, events, name: 'identification', action: extractNameTag);
+  var contact = childOf(events,
+      name: 'ContactInfo', parent: startTag, action: extractContacts);
+  final age = namedAttribute(startTag, 'name');
 
-      case 'ContactInfo':
-        contact = await extractContacts(events);
-        break;
-
-      default:
-        reportUnknownChild(_child, parent: tag);
-        // TODO Scan over to next child
-        await events.skip(1);
-    }
-  }
-
-  return Registration(nameTag, contact, age);
+  await endOf(startTag, events);
+  return Registration(await nameTag, await contact, await age);
 }
+*/
 
 // @Tag('ContactInfo')
 Future<ContactInfo> extractContacts(StreamQueue<XmlEvent> events) async {
-  await requireStartTag(events, 'ContactInfo');
-  final startTag = await events.next as XmlStartElementEvent;
-  final email = namedAttribute(startTag, 'email');
-  final phone = namedAttribute(startTag, 'phone');
+  final startTag = startOf(events, name: 'ContactInfo', rejectOthers: true);
+  final email = await namedAttribute(startTag, 'email');
+  final phone = await namedAttribute(startTag, 'phone');
 
-  await expectNoChildren(events, startTag, shouldThrow: true);
-
+  await endOf(startTag, events);
   return ContactInfo(email, phone);
 }

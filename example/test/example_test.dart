@@ -33,6 +33,7 @@ void main() {
     });
   });
 
+/*
   group('nested', () {
     test('single tag', () async {
       var result = await extractRegistration(_eventsFrom(
@@ -53,6 +54,7 @@ void main() {
       expect(result.contact.email, equals('foo@bar.dev'));
     });
   });
+  */
 
   group('error handling finds', () {
     test('missing start tag ', () {
@@ -60,10 +62,10 @@ void main() {
       expect(extractEmptyTag(events), throwsA(TypeMatcher<MissingStartTag>()));
     });
 
-    test('unexpected children in strict mode ', () {
-      var events = _eventsFrom('<emptyTag><foo/></emptyTag>');
-      expect(extractEmptyTag(events), throwsA(TypeMatcher<UnexpectedChild>()));
-    });
+    // test('unexpected children in strict mode ', () {
+    //   var events = _eventsFrom('<emptyTag><foo/></emptyTag>');
+    //   expect(extractEmptyTag(events), throwsA(TypeMatcher<UnexpectedChild>()));
+    // });
 
     test('missing required attribute', () async {
       var events = _eventsFrom('<attributesTest />');

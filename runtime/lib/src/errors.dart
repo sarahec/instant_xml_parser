@@ -18,12 +18,13 @@ class MissingAttribute implements ParsingError {
 }
 
 class MissingStartTag implements ParsingError {
-  final String tag;
+  final String wantedTag;
+  final String foundTag;
 
-  MissingStartTag(this.tag);
+  MissingStartTag(this.wantedTag, {this.foundTag = ''});
 
   @override
-  String get message => 'Expected <$tag> at start';
+  String get message => 'Expected <$wantedTag> at start';
 }
 
 class UnexpectedChild implements ParsingError {

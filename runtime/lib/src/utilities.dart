@@ -8,86 +8,78 @@ import 'converters.dart';
 import 'errors.dart';
 import 'logging.dart';
 
-void expectNoChildren(
-    StreamQueue<XmlEvent> events, XmlStartElementEvent startTag,
-    {shouldThrow = false}) async {
-  if (!startTag.isSelfClosing) {
-    await skipChildren(events, startTag, shouldThrow: shouldThrow);
-  }
-}
-
-Future<XmlStartElementEvent> getParent(StreamQueue<XmlEvent> queue,
-    {consume = false}) async {
-  log.v('getParent:');
-  if (!await queue.hasNext) {
-    return Future.error(EndOfQueue());
-  }
-  final event = await (consume ? queue.next : queue.peek);
-  log.v(event);
-  return event.parentEvent;
-}
-
-Future<bool> hasChildOf(
-    StreamQueue<XmlEvent> queue, XmlStartElementEvent startTag,
-    {consume = false}) async {
-  log.v('hasChildOf:');
-  if (!await queue.hasNext) {
-    log.v('eof');
-    return false;
-  }
-  final event = await (consume ? queue.next : queue.peek);
-  log.v(event);
-  return startTag == event.parentEvent;
-}
-
-Future<bool> hasStartTag(StreamQueue<XmlEvent> queue,
-    {String withName, consume = false}) async {
-  log.v('hasStartTag:');
-  if (!await queue.hasNext) {
-    return Future.error(EndOfQueue());
-  }
-  final event = await (consume ? queue.next : queue.peek);
-  log.v(event);
-  return (event is XmlStartElementEvent) &&
-      (withName == null || event.name == withName);
-}
-
-Future<XmlStartElementEvent> nextStartTag(StreamQueue<XmlEvent> queue,
-    {@required XmlStartElementEvent parent, discardOthers = true}) async {
-  log.v('nextStartTag:');
+/// Scans ahead to the next XmlStartElementEvent, setting event queue
+/// to the found element or resetting it
+///
+/// [events] Incoming event queue
+/// [parent] If supplied, returns only children of this node
+/// [name] If supplied, returns only nodes with this qualified name
+Future<XmlStartElementEvent> startOf(StreamQueue<XmlEvent> events,
+    {String name, XmlStartElementEvent parent, rejectOthers = false}) async {
+  // Scan for a start tag
+  var transaction = events.startTransaction();
+  var queue = transaction.newQueue();
   while (await queue.hasNext) {
-    var event = await queue.peek;
-    if (event.parentEvent != parent) {
-      log.v('exiting due to parent change');
-      return null;
-    }
-    if (event is XmlStartElementEvent) {
-      return event;
-    } else {
-      if (discardOthers) {
-        await queue.next;
+    var probe = await queue.next;
+    if (probe is XmlStartElementEvent) {
+      if ((parent == null || probe.parentEvent == parent) &&
+          (name == null || probe.qualifiedName == name)) {
+        transaction.commit(queue);
+        return probe;
+      } else if (rejectOthers) {
+        transaction.reject();
+        return Future.error(MissingStartTag(name, foundTag: probe.name));
       }
     }
   }
+  transaction.reject();
   return null;
 }
 
-T namedAttribute<T>(XmlStartElementEvent element, String attributeName,
-    {Converter<T> convert, isRequired = false, T defaultValue}) {
+/// Scans to the end of the starting tag, setting the event queue there.
+///
+Future<bool> endOf(FutureOr<XmlStartElementEvent> startTag,
+    StreamQueue<XmlEvent> events) async {
+  var element = await Future.value(startTag);
+  if (element.isSelfClosing) {
+    return true;
+  }
+  var transaction = events.startTransaction();
+  var queue = transaction.newQueue();
+  while (await queue.hasNext) {
+    var probe = await queue.next;
+    if (probe is XmlEndElementEvent &&
+        probe.qualifiedName == element.qualifiedName) {
+      transaction.commit(queue);
+      return true;
+    }
+  }
+  // Hit end of stream and found nothing
+  transaction.reject();
+  log.e('Could not find closing tag for <${element.name}>)');
+  return false;
+}
+
+Future<T> namedAttribute<T>(
+    FutureOr<XmlStartElementEvent> elementFuture, String attributeName,
+    {Converter<T> convert, isRequired = false, T defaultValue}) async {
   assert(convert != null || !(T is String),
       'converter required for non-String attributes');
+
+  final element = await Future.value(elementFuture);
 
   final attribute = element.attributes
       .firstWhere((a) => a.name == attributeName, orElse: () => null);
   final value = attribute?.value;
 
-  if (attribute?.value == null) {
+  if (value == null) {
     if (isRequired) {
-      throw MissingAttribute(element.name, attributeName);
-    } else {
-      return attribute?.value ?? defaultValue;
+      return Future.error(MissingAttribute(element.name, attributeName));
     }
+    // If we're returning the default value, we can bypass the converter
+    return value ?? defaultValue;
   }
+
   return convert == null ? value : convert(value);
 }
 
@@ -96,29 +88,5 @@ void reportUnknownChild(XmlStartElementEvent child,
   log.w('Unknown child <${child.name} inside <${parent.name}>');
   if (shouldThrow) {
     throw (UnexpectedChild(child.name));
-  }
-}
-
-void requireStartTag(StreamQueue<XmlEvent> events, String tag) async {
-  if (!(await hasStartTag(events, withName: tag))) {
-    throw (MissingStartTag(tag));
-  }
-}
-
-void skip(XmlEvent event) {
-  if (event is XmlStartElementEvent) {
-    log.d('Skipped: START <${event.name}>');
-  } else {
-    log.v('Skipped $event');
-  }
-}
-
-void skipChildren(StreamQueue<XmlEvent> events, XmlStartElementEvent startTag,
-    {shouldThrow = false}) async {
-  while (await hasChildOf(events, startTag)) {
-    if (shouldThrow) {
-      throw (UnexpectedChild(startTag.name));
-    }
-    skip(await events.next);
   }
 }
