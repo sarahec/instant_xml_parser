@@ -33,6 +33,17 @@ class Registration {
   Registration(this.person, this.contact, this.age);
 }
 
+@Tag('AltRegistration')
+class AltRegistration {
+  @Attribute(tag: 'identification')
+  final String name;
+  @Attribute(tag: 'ContactInfo')
+  final String email;
+  final int age;
+
+  AltRegistration(this.name, this.email, this.age);
+}
+
 @Tag('ContactInfo')
 class ContactInfo {
   final String email;
