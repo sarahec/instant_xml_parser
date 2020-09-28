@@ -34,17 +34,27 @@ void main() {
   });
 
   group('nested', () {
-    test('tag', () async {
+    test('single tag', () async {
       var result = await extractRegistration(_eventsFrom(
-          '<registration age="36"><namedTag name="bar"/></registration>'));
+          '<registration age="36"><identification name="bar"/></registration>'));
       expect(result, isA<Registration>());
       expect(result.person, isNotNull);
       expect(result.person.name, equals('bar'));
       expect(result.age, equals(36));
     });
+
+    test('dual tags', () async {
+      var result = await extractRegistration(_eventsFrom(
+          '<registration age="36"><identification name="bar"/><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309"/></registration>'));
+      expect(result, isA<Registration>());
+      expect(result.age, equals(36));
+      expect(result.person, isNotNull);
+      expect(result.contact, isNotNull);
+      expect(result.contact.email, equals('foo@bar.dev'));
+    });
   });
 
-  group('error handling', () {
+  group('error handling finds', () {
     test('missing start tag ', () {
       var events = _eventsFrom('<badTag />');
       expect(extractEmptyTag(events), throwsA(TypeMatcher<MissingStartTag>()));

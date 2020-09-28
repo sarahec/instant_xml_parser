@@ -5,11 +5,11 @@ class EmptyTag {
   EmptyTag();
 }
 
-@Tag('named')
-class NamedTag {
+@Tag('identification')
+class NameTag {
   final String name;
 
-  NamedTag(this.name);
+  NameTag(this.name);
 }
 
 @Tag('attributesTest')
@@ -26,8 +26,17 @@ class AttributesTag {
 
 @Tag('registration')
 class Registration {
-  final NamedTag person;
+  final NameTag person;
+  final ContactInfo contact;
   final int age;
 
-  Registration(this.person, this.age);
+  Registration(this.person, this.contact, this.age);
+}
+
+@Tag('ContactInfo')
+class ContactInfo {
+  final String email;
+  final String phone;
+
+  ContactInfo(this.email, this.phone);
 }

@@ -92,8 +92,12 @@ T namedAttribute<T>(XmlStartElementEvent element, String attributeName,
 }
 
 void reportUnknownChild(XmlStartElementEvent child,
-        {@required XmlStartElementEvent parent}) =>
-    log.d('Unknown child <${child.name} inside <${parent.name}>');
+    {@required XmlStartElementEvent parent, shouldThrow = false}) {
+  log.w('Unknown child <${child.name} inside <${parent.name}>');
+  if (shouldThrow) {
+    throw (UnexpectedChild(child.name));
+  }
+}
 
 void requireStartTag(StreamQueue<XmlEvent> events, String tag) async {
   if (!(await hasStartTag(events, withName: tag))) {
