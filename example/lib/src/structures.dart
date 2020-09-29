@@ -1,5 +1,6 @@
 import 'package:runtime/annotations.dart';
 
+@XmlParser('test')
 @Tag('empty', useStrict: true)
 class EmptyTag {
   EmptyTag();

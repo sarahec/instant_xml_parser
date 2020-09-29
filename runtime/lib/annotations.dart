@@ -1,5 +1,11 @@
 library annotations;
 
+class XmlParser {
+  final String prefix;
+
+  const XmlParser(this.prefix);
+}
+
 class Tag {
   final String tag;
   final String method;
