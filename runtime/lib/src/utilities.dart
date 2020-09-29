@@ -15,23 +15,27 @@ import 'logging.dart';
 /// [parent] If supplied, returns only children of this node
 /// [name] If supplied, returns only nodes with this qualified name
 Future<XmlStartElementEvent> startOf(StreamQueue<XmlEvent> events,
-    {String name, XmlStartElementEvent parent, rejectOthers = false}) async {
+    {String name, XmlStartElementEvent parent, mustBeFirst = false}) async {
   // Scan for a start tag
   var transaction = events.startTransaction();
   var queue = transaction.newQueue();
   while (await queue.hasNext) {
-    var probe = await queue.next;
+    var probe = await queue.peek;
     if (probe is XmlStartElementEvent) {
       if ((parent == null || probe.parentEvent == parent) &&
           (name == null || probe.qualifiedName == name)) {
         transaction.commit(queue);
+        log.v('Found start of $probe');
         return probe;
-      } else if (rejectOthers) {
+      } else if (mustBeFirst) {
+        // found, no match, reject
         transaction.reject();
         return Future.error(MissingStartTag(name, foundTag: probe.name));
       }
     }
+    await queue.skip(1);
   }
+  log.v('Reached end of stream looking for start tag');
   transaction.reject();
   return null;
 }
@@ -88,5 +92,42 @@ void reportUnknownChild(XmlStartElementEvent child,
   log.w('Unknown child <${child.name} inside <${parent.name}>');
   if (shouldThrow) {
     throw (UnexpectedChild(child.name));
+  }
+}
+
+typedef ParseMethod<T> = Future<T> Function(StreamQueue<XmlEvent> events);
+
+class ChildParser {
+  final Map<String, ParseMethod> dispatchMap;
+
+  ChildParser(this.dispatchMap);
+
+  Iterable<String> get skippedChildren => _skipped;
+
+  var _skipped;
+
+  Future<Map<String, dynamic>> parseAll(StreamQueue<XmlEvent> events) async {
+    Map<String, dynamic> results = {};
+    _skipped = <String>[];
+    log.v('parsing children)');
+    while (await events.hasNext) {
+      var transaction = events.startTransaction();
+      var queue = transaction.newQueue();
+      await queue.skip(1); // Move off initial start tag
+      var probe = await startOf(queue);
+      if (probe == null) {
+        transaction.reject();
+        return results;
+      }
+      var probeName = probe.qualifiedName;
+      if (dispatchMap.containsKey(probeName)) {
+        // TODO Deal with list results
+        results[probeName] =
+            await Function.apply(dispatchMap[probeName], [queue]);
+      } else {
+        _skipped.add(probeName);
+      }
+      transaction.commit(queue);
+    }
   }
 }

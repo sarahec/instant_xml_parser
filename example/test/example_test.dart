@@ -33,7 +33,6 @@ void main() {
     });
   });
 
-/*
   group('nested', () {
     test('single tag', () async {
       var result = await extractRegistration(_eventsFrom(
@@ -49,12 +48,11 @@ void main() {
           '<registration age="36"><identification name="bar"/><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309"/></registration>'));
       expect(result, isA<Registration>());
       expect(result.age, equals(36));
-      expect(result.person, isNotNull);
-      expect(result.contact, isNotNull);
+      expect(result.person, isA<NameTag>());
+      expect(result.contact, isA<ContactInfo>());
       expect(result.contact.email, equals('foo@bar.dev'));
     });
   });
-  */
 
   group('error handling finds', () {
     test('missing start tag ', () {
