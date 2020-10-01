@@ -4,7 +4,7 @@ class Convert {
   static Converter<String> get identity => (s) => s;
 
   static Converter<bool> get toBool =>
-      (s) => s == '1' || s == 'true' || s == 'TRUE';
+      (s) => s != null && (s == '1' || s == 'true' || s == 'TRUE');
 
   static Converter<double> get toDouble => (s) => double.parse(s);
 

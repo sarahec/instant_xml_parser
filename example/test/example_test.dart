@@ -35,6 +35,7 @@ void main() {
     });
   });
 
+  /*
   group('nested', () {
     test('single tag', () async {
       var result = await txp.extractRegistration(_eventsFrom(
@@ -55,6 +56,7 @@ void main() {
       expect(result.contact.email, equals('foo@bar.dev'));
     });
   });
+*/
 
   group('error handling finds', () {
     test('missing start tag ', () {

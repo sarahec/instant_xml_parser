@@ -8,14 +8,98 @@ import 'converters.dart';
 import 'errors.dart';
 import 'logging.dart';
 
+typedef ParseMethod<T> = Future<T> Function(StreamQueue<XmlEvent> events);
+
+abstract class ExtractorAction<T> {
+  String get key; // result identifier
+
+  Future<T> execute(StreamQueue<XmlEvent> events, ParserRuntime pr,
+      {T priorValue});
+}
+
+class GetAttr<T> implements ExtractorAction<T> {
+  final String attrName;
+  final bool isRequired;
+  final T defaultValue;
+  final Converter convert;
+
+  GetAttr(this.attrName,
+      {this.isRequired = false, this.defaultValue, this.convert});
+
+  @override
+  Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
+      {T priorValue}) async {
+    var startTag = await queue.peek;
+    return (startTag is XmlStartElementEvent)
+        ? pr._namedAttribute<T>(startTag, attrName,
+            defaultValue: defaultValue,
+            isRequired: isRequired,
+            convert: convert ?? _autoConverter)
+        : Future.error(MissingStartTag(key));
+  }
+
+  Converter get _autoConverter => (T == bool)
+      ? Convert.toBool
+      : (T == int) ? Convert.toInt : (T == double) ? Convert.toDouble : null;
+
+  @override
+  String get key => attrName;
+}
+
+class GetTag<T> implements ExtractorAction<T> {
+  final String tagName;
+  final ParseMethod<T> method;
+
+  GetTag(this.tagName, this.method);
+
+  @override
+  String get key => tagName;
+
+  @override
+  Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
+      {T priorValue}) async {
+    if (T is List) {
+      // We have to type this so .add will work (Dart 2.9.3)
+      List returnValue = priorValue ?? []; // ignore: omit_local_variable_types
+      returnValue.add(Function.apply(method, [queue]));
+      return returnValue as T;
+    }
+    return Function.apply(method, [queue]);
+  }
+}
+
 class ParserRuntime {
+  Future<Map<String, dynamic>> parse(StreamQueue<XmlEvent> events,
+      String tagName, Iterable<ExtractorAction> actions) async {
+    Map<String, dynamic> results = {}; // ignore: omit_local_variable_types
+    if (!await events.hasNext) {
+      return Future.error(EndOfQueue());
+    }
+
+    final transaction = events.startTransaction();
+    final queue = transaction.newQueue();
+    final startTag = await _startOf(queue, name: tagName, mustBeFirst: true);
+    if (startTag == null) {
+      transaction.reject();
+      return Future.error(MissingStartTag(tagName));
+    }
+    for (var action in actions) {
+      var key = action.key;
+      results[key] =
+          await action.execute(queue, this, priorValue: results[key]);
+    }
+    await _endOf(startTag, queue);
+    transaction.commit(queue);
+    return results;
+  }
+
   /// Scans ahead to the next XmlStartElementEvent, setting event queue
   /// to the found element or resetting it
   ///
   /// [events] Incoming event queue
   /// [parent] If supplied, returns only children of this node
   /// [name] If supplied, returns only nodes with this qualified name
-  Future<XmlStartElementEvent> startOf(StreamQueue<XmlEvent> events,
+  Future<XmlStartElementEvent> _startOf(StreamQueue<XmlEvent> events,
       {String name, XmlStartElementEvent parent, mustBeFirst = false}) async {
     // Scan for a start tag
     var transaction = events.startTransaction();
@@ -43,7 +127,7 @@ class ParserRuntime {
 
   /// Scans to the end of the starting tag, setting the event queue there.
   ///
-  Future<bool> endOf(FutureOr<XmlStartElementEvent> startTag,
+  Future<bool> _endOf(FutureOr<XmlStartElementEvent> startTag,
       StreamQueue<XmlEvent> events) async {
     var element = await Future.value(startTag);
     if (element.isSelfClosing) {
@@ -65,10 +149,10 @@ class ParserRuntime {
     return false;
   }
 
-  Future<T> namedAttribute<T>(
+  Future<T> _namedAttribute<T>(
       FutureOr<XmlStartElementEvent> elementFuture, String attributeName,
       {Converter<T> convert, isRequired = false, T defaultValue}) async {
-    assert(convert != null || !(T is String),
+    assert(convert != null || T == String,
         'converter required for non-String attributes');
 
     final element = await Future.value(elementFuture);
@@ -88,7 +172,7 @@ class ParserRuntime {
     return convert == null ? value : convert(value);
   }
 
-  void reportUnknownChild(XmlStartElementEvent child,
+  void _reportUnknownChild(XmlStartElementEvent child,
       {@required XmlStartElementEvent parent, shouldThrow = false}) {
     log.w('Unknown child <${child.name} inside <${parent.name}>');
     if (shouldThrow) {
