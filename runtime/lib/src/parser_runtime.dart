@@ -1,3 +1,5 @@
+library runtime;
+
 import 'dart:async';
 
 import 'package:async/async.dart';
@@ -10,67 +12,16 @@ import 'logging.dart';
 
 typedef ParseMethod<T> = Future<T> Function(StreamQueue<XmlEvent> events);
 
-abstract class ExtractorAction<T> {
+abstract class ParserAction<T> {
   String get key; // result identifier
 
   Future<T> execute(StreamQueue<XmlEvent> events, ParserRuntime pr,
       {T priorValue});
 }
 
-class GetAttr<T> implements ExtractorAction<T> {
-  final String attrName;
-  final bool isRequired;
-  final T defaultValue;
-  final Converter convert;
-
-  GetAttr(this.attrName,
-      {this.isRequired = false, this.defaultValue, this.convert});
-
-  @override
-  Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
-      {T priorValue}) async {
-    var startTag = await queue.peek;
-    return (startTag is XmlStartElementEvent)
-        ? pr._namedAttribute<T>(startTag, attrName,
-            defaultValue: defaultValue,
-            isRequired: isRequired,
-            convert: convert ?? _autoConverter)
-        : Future.error(MissingStartTag(key));
-  }
-
-  Converter get _autoConverter => (T == bool)
-      ? Convert.toBool
-      : (T == int) ? Convert.toInt : (T == double) ? Convert.toDouble : null;
-
-  @override
-  String get key => attrName;
-}
-
-class GetTag<T> implements ExtractorAction<T> {
-  final String tagName;
-  final ParseMethod<T> method;
-
-  GetTag(this.tagName, this.method);
-
-  @override
-  String get key => tagName;
-
-  @override
-  Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
-      {T priorValue}) async {
-    if (T is List) {
-      // We have to type this so .add will work (Dart 2.9.3)
-      List returnValue = priorValue ?? []; // ignore: omit_local_variable_types
-      returnValue.add(Function.apply(method, [queue]));
-      return returnValue as T;
-    }
-    return Function.apply(method, [queue]);
-  }
-}
-
 class ParserRuntime {
   Future<Map<String, dynamic>> parse(StreamQueue<XmlEvent> events,
-      String tagName, Iterable<ExtractorAction> actions) async {
+      String tagName, Iterable<ParserAction> actions) async {
     Map<String, dynamic> results = {}; // ignore: omit_local_variable_types
     if (!await events.hasNext) {
       return Future.error(EndOfQueue());
@@ -104,6 +55,7 @@ class ParserRuntime {
     // Scan for a start tag
     var transaction = events.startTransaction();
     var queue = transaction.newQueue();
+
     while (await queue.hasNext) {
       var probe = await queue.peek;
       if (probe is XmlStartElementEvent) {
@@ -112,9 +64,11 @@ class ParserRuntime {
           transaction.commit(queue);
           log.v('Found start of $probe');
           return probe;
-        } else if (mustBeFirst) {
+        }
+        if (mustBeFirst) {
           // found, no match, reject
           transaction.reject();
+          log.d('Missing start tag <$name>, found <${probe.name}>');
           return Future.error(MissingStartTag(name, foundTag: probe.name));
         }
       }
@@ -178,5 +132,59 @@ class ParserRuntime {
     if (shouldThrow) {
       throw (UnexpectedChild(child.name));
     }
+  }
+}
+
+// ============================================================================
+// Parser actions
+// ============================================================================
+
+class GetAttr<T> implements ParserAction<T> {
+  final String attrName;
+  final bool isRequired;
+  final T defaultValue;
+  final Converter convert;
+
+  GetAttr(this.attrName,
+      {this.isRequired = false, this.defaultValue, this.convert});
+
+  @override
+  Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
+      {T priorValue}) async {
+    var startTag = await queue.peek;
+    return (startTag is XmlStartElementEvent)
+        ? pr._namedAttribute<T>(startTag, attrName,
+            defaultValue: defaultValue,
+            isRequired: isRequired,
+            convert: convert ?? _autoConverter)
+        : Future.error(MissingStartTag(key));
+  }
+
+  Converter get _autoConverter => (T == bool)
+      ? Convert.toBool
+      : (T == int)
+          ? Convert.toInt
+          : (T == double)
+              ? Convert.toDouble
+              : null;
+
+  @override
+  String get key => attrName;
+}
+
+class GetTag<T> implements ParserAction<T> {
+  final String tagName;
+  final ParseMethod<T> method;
+
+  GetTag(this.tagName, this.method);
+
+  @override
+  String get key => tagName;
+
+  @override
+  Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
+      {T priorValue}) async {
+    await pr._startOf(queue, name: tagName);
+    return Function.apply(method, [queue]);
   }
 }

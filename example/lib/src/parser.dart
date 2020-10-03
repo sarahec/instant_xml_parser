@@ -40,19 +40,16 @@ class TestXmlParser {
     return NameTag(values['name']);
   }
 
-/*
 // @Tag('registration')
   Future<Registration> extractRegistration(StreamQueue<XmlEvent> events) async {
     final values = await pr.parse(events, RegistrationTagName, [
       GetAttr<int>('age', isRequired: true),
-      Children([
-        GetTag(NameTagName, extractNameTag),
-        GetTag(ContactInfoTagName, extractContacts)
-      ]),
+      GetTag(NameTagName, extractNameTag),
+      GetTag(ContactInfoTagName, extractContacts),
     ]);
-    return Registration(values.nameTag, values.contact, values.age);
+    return Registration(
+        values[NameTagName], values[ContactInfoTagName], values['age']);
   }
-  */
 
 // @Tag('ContactInfo')
   Future<ContactInfo> extractContacts(StreamQueue<XmlEvent> events) async {

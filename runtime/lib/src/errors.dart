@@ -1,3 +1,5 @@
+library runtime;
+
 class EndOfQueue implements ParsingError {
   final String reason;
 
