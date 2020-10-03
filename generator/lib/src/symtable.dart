@@ -53,9 +53,9 @@ class FieldEntry {
       {@required this.annotation,
       @required this.name,
       @required this.type,
-      @required this.trueIfEquals,
-      @required this.trueIfMatches,
-      @required parentTag})
+      this.trueIfEquals,
+      this.trueIfMatches,
+      parentTag})
       : _parentTag = parentTag;
 
   FieldEntry.fromElement(FieldElement element,

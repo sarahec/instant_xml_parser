@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:generator/src/symtable.dart';
 import 'package:meta/meta.dart';
+import 'package:recase/recase.dart';
 
 Code _attributeConverter(DartType type, [FieldEntry entry]) {
   if (type.isDartCoreBool) {
@@ -23,33 +24,31 @@ Expression _readAttribute(attribute, DartType type) =>
     refer('namedAttribute').call([refer('element'), literalString(attribute)],
         {}, [refer(type.getDisplayString(withNullability: false))]);
 
-class ClassMethodGen {
-  final ClassEntry entry;
-
-  ClassMethodGen(this.entry);
-
-  Method get toMethod => MethodSourceGen(entry.method).toMethod;
-}
-
 class FieldSourceGen {
   final FieldEntry entry;
 
   FieldSourceGen(this.entry);
 
-  Code get toVar => entry.initVar
-      ? _readAttribute(entry.attribute, entry.type).assignFinal(entry.name)
-      : Code('var ${entry.name}');
+  // TODO add a key: parameter with the entry's name
+  Code get toAction => Code("GetAttr<$entryType>('${entry.attribute}')");
+
+  String get entryType => entry.type.getDisplayString(withNullability: false);
 }
 
-class MethodSourceGen {
+class ParserSourceGen {
   final MethodEntry entry;
+  final Iterable<FieldEntry> fields;
+
+  final String prefix = 'extract';
 
   Method get toMethod => Method((b) => b
-    ..name = entry.name
-    ..body = Block.of([requireStartTag])
+    ..name = prefix + ReCase(entry.name).pascalCase
+    ..body = Block.of([parseCall, returnStructure])
     ..modifier = MethodModifier.async
     ..requiredParameters.add(parameter)
     ..returns = refer(returnTypeName));
+
+  String get entryVar => entry.name;
 
   String get toSource => DartEmitter().visitMethod(toMethod).toString();
 
@@ -58,14 +57,18 @@ class MethodSourceGen {
     ..type = Reference('StreamQueue<XmlEvent>'));
 
   @visibleForTesting
-  Code get requireStartTag => Code('''
-  if (!(await hasStartTag(events, withName: '${entry.tag}'))) {
-    return Future.error('Expected <${entry.tag}> at start');"
-  }''');
+  Code get parseCall => Code('''
+  final $entryVar = await pr.parse(events, '${entry.tag}' [$actions]);''');
+
+  String get actions =>
+      fields.map((f) => FieldSourceGen(f).toAction).join(',\n');
 
   @visibleForTesting
-  Code get attributeAccess => Code(
-      "namedAttribute<${entry.returnType}>(element, '${entry.attribute}')");
+  Code get returnStructure => Code('''return $returnTypeName();''');
+
+  // @visibleForTesting
+  // Code get attributeAccess => Code(
+  //     "namedAttribute<${entry.returnType}>(element, '${entry.attribute}')");
 
   @visibleForTesting
   String get returnTypeName =>
@@ -73,5 +76,5 @@ class MethodSourceGen {
       entry.returns.getDisplayString(withNullability: false) +
       '>';
 
-  MethodSourceGen(this.entry);
+  ParserSourceGen(this.entry, this.fields);
 }

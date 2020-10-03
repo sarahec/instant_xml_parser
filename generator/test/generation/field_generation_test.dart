@@ -5,6 +5,8 @@ import 'package:test/test.dart';
 import 'package:generator/src/source_gen.dart';
 import 'package:generator/src/symtable.dart';
 
+import 'package:runtime/annotations.dart';
+
 void main() {
   group('TestData testData(...)', () {
     var testDataType;
@@ -15,19 +17,24 @@ void main() {
       testDataType = MockType.withDisplayString('TestData');
       methodEntry =
           MethodEntry(name: 'testData', tag: 'test', returns: testDataType);
-      source = MethodSourceGen(methodEntry).toSource;
+      var attributeField = FieldEntry(
+          annotation: Attribute(attribute: 'attr'),
+          name: 'attr',
+          type: MockType.withDisplayString('String'));
+      var structField = FieldEntry(
+          annotation: null,
+          name: 'person',
+          type: MockType.withDisplayString('NameTag'));
+      source =
+          ParserSourceGen(methodEntry, [attributeField, structField]).toSource;
+      print(source); // <<<
     });
 
     test('declaration', () {
       expect(
           source,
           startsWith(
-              'FutureOr<TestData> testData(StreamQueue<XmlEvent> events) async'));
-    });
-
-    test('tag check', () {
-      print(source);
-      expect(source, contains("await hasStartTag(events, withName: 'test'"));
+              'FutureOr<TestData> extractTestData(StreamQueue<XmlEvent> events) async'));
     });
   });
 }
