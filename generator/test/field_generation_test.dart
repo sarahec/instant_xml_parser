@@ -13,13 +13,13 @@ void main() {
     var source;
 
     setUp(() {
-      final attributeField = AttributeFieldEntry(
+      final attributeField = AttributeActionGenerator(
           annotation: Attribute(attribute: 'attr'),
           name: 'attr',
           type: MockType.withDisplayString('String'));
-      final structField = TagFieldEntry(
+      final structField = MethodActionGenerator(
           name: 'person', type: MockType.withDisplayString('NameTag'));
-      classEntry = ClassEntry(
+      classEntry = MethodGenerator(
           annotation: Tag('testData'),
           type: testDataType,
           fields: [attributeField, structField]);
@@ -33,6 +33,18 @@ void main() {
           startsWith(
               'Future<TestData> extractTestData(StreamQueue<XmlEvent> events) async'));
     });
+
+    test('runtime call', () {
+      expect(
+          source,
+          contains(
+              'final testData = await pr.parse(events, TestDataTagName, ['));
+    });
+
+    test('actions', () {
+      expect(source, contains("GetAttr<String>('attr ')"));
+      expect(source, contains('GetTag<NameTag>(NameTagTagName, events)'));
+    });
   });
 }
 
@@ -41,6 +53,7 @@ class MockType extends Mock implements DartType {
     final result = MockType();
     when(result.getDisplayString(withNullability: nullable))
         .thenReturn(displayString);
+    when(result.isDartCoreBool).thenReturn(displayString == 'bool');
     return result;
   }
 

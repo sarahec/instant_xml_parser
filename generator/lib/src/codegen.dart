@@ -1,77 +1,113 @@
+library parse_generator;
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
+import 'package:source_gen/source_gen.dart';
 
 T _getAnnotation<T>(Element element) =>
     _hasAnnotation<T>(element) ? element.metadata.whereType<T>().first : null;
 bool _hasAnnotation<T>(Element element) =>
     element.metadata != null && element.metadata.whereType<T>().isNotEmpty;
 
-class ClassEntry {
+class LibraryGenerator {
+  final Iterable<MethodGenerator> classEntries;
+  // TODO final String get sourcePath; // need to include source file
+
+  LibraryGenerator.fromLibrary(LibraryReader library)
+      : classEntries = library
+            .annotatedWith(TypeChecker.fromRuntime(Tag))
+            .map((e) => MethodGenerator.fromElement(e as ClassElement));
+
+  Code get constants => Code(classEntries
+      .map((MethodGenerator c) =>
+          "const ${c.constantName} = '${c.constantValue}';")
+      .join('\n'));
+
+  Code get imports => Code('''
+  import 'dart:async';
+  import 'package:async/async.dart';
+  import 'package:runtime/runtime.dart';
+  import 'package:xml/xml_events.dart';
+
+  import 'structures.dart';
+  ''');
+
+  List<Method> get methods => classEntries.map((c) => c.toMethod);
+
+  Library get toCode =>
+      Library((b) => b.body..addAll([imports, constants])..addAll(methods));
+
+  String get toSource => DartEmitter().visitLibrary(toCode).toString();
+}
+
+class MethodGenerator {
   final Tag annotation;
-  final Iterable<FieldEntry> fields;
+  final Iterable<ActionGenerator> fields;
   final DartType type;
   final prefix = 'extract';
 
   @visibleForTesting
-  ClassEntry(
+  MethodGenerator(
       {@required this.annotation, @required this.type, @required this.fields});
 
-  factory ClassEntry.fromElement(ClassElement element) {
+  factory MethodGenerator.fromElement(ClassElement element) {
     assert(_hasAnnotation<Tag>(element), '@Tag required');
     final annotation = _getAnnotation<Tag>(element);
     final type = element.thisType;
-    final fields = element.fields.map((f) => FieldEntry.fromElement(f));
-    return ClassEntry(annotation: annotation, type: type, fields: fields);
+    final fields = element.fields.map((f) => ActionGenerator.fromElement(f));
+    return MethodGenerator(annotation: annotation, type: type, fields: fields);
   }
 
   Method get toMethod => Method((b) => b
     ..name = '$prefix$typeName'
-    ..body = Block.of([parseCall, returnCtor])
+    ..body = methodBody
     ..modifier = MethodModifier.async
-    ..requiredParameters.add(parameter)
+    ..requiredParameters.add(Parameter((b) => b
+      ..name = 'events'
+      ..type = Reference('StreamQueue<XmlEvent>')))
     ..returns = refer('Future<$typeName>'));
 
-  Parameter get parameter => Parameter((b) => b
-    ..name = 'events'
-    ..type = Reference('StreamQueue<XmlEvent>'));
-
   @visibleForTesting
-  Code get parseCall {
-    final entryVar = ReCase(typeName).pascalCase;
-    return Code(
-        "final $entryVar = await pr.parse(events, '${annotation.tag}' [$actions])");
+  Block get methodBody {
+    final entryVar = ReCase(typeName).camelCase;
+    final actions = fields.map((f) => f.toAction).join(',\n');
+    return Block.of([
+      Code(
+          'final $entryVar = await pr.parse(events, $constantName, [$actions])'),
+      Code('''return $typeName();''')
+    ]);
   }
 
-  String get actions => fields.map((f) => f.toAction).join(',\n');
+  String get constantName => typeName + 'TagName';
 
-  @visibleForTesting
-  Code get returnCtor => Code('''return $typeName();''');
+  String get constantValue => annotation.tag;
 
   String get typeName => type.getDisplayString(withNullability: false);
 
+  @visibleForTesting
   String get toSource => DartEmitter().visitMethod(toMethod).toString();
 }
 
-abstract class FieldEntry {
+abstract class ActionGenerator {
   String get name;
   DartType get type;
 
-  factory FieldEntry.fromElement(FieldElement element) =>
+  factory ActionGenerator.fromElement(FieldElement element) =>
       element.type.isDartCoreObject
-          ? AttributeFieldEntry.fromElement(
+          ? AttributeActionGenerator.fromElement(
               element, _getAnnotation<Attribute>(element))
-          : TagFieldEntry.fromElement(element);
+          : MethodActionGenerator.fromElement(element);
 
   Code get toAction;
 
   String get entryType;
 }
 
-class AttributeFieldEntry implements FieldEntry {
+class AttributeActionGenerator implements ActionGenerator {
   final Attribute annotation;
   @override
   final String name;
@@ -81,14 +117,14 @@ class AttributeFieldEntry implements FieldEntry {
   final RegExp trueIfMatches;
 
   @visibleForTesting
-  AttributeFieldEntry(
+  AttributeActionGenerator(
       {this.annotation,
       this.name,
       this.type,
       this.trueIfEquals,
       this.trueIfMatches});
 
-  AttributeFieldEntry.fromElement(FieldElement element, [this.annotation])
+  AttributeActionGenerator.fromElement(FieldElement element, [this.annotation])
       : name = element.getDisplayString(withNullability: false),
         type = element.type,
         trueIfEquals = annotation?.equals,
@@ -101,46 +137,37 @@ class AttributeFieldEntry implements FieldEntry {
   String get tag => annotation?.tag;
 
   @override
-  Code get toAction => Code("GetAttr<$entryType>('$attribute')");
+  Code get toAction {
+    assert(type != null);
+    var conversion = '';
+    if (type.isDartCoreBool && trueIfEquals != null) {
+      conversion = ", convert: Convert.ifEquals('$trueIfEquals'}";
+    } else if (type.isDartCoreBool && trueIfMatches != null) {
+      conversion = ', convert: Convert.ifMatches($trueIfMatches}';
+    }
+    return Code("GetAttr<$entryType>('$attribute $conversion')");
+  }
 
   @override
   String get entryType => type.getDisplayString(withNullability: false);
 }
 
-class TagFieldEntry implements FieldEntry {
+class MethodActionGenerator implements ActionGenerator {
   @override
   final String name;
   @override
   final DartType type;
 
   @visibleForTesting
-  TagFieldEntry({@required this.name, @required this.type});
+  MethodActionGenerator({@required this.name, @required this.type});
 
-  TagFieldEntry.fromElement(FieldElement element)
+  MethodActionGenerator.fromElement(FieldElement element)
       : name = element.getDisplayString(withNullability: false),
         type = element.type;
 
   @override
-  Code get toAction => Code("GetTag<$entryType>('---tag name---', events)");
+  Code get toAction => Code('GetTag<$entryType>(${entryType}TagName, events)');
 
   @override
   String get entryType => type.getDisplayString(withNullability: false);
 }
-
-/* 
-Code _attributeConverter(DartType type, [FieldEntry entry]) {
-  if (type.isDartCoreBool) {
-    if (entry?.trueIfMatches != null) {
-      return Code('ifMatches(${entry.trueIfMatches})');
-    }
-    if (entry?.trueIfEquals != null) {
-      return Code('ifEquals(${entry.trueIfEquals})');
-    }
-    // else
-    throw AssertionError('Bool requires either a string or regexp to match');
-  }
-  if (type.isDartCoreDouble) return Code('toDouble)');
-  if (type.isDartCoreInt) return Code('toInt');
-  return null;
-}
-*/
