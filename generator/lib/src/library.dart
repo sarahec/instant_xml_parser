@@ -33,14 +33,10 @@ class LibraryGenerator {
     ..assignment = Code("'${c.constantValue}'")
     ..modifier = FieldModifier.final$));
 
-  List<Directive> get directives => [
-        Directive.import(ParserRuntime),
-        Directive.import(sourceAsset.pathSegments.last)
-      ];
   List<Method> get methods => classEntries.map((c) => c.toMethod).toList();
 
   Library get toCode => Library((b) => b
-    ..directives.addAll(directives)
+    ..directives.add(Directive.import(sourceAsset.pathSegments.last))
     ..body.add(classWrapper));
 
   String get toSource => DartEmitter().visitLibrary(toCode).toString();
