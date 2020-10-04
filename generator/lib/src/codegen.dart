@@ -2,11 +2,17 @@ library parse_generator;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
 import 'package:source_gen/source_gen.dart';
+
+const AsyncCoreLibrary = 'dart:async';
+const AsyncLibrary = 'package:async/async.dart';
+const ParserRuntime = 'package:runtime/runtime.dart';
+const XMLEventsLibrary = 'package:xml/xml_events.dart';
 
 T _getAnnotation<T>(Element element) =>
     _hasAnnotation<T>(element) ? element.metadata.whereType<T>().first : null;
@@ -15,31 +21,38 @@ bool _hasAnnotation<T>(Element element) =>
 
 class LibraryGenerator {
   final Iterable<MethodGenerator> classEntries;
-  // TODO final String get sourcePath; // need to include source file
+  final AssetId sourceAsset;
 
-  LibraryGenerator.fromLibrary(LibraryReader library)
+  LibraryGenerator.fromLibrary(LibraryReader library, this.sourceAsset)
       : classEntries = library
             .annotatedWith(TypeChecker.fromRuntime(Tag))
-            .map((e) => MethodGenerator.fromElement(e as ClassElement));
+            .map((e) => MethodGenerator.fromElement(e.element));
 
-  Code get constants => Code(classEntries
-      .map((MethodGenerator c) =>
-          "const ${c.constantName} = '${c.constantValue}';")
-      .join('\n'));
+  Iterable<Field> get constants => classEntries.map((c) => Field((b) => b
+    ..name = c.constantName
+    ..assignment = Code("'${c.constantValue}'")
+    ..modifier = FieldModifier.final$));
 
-  Code get imports => Code('''
-  import 'dart:async';
-  import 'package:async/async.dart';
-  import 'package:runtime/runtime.dart';
-  import 'package:xml/xml_events.dart';
+  Class get classWrapper => Class((b) => b
+    ..name = 'Parser' // BUGBUG Add name of source file, uing Pascal case
+    ..fields.addAll(constants)
+    ..methods.addAll(methods)
+    ..methods.add(Method((b) => b
+      ..name = 'pr'
+      ..type = MethodType.getter
+      ..lambda = true
+      ..returns = Reference('ParserRuntime', ParserRuntime)
+      ..body = Code('ParserRuntime()'))));
 
-  import 'structures.dart';
-  ''');
+  List<Directive> get directives => [
+        Directive.import(ParserRuntime),
+        Directive.import(sourceAsset.pathSegments.last)
+      ];
+  List<Method> get methods => classEntries.map((c) => c.toMethod).toList();
 
-  List<Method> get methods => classEntries.map((c) => c.toMethod);
-
-  Library get toCode =>
-      Library((b) => b.body..addAll([imports, constants])..addAll(methods));
+  Library get toCode => Library((b) => b
+    ..directives.addAll(directives)
+    ..body.add(classWrapper));
 
   String get toSource => DartEmitter().visitLibrary(toCode).toString();
 }
@@ -62,14 +75,30 @@ class MethodGenerator {
     return MethodGenerator(annotation: annotation, type: type, fields: fields);
   }
 
+  // Future<SomeType> extractSomeType(StreamQueue<XmlEvent> events) async
   Method get toMethod => Method((b) => b
     ..name = '$prefix$typeName'
     ..body = methodBody
     ..modifier = MethodModifier.async
     ..requiredParameters.add(Parameter((b) => b
       ..name = 'events'
-      ..type = Reference('StreamQueue<XmlEvent>')))
-    ..returns = refer('Future<$typeName>'));
+      ..type = TypeReference((b) => b
+        ..symbol = 'StreamQueue'
+        ..url = AsyncLibrary
+        ..isNullable = false
+        ..types.add(TypeReference((b) => b
+          ..symbol = 'XmlEvent'
+          ..url = XMLEventsLibrary
+          ..isNullable = false)))))
+    ..returns = TypeReference((b) => b // Future<SomeType>
+      ..symbol = 'Future'
+      ..isNullable = false
+      ..url = AsyncCoreLibrary
+      // BUGBUG Need to get reference to source lib?
+      ..types.add(TypeReference((b) => b
+            ..symbol = typeName
+            ..isNullable = false
+          /* ..url = SourceLibrary */))));
 
   @visibleForTesting
   Block get methodBody {
@@ -77,14 +106,14 @@ class MethodGenerator {
     final actions = fields.map((f) => f.toAction).join(',\n');
     return Block.of([
       Code(
-          'final $entryVar = await pr.parse(events, $constantName, [$actions])'),
+          'final $entryVar = await pr.parse(events, $constantName, [$actions]);'),
       Code('''return $typeName();''')
     ]);
   }
 
   String get constantName => typeName + 'TagName';
 
-  String get constantValue => annotation.tag;
+  String get constantValue => annotation?.tag ?? typeName;
 
   String get typeName => type.getDisplayString(withNullability: false);
 
@@ -97,7 +126,7 @@ abstract class ActionGenerator {
   DartType get type;
 
   factory ActionGenerator.fromElement(FieldElement element) =>
-      element.type.isDartCoreObject
+      _isPrimitive(element.type)
           ? AttributeActionGenerator.fromElement(
               element, _getAnnotation<Attribute>(element))
           : MethodActionGenerator.fromElement(element);
@@ -105,6 +134,13 @@ abstract class ActionGenerator {
   Code get toAction;
 
   String get entryType;
+
+  static bool _isPrimitive(DartType type) => (type.isDartCoreBool ||
+      type.isDartCoreDouble ||
+      type.isDartCoreInt ||
+      type.isDartCoreString);
+
+  // TODO Also handle lists/iterables of primitives
 }
 
 class AttributeActionGenerator implements ActionGenerator {

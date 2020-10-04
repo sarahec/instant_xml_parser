@@ -7,7 +7,7 @@ import 'package:generator/src/codegen.dart';
 import 'package:runtime/annotations.dart';
 
 void main() {
-  group('extractTestData(...)', () {
+  group('library', () {
     var source;
 
     setUp(() {
