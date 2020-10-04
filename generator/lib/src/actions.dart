@@ -51,13 +51,12 @@ class AttributeActionGenerator implements ActionGenerator {
       this.trueIfMatches});
 
   AttributeActionGenerator.fromElement(FieldElement element, [this.annotation])
-      : name = element.getDisplayString(withNullability: false),
+      : name = element.name,
         type = element.type,
         trueIfEquals = annotation?.equals,
         trueIfMatches = annotation?.matches;
 
-  String get attribute =>
-      annotation != null ? (annotation.attribute ?? name) : null;
+  String get attribute => annotation?.attribute ?? name;
 
   @override
   String get entryType => type.getDisplayString(withNullability: false);
@@ -74,7 +73,7 @@ class AttributeActionGenerator implements ActionGenerator {
     } else if (type.isDartCoreBool && trueIfMatches != null) {
       conversion = ', convert: Convert.ifMatches($trueIfMatches}';
     }
-    return Code("GetAttr<$entryType>('$attribute $conversion')");
+    return Code("GetAttr<$entryType>('$attribute' $conversion)");
   }
 }
 
