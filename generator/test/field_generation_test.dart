@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:generator/src/symtable.dart';
+import 'package:generator/src/codegen.dart';
 
 import 'package:runtime/annotations.dart';
 
