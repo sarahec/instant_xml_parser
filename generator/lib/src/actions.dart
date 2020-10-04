@@ -4,6 +4,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
+import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
 
 abstract class ActionGenerator {
@@ -58,6 +59,12 @@ class AttributeActionGenerator implements ActionGenerator {
 
   String get attribute => annotation?.attribute ?? name;
 
+  String get defaultValue => (annotation?.defaultValue == null)
+      ? ''
+      : (annotation.defaultValue is String)
+          ? ", defaultValue: '${annotation.defaultValue}}'"
+          : ', defaultValue: ${annotation.defaultValue}}';
+
   @override
   String get entryType => type.getDisplayString(withNullability: false);
 
@@ -73,7 +80,7 @@ class AttributeActionGenerator implements ActionGenerator {
     } else if (type.isDartCoreBool && trueIfMatches != null) {
       conversion = ', convert: Convert.ifMatches($trueIfMatches}';
     }
-    return Code("GetAttr<$entryType>('$attribute' $conversion)");
+    return Code("GetAttr<$entryType>('$attribute' $conversion $defaultValue)");
   }
 }
 
@@ -87,12 +94,15 @@ class MethodActionGenerator implements ActionGenerator {
   MethodActionGenerator({@required this.name, @required this.type});
 
   MethodActionGenerator.fromElement(FieldElement element)
-      : name = element.getDisplayString(withNullability: false),
+      : name = element.type.getDisplayString(withNullability: false),
         type = element.type;
+
+  String get methodName => 'extract$name';
 
   @override
   String get entryType => type.getDisplayString(withNullability: false);
 
   @override
-  Code get toAction => Code('GetTag<$entryType>(${entryType}TagName, events)');
+  Code get toAction =>
+      Code('GetTag<$entryType>(${entryType}Name, $methodName)');
 }

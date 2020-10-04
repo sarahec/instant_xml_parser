@@ -9,13 +9,13 @@ import 'common.dart';
 import 'method.dart';
 
 class LibraryGenerator {
-  final Iterable<MethodGenerator> classEntries;
+  final Iterable<MethodGenerator> methodEntries;
   final AssetId sourceAsset;
 
   LibraryGenerator.fromLibrary(LibraryReader library, this.sourceAsset)
-      : classEntries = library
+      : methodEntries = library
             .annotatedWith(TypeChecker.fromRuntime(Tag))
-            .map((e) => MethodGenerator.fromElement(e.element));
+            .map((e) => MethodGenerator.fromElement(e.element, e.annotation));
 
   Class get classWrapper => Class((b) => b
     ..name = 'Parser' // BUGBUG Add name of source file, uing Pascal case
@@ -28,12 +28,16 @@ class LibraryGenerator {
       ..returns = Reference('ParserRuntime', ParserRuntime)
       ..body = Code('ParserRuntime()'))));
 
-  Iterable<Field> get constants => classEntries.map((c) => Field((b) => b
+  Iterable<Field> get constants => methodEntries.map((c) => Field((b) => b
     ..name = c.constantName
     ..assignment = Code("'${c.constantValue}'")
     ..modifier = FieldModifier.final$));
 
-  List<Method> get methods => classEntries.map((c) => c.toMethod).toList();
+  List<Method> get methods {
+    final entries = methodEntries.map((c) => c.toMethod).toList();
+    entries.sort((a, b) => a.name.compareTo(b.name));
+    return entries;
+  }
 
   Library get toCode => Library((b) => b
     ..directives.add(Directive.import(sourceAsset.pathSegments.last))

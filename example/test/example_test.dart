@@ -11,7 +11,7 @@ void main() {
       .normalizeEvents()
       .flatten());
 
-  final txp = TestXmlParser();
+  final txp = Parser();
 
   group('self-contained tag', () {
     test('core attributes', () async {

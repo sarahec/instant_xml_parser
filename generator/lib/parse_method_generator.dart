@@ -23,7 +23,7 @@ class ParseMethodGenerator extends Generator {
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final emitter = DartEmitter(Allocator());
     final gen = LibraryGenerator.fromLibrary(library, buildStep.inputId);
-    return (gen.classEntries.isEmpty)
+    return (gen.methodEntries.isEmpty)
         ? '' // don't generate a file for this source
         : DartFormatter().format('${gen.toCode.accept(emitter)}');
   }
