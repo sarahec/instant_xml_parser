@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
@@ -13,9 +14,7 @@ class ClassEntry {
   final Tag annotation;
   final Iterable<FieldEntry> fields;
   final DartType type;
-
-  // Memoize the result of generating a method entry
-  MethodEntry _method;
+  final prefix = 'extract';
 
   @visibleForTesting
   ClassEntry(
@@ -25,98 +24,123 @@ class ClassEntry {
     assert(_hasAnnotation<Tag>(element), '@Tag required');
     final annotation = _getAnnotation<Tag>(element);
     final type = element.thisType;
-    final fields = element.fields.map((f) => FieldEntry.fromElement(f,
-        parentTag: annotation.tag, annotation: _getAnnotation<Attribute>(f)));
+    final fields = element.fields.map((f) => FieldEntry.fromElement(f));
     return ClassEntry(annotation: annotation, type: type, fields: fields);
   }
 
-  MethodEntry get method =>
-      _method ?? (_method = MethodEntry.fromClassEntry(this));
+  Method get toMethod => Method((b) => b
+    ..name = '$prefix$typeName'
+    ..body = Block.of([parseCall, returnCtor])
+    ..modifier = MethodModifier.async
+    ..requiredParameters.add(parameter)
+    ..returns = refer('Future<$typeName>'));
 
-  String get name => type.getDisplayString(withNullability: false);
-
-  String get tag => annotation.tag;
-}
-
-class FieldEntry {
-  final Attribute annotation;
-  final String name;
-  final String trueIfEquals;
-  final RegExp trueIfMatches;
-  final DartType type;
-
-  /// Tag associated with the enclosing class
-  final String _parentTag;
+  Parameter get parameter => Parameter((b) => b
+    ..name = 'events'
+    ..type = Reference('StreamQueue<XmlEvent>'));
 
   @visibleForTesting
-  FieldEntry(
-      {@required this.annotation,
-      @required this.name,
-      @required this.type,
-      this.trueIfEquals,
-      this.trueIfMatches,
-      parentTag})
-      : _parentTag = parentTag;
+  Code get parseCall {
+    final entryVar = ReCase(typeName).pascalCase;
+    return Code(
+        "final $entryVar = await pr.parse(events, '${annotation.tag}' [$actions])");
+  }
 
-  FieldEntry.fromElement(FieldElement element,
-      {Attribute annotation, String parentTag})
-      : annotation = annotation,
-        name = element.getDisplayString(withNullability: false),
+  String get actions => fields.map((f) => f.toAction).join(',\n');
+
+  @visibleForTesting
+  Code get returnCtor => Code('''return $typeName();''');
+
+  String get typeName => type.getDisplayString(withNullability: false);
+
+  String get toSource => DartEmitter().visitMethod(toMethod).toString();
+}
+
+abstract class FieldEntry {
+  String get name;
+  DartType get type;
+
+  factory FieldEntry.fromElement(FieldElement element) =>
+      element.type.isDartCoreObject
+          ? AttributeFieldEntry.fromElement(
+              element, _getAnnotation<Attribute>(element))
+          : TagFieldEntry.fromElement(element);
+
+  Code get toAction;
+
+  String get entryType;
+}
+
+class AttributeFieldEntry implements FieldEntry {
+  final Attribute annotation;
+  @override
+  final String name;
+  @override
+  final DartType type;
+  final String trueIfEquals;
+  final RegExp trueIfMatches;
+
+  @visibleForTesting
+  AttributeFieldEntry(
+      {this.annotation,
+      this.name,
+      this.type,
+      this.trueIfEquals,
+      this.trueIfMatches});
+
+  AttributeFieldEntry.fromElement(FieldElement element, [this.annotation])
+      : name = element.getDisplayString(withNullability: false),
         type = element.type,
         trueIfEquals = annotation?.equals,
-        trueIfMatches = annotation?.matches,
-        _parentTag = parentTag;
+        trueIfMatches = annotation?.matches;
 
-  /// The attribute name to read (or null)
-  ///
-  /// Convenience feature: If the annotation exists but doesn't specify a name,
-  /// uses the field name.
   String get attribute =>
       annotation != null ? (annotation.attribute ?? name) : null;
 
   /// The child tag to use, or null if using the parent tag's attribute
-  String get tag => annotation?.tag != _parentTag ? annotation?.tag : null;
+  String get tag => annotation?.tag;
 
-  bool get initVar => tag == null && attribute != null;
+  @override
+  Code get toAction => Code("GetAttr<$entryType>('$attribute')");
 
-  bool get wantsTag => tag != null;
-
-  bool get useAttribute => attribute != null;
-
-  bool get callMethod => _callMethod(type);
-
-  bool get buildList => type.isDartCoreIterable;
-
-  bool get callMethodInList =>
-      buildList && _callMethod((type as ParameterizedType).typeArguments.first);
-
-  bool _callMethod(t) => name != null && !t.isDartCoreObject;
+  @override
+  String get entryType => type.getDisplayString(withNullability: false);
 }
 
-class MethodEntry {
-  final String attribute;
+class TagFieldEntry implements FieldEntry {
+  @override
   final String name;
-  final DartType returns;
-  final String tag;
+  @override
+  final DartType type;
 
   @visibleForTesting
-  MethodEntry(
-      {@required this.name,
-      @required this.tag,
-      this.attribute,
-      @required this.returns});
+  TagFieldEntry({@required this.name, @required this.type});
 
-  MethodEntry.fromClassEntry(ClassEntry classEntry)
-      : name = ReCase(classEntry.name).camelCase,
-        tag = classEntry.annotation.tag,
-        attribute = null,
-        returns = classEntry.type;
+  TagFieldEntry.fromElement(FieldElement element)
+      : name = element.getDisplayString(withNullability: false),
+        type = element.type;
 
-  MethodEntry.fromFieldEntry(FieldEntry entry)
-      : name = 'get${ReCase(entry.name).pascalCase}',
-        tag = entry.tag,
-        attribute = entry.attribute,
-        returns = entry.type;
+  @override
+  Code get toAction => Code("GetTag<$entryType>('---tag name---', events)");
 
-  String get returnType => returns.getDisplayString(withNullability: false);
+  @override
+  String get entryType => type.getDisplayString(withNullability: false);
 }
+
+/* 
+Code _attributeConverter(DartType type, [FieldEntry entry]) {
+  if (type.isDartCoreBool) {
+    if (entry?.trueIfMatches != null) {
+      return Code('ifMatches(${entry.trueIfMatches})');
+    }
+    if (entry?.trueIfEquals != null) {
+      return Code('ifEquals(${entry.trueIfEquals})');
+    }
+    // else
+    throw AssertionError('Bool requires either a string or regexp to match');
+  }
+  if (type.isDartCoreDouble) return Code('toDouble)');
+  if (type.isDartCoreInt) return Code('toInt');
+  return null;
+}
+*/

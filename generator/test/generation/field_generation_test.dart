@@ -2,31 +2,28 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:generator/src/source_gen.dart';
 import 'package:generator/src/symtable.dart';
 
 import 'package:runtime/annotations.dart';
 
 void main() {
   group('TestData testData(...)', () {
-    var testDataType;
-    var methodEntry;
+    final testDataType = MockType.withDisplayString('TestData');
+    var classEntry;
     var source;
 
     setUp(() {
-      testDataType = MockType.withDisplayString('TestData');
-      methodEntry =
-          MethodEntry(name: 'testData', tag: 'test', returns: testDataType);
-      var attributeField = FieldEntry(
+      final attributeField = AttributeFieldEntry(
           annotation: Attribute(attribute: 'attr'),
           name: 'attr',
           type: MockType.withDisplayString('String'));
-      var structField = FieldEntry(
-          annotation: null,
-          name: 'person',
-          type: MockType.withDisplayString('NameTag'));
-      source =
-          ParserSourceGen(methodEntry, [attributeField, structField]).toSource;
+      final structField = TagFieldEntry(
+          name: 'person', type: MockType.withDisplayString('NameTag'));
+      classEntry = ClassEntry(
+          annotation: Tag('testData'),
+          type: testDataType,
+          fields: [attributeField, structField]);
+      source = classEntry.toSource;
       print(source); // <<<
     });
 
@@ -34,7 +31,7 @@ void main() {
       expect(
           source,
           startsWith(
-              'FutureOr<TestData> extractTestData(StreamQueue<XmlEvent> events) async'));
+              'Future<TestData> extractTestData(StreamQueue<XmlEvent> events) async'));
     });
   });
 }
