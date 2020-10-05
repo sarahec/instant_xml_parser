@@ -4,15 +4,14 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
-import 'package:recase/recase.dart';
-import 'package:runtime/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'actions.dart';
 import 'common.dart';
 
 class MethodGenerator {
-  final Tag annotation;
+  final String tag;
+  final String methodOverride;
   final Iterable<ActionGenerator> fields;
   final ConstructorElement constructorElement;
   final DartType type;
@@ -20,23 +19,22 @@ class MethodGenerator {
 
   @visibleForTesting
   MethodGenerator(
-      {@required this.annotation,
+      {@required this.tag,
+      this.methodOverride,
       @required this.type,
       @required this.fields,
       @required this.constructorElement});
 
-  MethodGenerator.fromElement(
-      ClassElement element, ConstantReader annotationReader)
-      : annotation = Tag(annotationReader.read('tag').stringValue,
-            method: annotationReader.peek('method')?.stringValue,
-            useStrict: annotationReader.peek('useStrict')?.boolValue),
+  MethodGenerator.fromElement(ClassElement element, ConstantReader cr)
+      : tag = cr.read('tag').stringValue,
+        methodOverride = cr.peek('method')?.stringValue,
         type = element.thisType,
         fields = element.fields.map((f) => ActionGenerator.fromElement(f)),
         constructorElement = element.constructors.first;
 
   String get constantName => typeName + 'Name';
 
-  String get constantValue => annotation.tag;
+  String get constantValue => tag;
 
   String get entryVar => 'values';
 
@@ -59,7 +57,7 @@ class MethodGenerator {
   }
 
   Method get toMethod => Method((b) => b
-    ..name = '$prefix$typeName'
+    ..name = methodOverride ?? '$prefix$typeName'
     ..body = methodBody
     ..modifier = MethodModifier.async
     ..requiredParameters.add(Parameter((b) => b
@@ -85,9 +83,4 @@ class MethodGenerator {
   String get toSource => DartEmitter().visitMethod(toMethod).toString();
 
   String get typeName => type.getDisplayString(withNullability: false);
-
-  static T _getAnnotation<T>(Element element) =>
-      _hasAnnotation<T>(element) ? element.metadata.whereType<T>().first : null;
-  static bool _hasAnnotation<T>(Element element) =>
-      element.metadata != null && element.metadata.whereType<T>().isNotEmpty;
 }
