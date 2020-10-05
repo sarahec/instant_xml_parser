@@ -3,12 +3,12 @@ library runtime;
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:xml/xml_events.dart';
 
 import 'converters.dart';
 import 'errors.dart';
-import 'logging.dart';
 
 typedef ParseMethod<T> = Future<T> Function(StreamQueue<XmlEvent> events);
 
@@ -20,6 +20,8 @@ abstract class ParserAction<T> {
 }
 
 class ParserRuntime {
+  final _log = Logger('ParserRuntime');
+
   Future<Map<String, dynamic>> parse(StreamQueue<XmlEvent> events,
       String tagName, Iterable<ParserAction> actions) async {
     Map<String, dynamic> results = {}; // ignore: omit_local_variable_types
@@ -62,19 +64,18 @@ class ParserRuntime {
         if ((parent == null || probe.parentEvent == parent) &&
             (name == null || probe.qualifiedName == name)) {
           transaction.commit(queue);
-          log.v('Found start of $probe');
           return probe;
         }
         if (mustBeFirst) {
           // found, no match, reject
           transaction.reject();
-          log.d('Missing start tag <$name>, found <${probe.name}>');
+          _log.fine('Missing start tag <$name>, found <${probe.name}>');
           return Future.error(MissingStartTag(name, foundTag: probe.name));
         }
       }
       await queue.skip(1);
     }
-    log.v('Reached end of stream looking for start tag');
+    _log.finest('Reached end of stream looking for start tag');
     transaction.reject();
     return null;
   }
@@ -99,7 +100,7 @@ class ParserRuntime {
     }
     // Hit end of stream and found nothing
     transaction.reject();
-    log.e('Could not find closing tag for <${element.name}>)');
+    _log.warning('Could not find closing tag for <${element.name}>)');
     return false;
   }
 
@@ -128,7 +129,7 @@ class ParserRuntime {
 
   void _reportUnknownChild(XmlStartElementEvent child,
       {@required XmlStartElementEvent parent, shouldThrow = false}) {
-    log.w('Unknown child <${child.name} inside <${parent.name}>');
+    _log.warning('Unknown child <${child.name} inside <${parent.name}>');
     if (shouldThrow) {
       throw (UnexpectedChild(child.name));
     }
