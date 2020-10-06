@@ -1,60 +1,50 @@
 library annotations;
 
-class XmlParser {
-  final String prefix;
+const optional = 'optional';
 
-  const XmlParser(this.prefix);
-}
-
-class Tag {
-  final String tag;
-  final String method;
-  final bool useStrict;
-
-  const Tag(this.tag, {this.method, this.useStrict = false})
-      : assert(tag != null, 'tag required');
-}
-
-/// Annotates a field inside a "tag" class to specify the attribute (and tag
-/// if not in the parent tag.)
-///
-/// Notes:
-/// * ```attribute``` is required
-/// * ```tag``` is optional. If you supply it, the generated code will look for
-///   that tag as a child and extract the attribute from there.
-/// * Fill in ```equals``` or ```matches``` when annotating a boolean field.
-class Attribute {
+class attr {
   /// Name for the attribute to extract
-  final String attribute;
+  final String name;
 
-  /// The tag name, if not an attribute on the parent tag
-  final String tag;
-
-  /// Is this a required attribute?
-  final bool isRequired;
-
-  final dynamic defaultValue;
-
-  /// If this is a boolean field, true when the attribute equals this value
-  final String equals;
-
-  /// If this is a boolean field, true when the attribute matches this regexp
-  final RegExp matches;
-
-  const Attribute(
-      {this.attribute,
-      this.tag,
-      this.isRequired = false,
-      this.defaultValue,
-      this.equals,
-      this.matches});
+  const attr(this.name);
 }
 
-class IgnoreTag {
+class from {
+  /// Name for the attribute to extract (if not inferred form the field name)
+  final String attribute;
+  final String tag;
+  final Type type;
+
+  const from({this.type, this.tag, this.attribute})
+      : assert(type != null || tag != null);
+}
+
+class ifEquals {
+  final String value;
+
+  const ifEquals(this.value);
+}
+
+class ifMatches {
+  final String regex;
+
+  const ifMatches(this.regex);
+}
+
+class ignore {
   final Iterable<String> tags;
 
-  IgnoreTag({String tag, Iterable<String> tags})
-      : assert(
-            tag != null || tags != null, 'tag or tags (collection) required'),
-        tags = tags ?? [tag];
+  const ignore(this.tags);
+}
+
+class parser {
+  final String name;
+
+  const parser(this.name);
+}
+
+class tag {
+  final String value;
+
+  const tag(this.value);
 }

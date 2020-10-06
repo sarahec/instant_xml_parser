@@ -14,7 +14,7 @@ class LibraryGenerator {
 
   LibraryGenerator.fromLibrary(LibraryReader library, this.sourceAsset)
       : methodEntries = library
-            .annotatedWith(TypeChecker.fromRuntime(Tag))
+            .annotatedWith(TypeChecker.fromRuntime(tag))
             .map((e) => MethodGenerator.fromElement(e.element, e.annotation));
 
   Class get classWrapper => Class((b) => b
