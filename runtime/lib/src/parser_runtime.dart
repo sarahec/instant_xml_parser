@@ -145,9 +145,11 @@ class GetAttr<T> implements ParserAction<T> {
   final bool isRequired;
   final T defaultValue;
   final Converter convert;
+  final String _key;
 
   GetAttr(this.attrName,
-      {this.isRequired = false, this.defaultValue, this.convert});
+      {this.isRequired = false, this.defaultValue, this.convert, String key})
+      : _key = key;
 
   @override
   Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
@@ -170,17 +172,18 @@ class GetAttr<T> implements ParserAction<T> {
               : null;
 
   @override
-  String get key => attrName;
+  String get key => _key ?? attrName;
 }
 
 class GetTag<T> implements ParserAction<T> {
   final String tagName;
   final ParseMethod<T> method;
+  final String _key;
 
-  GetTag(this.tagName, this.method);
+  GetTag(this.tagName, this.method, {String key}) : _key = key;
 
   @override
-  String get key => tagName;
+  String get key => _key ?? tagName;
 
   @override
   Future<T> execute(StreamQueue<XmlEvent> queue, ParserRuntime pr,
