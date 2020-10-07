@@ -4,37 +4,28 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
-import 'package:source_gen/source_gen.dart';
+import 'package:runtime/annotations.dart';
 
 import 'actions.dart';
-import 'common.dart';
+import 'annotation_reader.dart';
+import 'import_uris.dart';
 
-class MethodGenerator {
-  final String tag;
-  final String methodOverride;
+class MethodGenerator with AnnotationReader {
+  final String tagName;
   final Iterable<ActionGenerator> fields;
   final ConstructorElement constructorElement;
   final DartType type;
   final prefix = 'extract'; // TODO Make this configurable
 
-  @visibleForTesting
-  MethodGenerator(
-      {@required this.tag,
-      this.methodOverride,
-      @required this.type,
-      @required this.fields,
-      @required this.constructorElement});
-
-  MethodGenerator.fromElement(ClassElement element, ConstantReader cr)
-      : tag = cr.read('tag').stringValue,
-        methodOverride = cr.peek('method')?.stringValue,
+  MethodGenerator.fromElement(ClassElement element)
+      : tagName = AnnotationReader.getAnnotation<tag>(element, 'value'),
         type = element.thisType,
         fields = element.fields.map((f) => ActionGenerator.fromElement(f)),
         constructorElement = element.constructors.first;
 
   String get constantName => typeName + 'Name';
 
-  String get constantValue => tag;
+  String get constantValue => tagName;
 
   String get entryVar => 'values';
 
@@ -57,7 +48,7 @@ class MethodGenerator {
   }
 
   Method get toMethod => Method((b) => b
-    ..name = methodOverride ?? '$prefix$typeName'
+    ..name = '$prefix$typeName'
     ..body = methodBody
     ..modifier = MethodModifier.async
     ..requiredParameters.add(Parameter((b) => b

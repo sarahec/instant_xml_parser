@@ -5,6 +5,24 @@ class EmptyTag {
   EmptyTag();
 }
 
+@tag('attributesTest')
+class AttributesTag {
+  final String name;
+  final int count;
+  final double temperature;
+  final bool active;
+
+  // TODO Add default value back in once ctor scanning works
+  AttributesTag(this.name, this.temperature, this.active, this.count);
+}
+
+@tag('identification')
+class NameTag {
+  final String name;
+
+  NameTag(this.name);
+}
+
 /*
 @tag('AltRegistration')
 class AltRegistration {
@@ -16,16 +34,7 @@ class AltRegistration {
 
   AltRegistration(this.name, this.email, this.age);
 }
-
-@tag('attributesTest')
-class AttributesTag {
-  final String name;
-  final int count;
-  final double temperature;
-  final bool active;
-
-  AttributesTag(this.name, this.temperature, this.active, {this.count = 0});
-}
+*/
 
 @tag('ContactInfo')
 class ContactInfo {
@@ -33,13 +42,6 @@ class ContactInfo {
   final String phone;
 
   ContactInfo(this.email, this.phone);
-}
-
-@tag('identification')
-class NameTag {
-  final String name;
-
-  NameTag(this.name);
 }
 
 @tag('registration')
@@ -50,4 +52,3 @@ class Registration {
 
   Registration(this.person, this.contact, this.age);
 }
-*/

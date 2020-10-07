@@ -5,7 +5,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:runtime/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'common.dart';
+import 'import_uris.dart';
 import 'method.dart';
 
 class LibraryGenerator {
@@ -15,7 +15,7 @@ class LibraryGenerator {
   LibraryGenerator.fromLibrary(LibraryReader library, this.sourceAsset)
       : methodEntries = library
             .annotatedWith(TypeChecker.fromRuntime(tag))
-            .map((e) => MethodGenerator.fromElement(e.element, e.annotation));
+            .map((e) => MethodGenerator.fromElement(e.element));
 
   Class get classWrapper => Class((b) => b
     ..name = 'Parser' // BUGBUG Add name of source file, uing Pascal case

@@ -4,14 +4,15 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
-import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
+import 'package:source_gen/source_gen.dart';
 
-abstract class ActionGenerator {
+import 'annotation_reader.dart';
+
+abstract class ActionGenerator with AnnotationReader {
   factory ActionGenerator.fromElement(FieldElement element) =>
       _isPrimitive(element.type)
-          ? AttributeActionGenerator.fromElement(
-              element, _getAnnotation<Attribute>(element))
+          ? AttributeActionGenerator.fromElement(element)
           : MethodActionGenerator.fromElement(element);
   String get entryType;
 
@@ -21,13 +22,7 @@ abstract class ActionGenerator {
 
   DartType get type;
 
-  static T _getAnnotation<T>(Element element) =>
-      _hasAnnotation<T>(element) ? element.metadata.whereType<T>().first : null;
-
   // TODO Also handle lists/iterables of primitives
-
-  static bool _hasAnnotation<T>(Element element) =>
-      element.metadata != null && element.metadata.whereType<T>().isNotEmpty;
   static bool _isPrimitive(DartType type) => (type.isDartCoreBool ||
       type.isDartCoreDouble ||
       type.isDartCoreInt ||
@@ -35,41 +30,30 @@ abstract class ActionGenerator {
 }
 
 class AttributeActionGenerator implements ActionGenerator {
-  final Attribute annotation;
   @override
   final String name;
   @override
   final DartType type;
+  final String attribute;
+  final String tag;
   final String trueIfEquals;
   final RegExp trueIfMatches;
 
-  @visibleForTesting
-  AttributeActionGenerator(
-      {this.annotation,
-      this.name,
-      this.type,
-      this.trueIfEquals,
-      this.trueIfMatches});
+  // final String defaultValue; // will come from constructor
 
-  AttributeActionGenerator.fromElement(FieldElement element, [this.annotation])
+  AttributeActionGenerator.fromElement(FieldElement element)
       : name = element.name,
         type = element.type,
-        trueIfEquals = annotation?.equals,
-        trueIfMatches = annotation?.matches;
-
-  String get attribute => annotation?.attribute ?? name;
-
-  String get defaultValue => (annotation?.defaultValue == null)
-      ? ''
-      : (annotation.defaultValue is String)
-          ? ", defaultValue: '${annotation.defaultValue}}'"
-          : ', defaultValue: ${annotation.defaultValue}}';
+        attribute = AnnotationReader.getAnnotation<attr>(element, 'name') ??
+            element.name,
+        tag = AnnotationReader.getAnnotation<from>(element, 'tag'),
+        trueIfEquals =
+            AnnotationReader.getAnnotation<ifEquals>(element, 'value'),
+        trueIfMatches =
+            AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
 
   @override
   String get entryType => type.getDisplayString(withNullability: false);
-
-  /// The child tag to use, or null if using the parent tag's attribute
-  String get tag => annotation?.tag;
 
   @override
   Code get toAction {
@@ -80,7 +64,7 @@ class AttributeActionGenerator implements ActionGenerator {
     } else if (type.isDartCoreBool && trueIfMatches != null) {
       conversion = ', convert: Convert.ifMatches($trueIfMatches}';
     }
-    return Code("GetAttr<$entryType>('$attribute' $conversion $defaultValue)");
+    return Code("GetAttr<$entryType>('$attribute' $conversion)");
   }
 }
 

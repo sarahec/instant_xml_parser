@@ -13,7 +13,13 @@ void main() {
 
   final txp = Parser();
 
-  group('self-contained tag', () {
+  group('extraction', () {
+    test('EmptyTag', () async {
+      final events = _eventsFrom('<empty/>');
+      final emptyTag = await txp.extractEmptyTag(events);
+      expect(emptyTag, isA<EmptyTag>());
+    });
+
     test('core attributes', () async {
       final eventsFrom = _eventsFrom(
           '<attributesTest name="foo" count="999" temperature="22.1" active="1" />');
@@ -25,18 +31,6 @@ void main() {
       expect(attributesTag.active, isTrue);
     });
 
-    test('populates default values', () async {
-      final events = _eventsFrom('<attributesTest name="foo" />');
-      final attributesTag = await txp.extractAttributesTag(events);
-      expect(attributesTag, isA<AttributesTag>());
-      expect(attributesTag.name, equals('foo'));
-      expect(attributesTag.count, equals(0));
-      expect(attributesTag.temperature, isNull);
-      expect(attributesTag.active, isNull);
-    });
-  });
-
-  group('extraction', () {
     test('NameTag', () async {
       final events = _eventsFrom('<identification name="bar"/>');
       final nameTag = await txp.extractNameTag(events);
@@ -68,10 +62,10 @@ void main() {
     //   expect(extractEmptyTag(events), throwsA(TypeMatcher<UnexpectedChild>()));
     // });
 
-    test('missing required attribute', () async {
-      var events = _eventsFrom('<attributesTest />');
-      expect(txp.extractAttributesTag(events),
-          throwsA(TypeMatcher<MissingAttribute>()));
-    });
+    // test('missing required attribute', () async {
+    //   var events = _eventsFrom('<attributesTest />');
+    //   expect(txp.extractAttributesTag(events),
+    //       throwsA(TypeMatcher<MissingAttribute>()));
+    // });
   });
 }
