@@ -3,6 +3,7 @@ library parse_generator;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
 
 import 'annotation_reader.dart';
@@ -12,11 +13,9 @@ abstract class ActionGenerator with AnnotationReader {
       _isPrimitive(element.type)
           ? AttributeActionGenerator.fromElement(element)
           : MethodActionGenerator.fromElement(element);
-  String get entryType;
+  String get typeName;
 
   String get fieldName;
-
-  Code get toAction;
 
   DartType get type;
 
@@ -33,7 +32,7 @@ class AttributeActionGenerator implements ActionGenerator {
   @override
   final DartType type;
   final String attribute;
-  final String tag;
+  final String sourceTag;
   final String trueIfEquals;
   final RegExp trueIfMatches;
 
@@ -42,28 +41,30 @@ class AttributeActionGenerator implements ActionGenerator {
   AttributeActionGenerator.fromElement(FieldElement element)
       : fieldName = element.name,
         type = element.type,
-        attribute = AnnotationReader.getAnnotation<attr>(element, 'name') ??
-            element.name,
-        tag = AnnotationReader.getAnnotation<from>(element, 'tag'),
+        attribute =
+            AnnotationReader.getAnnotation<from>(element, 'attribute') ??
+                element.name,
+        sourceTag = AnnotationReader.getAnnotation<from>(element, 'tag'),
         trueIfEquals =
             AnnotationReader.getAnnotation<ifEquals>(element, 'value'),
         trueIfMatches =
             AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
 
   @override
-  String get entryType => type.getDisplayString(withNullability: false);
+  String get typeName => type.getDisplayString(withNullability: false);
 
-  @override
-  Code get toAction {
+  Code toAction(String sourceVar) {
     assert(type != null);
+    assert(sourceTag == null, '@from(attr, tag) not implemented yet');
     var conversion = '';
     if (type.isDartCoreBool && trueIfEquals != null) {
       conversion = ", convert: Convert.ifEquals('$trueIfEquals'}";
     } else if (type.isDartCoreBool && trueIfMatches != null) {
       conversion = ', convert: Convert.ifMatches($trueIfMatches}';
     }
+    // BUGBUG Need to get the correct name for the source tag
     return Code(
-        "GetAttr<$entryType>('$attribute', key: '$fieldName' $conversion)");
+        "final $fieldName = await _pr.namedAttribute<$typeName>($sourceVar, '$fieldName' $conversion);");
   }
 }
 
@@ -78,11 +79,16 @@ class MethodActionGenerator implements ActionGenerator {
         type = element.type;
 
   @override
-  String get entryType => type.getDisplayString(withNullability: false);
+  String get typeName => type.getDisplayString(withNullability: false);
 
-  String get methodName => 'extract$entryType';
+  String get constantName => typeName + 'Name';
 
-  @override
-  Code get toAction => Code(
-      "GetTag<$entryType>(${entryType}Name, $methodName, key: '$fieldName')");
+  String get methodName => 'extract$typeName';
+
+  String get varName => ReCase(typeName).camelCase;
+
+  Code toAction() => Code('''
+    case $constantName:
+      $varName = await $methodName(events);
+    break;''');
 }

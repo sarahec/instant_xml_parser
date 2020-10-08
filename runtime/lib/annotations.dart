@@ -2,21 +2,12 @@ library annotations;
 
 const optional = 'optional';
 
-class attr {
-  /// Name for the attribute to extract
-  final String name;
-
-  const attr(this.name);
-}
-
 class from {
-  /// Name for the attribute to extract (if not inferred form the field name)
+  /// Name for the attribute to extract (if not inferred from the field name)
   final String attribute;
   final String tag;
-  final Type type;
 
-  const from({this.type, this.tag, this.attribute})
-      : assert(type != null || tag != null);
+  const from(this.attribute, {this.tag});
 }
 
 class ifEquals {

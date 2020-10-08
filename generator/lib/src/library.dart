@@ -22,7 +22,7 @@ class LibraryGenerator {
     ..fields.addAll(constants)
     ..methods.addAll(methods)
     ..methods.add(Method((b) => b
-      ..name = 'pr'
+      ..name = '_pr'
       ..type = MethodType.getter
       ..lambda = true
       ..returns = Reference('ParserRuntime', ParserRuntime)
@@ -31,7 +31,8 @@ class LibraryGenerator {
   Iterable<Field> get constants => methodEntries.map((c) => Field((b) => b
     ..name = c.constantName
     ..assignment = Code("'${c.constantValue}'")
-    ..modifier = FieldModifier.final$));
+    ..static = true
+    ..modifier = FieldModifier.constant));
 
   List<Method> get methods {
     final entries = methodEntries.map((c) => c.toMethod).toList();
