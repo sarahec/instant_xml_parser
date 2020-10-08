@@ -54,7 +54,7 @@ class MethodGenerator with AnnotationReader {
 
     final endBlock = Code('await _pr.endOf(events, $startVar);');
 
-    final childVars = children.map((f) => 'var ${f.varName};').join('\n');
+    final childVars = children.map((f) => 'var ${f.fieldName};').join('\n');
     final childBlock = children.isEmpty ? Code('') : Code('''
       $childVars
       var probe = await _pr.startOf(events, parent: $startVar);

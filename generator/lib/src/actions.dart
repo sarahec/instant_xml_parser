@@ -85,10 +85,8 @@ class MethodActionGenerator implements ActionGenerator {
 
   String get methodName => 'extract$typeName';
 
-  String get varName => ReCase(typeName).camelCase;
-
   Code toAction() => Code('''
     case $constantName:
-      $varName = await $methodName(events);
+      $fieldName = await $methodName(events);
     break;''');
 }
