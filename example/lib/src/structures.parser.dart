@@ -71,22 +71,22 @@ class Parser {
         await _pr.startOf(events, name: RegistrationName, failOnMismatch: true);
     if (_registration == null) return null;
     final age = await _pr.namedAttribute<int>(_registration, 'age');
-    var nameTag;
-    var contactInfo;
+    var person;
+    var contact;
     var probe = await _pr.startOf(events, parent: _registration);
     while (probe != null) {
       switch (probe.qualifiedName) {
         case NameTagName:
-          nameTag = await extractNameTag(events);
+          person = await extractNameTag(events);
           break;
 
         case ContactInfoName:
-          contactInfo = await extractContactInfo(events);
+          contact = await extractContactInfo(events);
           break;
         default:
           await _pr.logUnknown(probe, RegistrationName);
-          await events.skip(1);
       }
+      await events.skip(1);
       probe = await _pr.startOf(events, parent: _registration);
     }
     await _pr.endOf(events, _registration);

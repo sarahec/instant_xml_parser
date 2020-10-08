@@ -63,8 +63,8 @@ class MethodGenerator with AnnotationReader {
           ${children.map((f) => f.toAction()).join('\n\n')}
         default:
           await _pr.logUnknown(probe, $constantName);
-          await events.skip(1);
       }
+      await events.skip(1);
       probe = await _pr.startOf(events, parent: $startVar);
     }''');
     return Block.of([
