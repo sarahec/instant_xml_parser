@@ -23,19 +23,6 @@ class NameTag {
   NameTag(this.name);
 }
 
-/*
-@tag('AltRegistration')
-class AltRegistration {
-  @from(type: NameTag)
-  final String name;
-  @from(type: ContactInfo)
-  final String email;
-  final int age;
-
-  AltRegistration(this.name, this.email, this.age);
-}
-*/
-
 @tag('ContactInfo')
 class ContactInfo {
   final String email;

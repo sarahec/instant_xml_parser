@@ -3,7 +3,6 @@ library parse_generator;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
 
 import 'annotation_reader.dart';
@@ -32,7 +31,6 @@ class AttributeActionGenerator implements ActionGenerator {
   @override
   final DartType type;
   final String attribute;
-  final String sourceTag;
   final String trueIfEquals;
   final RegExp trueIfMatches;
 
@@ -41,10 +39,8 @@ class AttributeActionGenerator implements ActionGenerator {
   AttributeActionGenerator.fromElement(FieldElement element)
       : fieldName = element.name,
         type = element.type,
-        attribute =
-            AnnotationReader.getAnnotation<from>(element, 'attribute') ??
-                element.name,
-        sourceTag = AnnotationReader.getAnnotation<from>(element, 'tag'),
+        attribute = AnnotationReader.getAnnotation<alias>(element, 'name') ??
+            element.name,
         trueIfEquals =
             AnnotationReader.getAnnotation<ifEquals>(element, 'value'),
         trueIfMatches =
@@ -55,7 +51,6 @@ class AttributeActionGenerator implements ActionGenerator {
 
   Code toAction(String sourceVar) {
     assert(type != null);
-    assert(sourceTag == null, '@from(attr, tag) not implemented yet');
     var conversion = '';
     if (type.isDartCoreBool && trueIfEquals != null) {
       conversion = ", convert: Convert.ifEquals('$trueIfEquals'}";

@@ -47,10 +47,8 @@ class MethodGenerator with AnnotationReader {
         await _pr.startOf(events, name: $constantName, failOnMismatch: true);
       if ($startVar == null) return null;''');
 
-    final attributesBlock = Code(attributes
-        .where((f) => f.sourceTag == null)
-        .map((f) => f.toAction(startVar))
-        .join('\n'));
+    final attributesBlock =
+        Code(attributes.map((f) => f.toAction(startVar)).join('\n'));
 
     final endBlock = Code('await _pr.endOf(events, $startVar);');
 

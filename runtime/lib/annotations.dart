@@ -1,13 +1,14 @@
 library annotations;
 
+import 'package:meta/meta.dart';
+
 const optional = 'optional';
 
-class from {
+class alias {
   /// Name for the attribute to extract (if not inferred from the field name)
-  final String attribute;
-  final String tag;
+  final String name;
 
-  const from(this.attribute, {this.tag});
+  const alias(this.name);
 }
 
 class ifEquals {
