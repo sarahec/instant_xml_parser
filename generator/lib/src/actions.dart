@@ -8,17 +8,22 @@ import 'package:runtime/annotations.dart';
 import 'annotation_reader.dart';
 
 abstract class ActionGenerator with AnnotationReader {
-  factory ActionGenerator.fromElement(FieldElement element) =>
-      _isPrimitive(element.type)
-          ? AttributeActionGenerator.fromElement(element)
-          : MethodActionGenerator.fromElement(element);
+  factory ActionGenerator.fromElement(FieldElement element) {
+    final isList = element.type.isDartCoreList;
+    final valueType = isList
+        ? (element.type as ParameterizedType).typeArguments.first
+        : element.type;
+    return (!isList && _isPrimitive(valueType))
+        ? AttributeActionGenerator.fromElement(element, valueType)
+        // TODO Add text field type (aka inline tag)
+        : MethodActionGenerator.fromElement(element, valueType, isList);
+  }
   String get typeName;
 
   String get fieldName;
 
   DartType get type;
 
-  // TODO Also handle lists/iterables of primitives
   static bool _isPrimitive(DartType type) => (type.isDartCoreBool ||
       type.isDartCoreDouble ||
       type.isDartCoreInt ||
@@ -36,9 +41,8 @@ class AttributeActionGenerator implements ActionGenerator {
 
   // final String defaultValue; // will come from constructor
 
-  AttributeActionGenerator.fromElement(FieldElement element)
+  AttributeActionGenerator.fromElement(FieldElement element, this.type)
       : fieldName = element.name,
-        type = element.type,
         attribute = AnnotationReader.getAnnotation<alias>(element, 'name') ??
             element.name,
         trueIfEquals =
@@ -52,10 +56,12 @@ class AttributeActionGenerator implements ActionGenerator {
   Code toAction(String sourceVar) {
     assert(type != null);
     var conversion = '';
-    if (type.isDartCoreBool && trueIfEquals != null) {
-      conversion = ", convert: Convert.ifEquals('$trueIfEquals'}";
-    } else if (type.isDartCoreBool && trueIfMatches != null) {
-      conversion = ', convert: Convert.ifMatches($trueIfMatches}';
+    if (type.isDartCoreBool) {
+      if (trueIfEquals != null) {
+        conversion = ", convert: Convert.ifEquals('$trueIfEquals'}";
+      } else if (trueIfMatches != null) {
+        conversion = ', convert: Convert.ifMatches($trueIfMatches}';
+      }
     }
     // BUGBUG Need to get the correct name for the source tag
     return Code(
@@ -68,10 +74,11 @@ class MethodActionGenerator implements ActionGenerator {
   final String fieldName;
   @override
   final DartType type;
+  final bool isList;
 
-  MethodActionGenerator.fromElement(FieldElement element)
-      : fieldName = element.name,
-        type = element.type;
+  MethodActionGenerator.fromElement(
+      FieldElement element, this.type, this.isList)
+      : fieldName = element.name;
 
   @override
   String get typeName => type.getDisplayString(withNullability: false);
@@ -80,8 +87,12 @@ class MethodActionGenerator implements ActionGenerator {
 
   String get methodName => 'extract$typeName';
 
+  String get vardecl => "var $fieldName ${isList ? '= [];' : ';'}";
+
+  String get methodCall => 'await $methodName(events)';
+
   Code toAction() => Code('''
     case $constantName:
-      $fieldName = await $methodName(events);
+      $fieldName${isList ? '.add($methodCall)' : '= $methodCall'};
     break;''');
 }

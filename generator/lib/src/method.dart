@@ -28,8 +28,6 @@ class MethodGenerator with AnnotationReader {
 
   String get constantValue => tagName;
 
-  String get entryVar => 'values';
-
   String get constructor => '$typeName($constructorParams)';
 
   String get constructorParams => constructorElement == null
@@ -52,7 +50,8 @@ class MethodGenerator with AnnotationReader {
 
     final endBlock = Code('await _pr.endOf(events, $startVar);');
 
-    final childVars = children.map((f) => 'var ${f.fieldName};').join('\n');
+    final childVars = children.map((f) => f.vardecl).join('\n');
+
     final childBlock = children.isEmpty ? Code('') : Code('''
       $childVars
       var probe = await _pr.startOf(events, parent: $startVar);
