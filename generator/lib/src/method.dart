@@ -7,13 +7,13 @@ import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
 
-import 'actions.dart';
 import 'annotation_reader.dart';
+import 'fields.dart';
 import 'import_uris.dart';
 
 class MethodGenerator with AnnotationReader {
   final String tagName;
-  final Iterable<ActionGenerator> fields;
+  final Iterable<FieldGenerator> fields;
   final ConstructorElement constructorElement;
   final DartType type;
   final prefix = 'extract'; // TODO Make this configurable
@@ -21,7 +21,7 @@ class MethodGenerator with AnnotationReader {
   MethodGenerator.fromElement(ClassElement element)
       : tagName = AnnotationReader.getAnnotation<tag>(element, 'value'),
         type = element.thisType,
-        fields = element.fields.map((f) => ActionGenerator.fromElement(f)),
+        fields = element.fields.map((f) => FieldGenerator.fromElement(f)),
         constructorElement = element.constructors.first;
 
   String get constantName => typeName + 'Name';
@@ -36,8 +36,8 @@ class MethodGenerator with AnnotationReader {
 
   @visibleForTesting
   Block get methodBody {
-    final attributes = fields.whereType<AttributeActionGenerator>();
-    final children = fields.whereType<MethodActionGenerator>();
+    final attributes = fields.whereType<AttributeFieldGenerator>();
+    final children = fields.whereType<TagFieldGenerator>();
     final startVar = '_${ReCase(typeName).camelCase}';
 
     final startBlock = Code('''

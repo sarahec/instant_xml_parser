@@ -7,16 +7,16 @@ import 'package:runtime/annotations.dart';
 
 import 'annotation_reader.dart';
 
-abstract class ActionGenerator with AnnotationReader {
-  factory ActionGenerator.fromElement(FieldElement element) {
+abstract class FieldGenerator with AnnotationReader {
+  factory FieldGenerator.fromElement(FieldElement element) {
     final isList = element.type.isDartCoreList;
     final valueType = isList
         ? (element.type as ParameterizedType).typeArguments.first
         : element.type;
     return (!isList && _isPrimitive(valueType))
-        ? AttributeActionGenerator.fromElement(element, valueType)
+        ? AttributeFieldGenerator.fromElement(element, valueType)
         // TODO Add text field type (aka inline tag)
-        : MethodActionGenerator.fromElement(element, valueType, isList);
+        : TagFieldGenerator.fromElement(element, valueType, isList);
   }
   String get typeName;
 
@@ -30,7 +30,7 @@ abstract class ActionGenerator with AnnotationReader {
       type.isDartCoreString);
 }
 
-class AttributeActionGenerator implements ActionGenerator {
+class AttributeFieldGenerator implements FieldGenerator {
   @override
   final String fieldName;
   @override
@@ -41,7 +41,7 @@ class AttributeActionGenerator implements ActionGenerator {
 
   // final String defaultValue; // will come from constructor
 
-  AttributeActionGenerator.fromElement(FieldElement element, this.type)
+  AttributeFieldGenerator.fromElement(FieldElement element, this.type)
       : fieldName = element.name,
         attribute = AnnotationReader.getAnnotation<alias>(element, 'name') ??
             element.name,
@@ -69,15 +69,14 @@ class AttributeActionGenerator implements ActionGenerator {
   }
 }
 
-class MethodActionGenerator implements ActionGenerator {
+class TagFieldGenerator implements FieldGenerator {
   @override
   final String fieldName;
   @override
   final DartType type;
   final bool isList;
 
-  MethodActionGenerator.fromElement(
-      FieldElement element, this.type, this.isList)
+  TagFieldGenerator.fromElement(FieldElement element, this.type, this.isList)
       : fieldName = element.name;
 
   @override
