@@ -40,3 +40,7 @@ class tag {
 
   const tag(this.value);
 }
+
+class text {
+  const text();
+}
