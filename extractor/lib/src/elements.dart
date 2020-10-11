@@ -28,6 +28,7 @@ class TextRun {
   TextRun(this.segments);
 }
 
+@tag('w:t')
 class Text {
   @text()
   final String value;
