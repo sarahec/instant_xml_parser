@@ -1,5 +1,9 @@
 library annotations;
 
+import 'package:meta/meta.dart';
+
+const optional = 'optional';
+
 class alias {
   /// Name for the attribute to extract (if not inferred from the field name)
   final String name;
@@ -37,14 +41,6 @@ class tag {
   const tag(this.value);
 }
 
-const keep = '';
-const trim = 'trim';
-const msOffice = 'msOffice';
-
 class text {
-  /// Setting this to 'trim' removes whitespace
-  /// Setting this to 'msOffice' uses special OOXML whitespace rules
-  final String mode;
-
-  const text([this.mode = trim]);
+  const text();
 }

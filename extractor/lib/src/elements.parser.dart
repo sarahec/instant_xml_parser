@@ -92,7 +92,7 @@ class Parser {
         await _pr.startOf(events, name: TextName, failOnMismatch: true);
     if (_text == null) return null;
 
-    final value = await _pr.textOf(events, _text, 'msOffice');
+    final value = await _pr.textOf(events, _text);
 
     await _pr.endOf(events, _text);
     return Text(value);
@@ -122,6 +122,5 @@ class Parser {
 
   ParserRuntime get _pr => ParserRuntime();
   StreamQueue<XmlEvent> generateEventStream(Stream<String> source) =>
-      StreamQueue(
-          source.toXmlEvents().withParentEvents().normalizeEvents().flatten());
+      StreamQueue(source.toXmlEvents().withParentEvents().flatten());
 }

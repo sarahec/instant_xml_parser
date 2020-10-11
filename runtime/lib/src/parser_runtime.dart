@@ -106,19 +106,12 @@ class ParserRuntime {
   }
 
   Future<String> textOf(
-      StreamQueue<XmlEvent> events, XmlStartElementEvent startEvent,
-      [whitespace = '']) async {
+      StreamQueue<XmlEvent> events, XmlStartElementEvent startEvent) async {
     var lines;
     var probe = await events.peek;
     assert(probe == startEvent || probe.parentEvent == startEvent);
     assert(!startEvent.isSelfClosing);
 
-    // special hack for OOXML: keep the whitespace if the xml:space attribute
-    // equals 'preserve'
-    final wantsTrim = whitespace == 'trim' ||
-        (whitespace == 'msOffice' &&
-            await namedAttribute<String>(startEvent, 'xml:space') !=
-                'preserve');
     // Scan for text events
     var transaction = events.startTransaction();
     var queue = transaction.newQueue();
@@ -126,7 +119,7 @@ class ParserRuntime {
       probe = await queue.next;
       if (probe is XmlTextEvent) {
         lines ??= [];
-        lines.add(wantsTrim ? probe.text.trim() : probe.text);
+        lines.add(probe.text);
       } else if (probe is XmlEndElementEvent) {
         break;
       }
