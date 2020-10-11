@@ -26,7 +26,7 @@ class Parser {
         await _pr.startOf(events, name: BodyName, failOnMismatch: true);
     if (_body == null) return null;
 
-    var paragraphs = [];
+    var paragraphs = <Paragraph>[];
     var probe = await _pr.startOf(events, parent: _body);
     while (probe != null) {
       switch (probe.qualifiedName) {
@@ -70,7 +70,7 @@ class Parser {
         await _pr.startOf(events, name: ParagraphName, failOnMismatch: true);
     if (_paragraph == null) return null;
 
-    var textRuns = [];
+    var textRuns = <TextRun>[];
     var probe = await _pr.startOf(events, parent: _paragraph);
     while (probe != null) {
       switch (probe.qualifiedName) {
@@ -103,7 +103,7 @@ class Parser {
         await _pr.startOf(events, name: TextRunName, failOnMismatch: true);
     if (_textRun == null) return null;
 
-    var segments = [];
+    var segments = <Text>[];
     var probe = await _pr.startOf(events, parent: _textRun);
     while (probe != null) {
       switch (probe.qualifiedName) {
@@ -121,4 +121,6 @@ class Parser {
   }
 
   ParserRuntime get _pr => ParserRuntime();
+  StreamQueue<XmlEvent> generateEventStream(Stream<String> source) =>
+      StreamQueue(source.toXmlEvents().withParentEvents().flatten());
 }

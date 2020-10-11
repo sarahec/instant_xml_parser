@@ -126,10 +126,8 @@ class ParserRuntime {
     }
     if (lines == null) {
       _log.fine('No text found in <${startEvent.name}>');
-      transaction.reject();
-    } else {
-      transaction.commit(queue);
     }
+    transaction.reject(); // don't advance
     return lines?.join(' ');
   }
 

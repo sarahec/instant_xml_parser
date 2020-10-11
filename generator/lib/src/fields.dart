@@ -92,7 +92,7 @@ mixin ChildGenerator on FieldGenerator {
 
   String get requiredTag;
 
-  String get vardecl => "var $fieldName ${isList ? '= [];' : ';'}";
+  String get vardecl => "var $fieldName ${isList ? '= <${typeName}>[];' : ';'}";
 
   @override
   String get toAction => '''
