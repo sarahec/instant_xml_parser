@@ -1,80 +1,79 @@
 library parse_generator;
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
-import 'package:runtime/annotations.dart';
 
-import 'annotation_reader.dart';
 import 'fields.dart';
 import 'import_uris.dart';
+import 'method_info.dart';
 
-class MethodGenerator with AnnotationReader {
-  final String tagName;
+class MethodGenerator {
+  final MethodInfo info;
   final Iterable<FieldGenerator> fields;
   final ConstructorElement constructorElement;
-  final DartType type;
-  final prefix = 'extract'; // TODO Make this configurable
 
-  MethodGenerator.fromElement(ClassElement element)
-      : tagName = AnnotationReader.getAnnotation<tag>(element, 'value'),
-        type = element.thisType,
-        fields = element.fields.map((f) => FieldGenerator.fromElement(f)),
+  MethodGenerator.fromElement(ClassElement element, MethodInfo info)
+      : info = info,
+        fields = element.fields.map((f) => FieldGenerator.fromElement(f, info)),
         constructorElement = element.constructors.first;
 
-  String get constantName => typeName + 'Name';
+  String get constructor {
+    final params =
+        constructorElement?.parameters?.map((p) => p.name)?.join(',') ?? '';
+    return '${info.typeName}($params)';
+  }
 
-  String get constantValue => tagName;
-
-  String get constructor => '$typeName($constructorParams)';
-
-  String get constructorParams => constructorElement == null
-      ? ''
-      : constructorElement.parameters.map((p) => p.name).join(',');
+  String blockOf(Section section) => fields
+      .where((f) => f.section == section)
+      .map((f) => f.toAction)
+      .join('\n');
 
   @visibleForTesting
   Block get methodBody {
-    final attributes = fields.whereType<AttributeFieldGenerator>();
-    final children = fields.whereType<TagFieldGenerator>();
-    final startVar = '_${ReCase(typeName).camelCase}';
+    final startVar = '_${ReCase(info.typeName).camelCase}';
+    final attributesBlock = blockOf(Section.attributesSection);
+    final textExtractionBlock = blockOf(Section.textSection);
 
-    final startBlock = Code('''
-      final  $startVar = 
-        await _pr.startOf(events, name: $constantName, failOnMismatch: true);
-      if ($startVar == null) return null;''');
+    final children = fields.where((f) => f.section == Section.childSection);
+    final childVars =
+        children.map((f) => (f as ChildGenerator).vardecl).join('\n');
 
-    final attributesBlock =
-        Code(attributes.map((f) => f.toAction(startVar)).join('\n'));
-
-    final endBlock = Code('await _pr.endOf(events, $startVar);');
-
-    final childVars = children.map((f) => f.vardecl).join('\n');
-
-    final childBlock = children.isEmpty ? Code('') : Code('''
+    final childBlock = children.isEmpty
+        ? ''
+        : '''
       $childVars
       var probe = await _pr.startOf(events, parent: $startVar);
       while (probe != null) {
         switch (probe.qualifiedName) {
-          ${children.map((f) => f.toAction()).join('\n\n')}
+          ${blockOf(Section.childSection)}
         default:
-          await _pr.logUnknown(probe, $constantName);
+          await _pr.logUnknown(probe, ${info.constantName});
       }
       await events.skip(1);
       probe = await _pr.startOf(events, parent: $startVar);
-    }''');
+    }''';
+
+    final startBlock = '''
+      final  $startVar = 
+        await _pr.startOf(events, name: ${info.constantName}, failOnMismatch: true);
+      if ($startVar == null) return null;''';
+
+    final endBlock = 'await _pr.endOf(events, $startVar);';
+
     return Block.of([
       startBlock,
       attributesBlock,
+      textExtractionBlock,
       childBlock,
       endBlock,
-      Code('return $constructor;')
-    ]);
+      'return $constructor;'
+    ].map((s) => Code(s)));
   }
 
   Method get toMethod => Method((b) => b
-    ..name = '$prefix$typeName'
+    ..name = info.name
     ..body = methodBody
     ..modifier = MethodModifier.async
     ..requiredParameters.add(Parameter((b) => b
@@ -92,12 +91,10 @@ class MethodGenerator with AnnotationReader {
       ..isNullable = false
       ..url = AsyncCoreLibrary
       ..types.add(TypeReference((b) => b
-            ..symbol = typeName
+            ..symbol = info.typeName
             ..isNullable = false
           /* ..url = SourceLibrary */))));
 
   @visibleForTesting
   String get toSource => DartEmitter().visitMethod(toMethod).toString();
-
-  String get typeName => type.getDisplayString(withNullability: false);
 }

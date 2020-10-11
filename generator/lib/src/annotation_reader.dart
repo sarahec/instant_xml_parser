@@ -1,14 +1,13 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
-mixin AnnotationReader {
-  static dynamic getAnnotation<A>(Element element,
-      [String field, Type type = String]) {
+class AnnotationReader {
+  static dynamic getAnnotation<A>(Element element, String field,
+      [Type type = String]) {
     final _attributeChecker = TypeChecker.fromRuntime(A);
     final found = _attributeChecker.firstAnnotationOfExact(element,
         throwOnUnresolved: false);
     if (found == null) return null;
-    if (field == null) return found.toStringValue();
     switch (type) {
       case bool:
         found.getField(field)?.toIntValue();
@@ -26,4 +25,7 @@ mixin AnnotationReader {
         return found.getField(field)?.toStringValue();
     }
   }
+
+  static dynamic hasAnnotation<A>(Element element) => TypeChecker.fromRuntime(A)
+      .hasAnnotationOf(element, throwOnUnresolved: false);
 }

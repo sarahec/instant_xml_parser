@@ -2,27 +2,38 @@ library parse_generator;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:code_builder/code_builder.dart';
 import 'package:runtime/annotations.dart';
 
 import 'annotation_reader.dart';
+import 'method_info.dart';
 
-abstract class FieldGenerator with AnnotationReader {
-  factory FieldGenerator.fromElement(FieldElement element) {
+enum Section { attributesSection, textSection, childSection }
+
+abstract class FieldGenerator {
+  final MethodInfo context;
+  final String fieldName;
+  final bool isList;
+  final DartType type;
+
+  FieldGenerator(this.fieldName, this.type, this.context,
+      [this.isList = false]);
+
+  factory FieldGenerator.fromElement(FieldElement element, MethodInfo context) {
     final isList = element.type.isDartCoreList;
-    final valueType = isList
+    final fieldType = isList
         ? (element.type as ParameterizedType).typeArguments.first
         : element.type;
-    return (!isList && _isPrimitive(valueType))
-        ? AttributeFieldGenerator.fromElement(element, valueType)
-        // TODO Add text field type (aka inline tag)
-        : TagFieldGenerator.fromElement(element, valueType, isList);
+    if (AnnotationReader.hasAnnotation<text>(element)) {
+      return TextFieldGenerator(element.name, fieldType, context, isList);
+    }
+    return (!isList && _isPrimitive(fieldType))
+        ? AttributeFieldGenerator(element, fieldType, context)
+        : TagFieldGenerator(element.name, fieldType, context, isList);
   }
-  String get typeName;
 
-  String get fieldName;
-
-  DartType get type;
+  Section get section;
+  String get toAction;
+  String get typeName => type.getDisplayString(withNullability: false);
 
   static bool _isPrimitive(DartType type) => (type.isDartCoreBool ||
       type.isDartCoreDouble ||
@@ -30,30 +41,27 @@ abstract class FieldGenerator with AnnotationReader {
       type.isDartCoreString);
 }
 
-class AttributeFieldGenerator implements FieldGenerator {
-  @override
-  final String fieldName;
-  @override
-  final DartType type;
+class AttributeFieldGenerator extends FieldGenerator {
   final String attribute;
   final String trueIfEquals;
   final RegExp trueIfMatches;
+  @override
+  final section = Section.attributesSection;
 
   // final String defaultValue; // will come from constructor
 
-  AttributeFieldGenerator.fromElement(FieldElement element, this.type)
-      : fieldName = element.name,
-        attribute = AnnotationReader.getAnnotation<alias>(element, 'name') ??
+  AttributeFieldGenerator(
+      FieldElement element, DartType type, MethodInfo context)
+      : attribute = AnnotationReader.getAnnotation<alias>(element, 'name') ??
             element.name,
         trueIfEquals =
             AnnotationReader.getAnnotation<ifEquals>(element, 'value'),
         trueIfMatches =
-            AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
+            AnnotationReader.getAnnotation<ifMatches>(element, 'regex'),
+        super(element.name, type, context);
 
   @override
-  String get typeName => type.getDisplayString(withNullability: false);
-
-  Code toAction(String sourceVar) {
+  String get toAction {
     assert(type != null);
     var conversion = '';
     if (type.isDartCoreBool) {
@@ -63,35 +71,48 @@ class AttributeFieldGenerator implements FieldGenerator {
         conversion = ', convert: Convert.ifMatches($trueIfMatches}';
       }
     }
-    // BUGBUG Need to get the correct name for the source tag
-    return Code(
-        "final $fieldName = await _pr.namedAttribute<$typeName>($sourceVar, '$fieldName' $conversion);");
+    return "final $fieldName = await _pr.namedAttribute<$typeName>(${context.startVar}, '$fieldName' $conversion);";
   }
 }
 
-class TagFieldGenerator implements FieldGenerator {
+class TextFieldGenerator extends FieldGenerator {
   @override
-  final String fieldName;
-  @override
-  final DartType type;
-  final bool isList;
+  final section = Section.textSection;
 
-  TagFieldGenerator.fromElement(FieldElement element, this.type, this.isList)
-      : fieldName = element.name;
+  TextFieldGenerator(fieldName, type, context, isList)
+      : super(fieldName, type, context, isList);
 
   @override
-  String get typeName => type.getDisplayString(withNullability: false);
+  String get toAction =>
+      'final $fieldName = await _pr.textOf(events, ${context.startVar});';
+}
 
-  String get constantName => typeName + 'Name';
+mixin ChildGenerator on FieldGenerator {
+  String get action;
 
-  String get methodName => 'extract$typeName';
+  String get requiredTag;
 
   String get vardecl => "var $fieldName ${isList ? '= [];' : ';'}";
 
-  String get methodCall => 'await $methodName(events)';
+  @override
+  String get toAction => '''
+    case $requiredTag:
+      $fieldName${isList ? '.add($action)' : '= $action'};
+    break;''';
+}
 
-  Code toAction() => Code('''
-    case $constantName:
-      $fieldName${isList ? '.add($methodCall)' : '= $methodCall'};
-    break;''');
+class TagFieldGenerator extends FieldGenerator with ChildGenerator {
+  @override
+  final section = Section.childSection;
+
+  TagFieldGenerator(fieldName, type, context, isList)
+      : super(fieldName, type, context, isList);
+
+  @override
+  String get action => 'await $methodName(events)';
+
+  String get methodName => 'extract$typeName';
+
+  @override
+  String get requiredTag => typeName + 'Name';
 }

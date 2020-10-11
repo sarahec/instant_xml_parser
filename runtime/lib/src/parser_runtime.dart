@@ -105,6 +105,34 @@ class ParserRuntime {
     return null;
   }
 
+  Future<String> textOf(
+      StreamQueue<XmlEvent> events, XmlStartElementEvent startEvent) async {
+    var lines;
+    var probe = await events.peek;
+    assert(probe == startEvent || probe.parentEvent == startEvent);
+    assert(!startEvent.isSelfClosing);
+
+    // Scan for text events
+    var transaction = events.startTransaction();
+    var queue = transaction.newQueue();
+    while (await queue.hasNext) {
+      probe = await queue.next;
+      if (probe is XmlTextEvent) {
+        lines ??= [];
+        lines.add(probe.text);
+      } else if (probe is XmlEndElementEvent) {
+        break;
+      }
+    }
+    if (lines == null) {
+      _log.fine('No text found in <${startEvent.name}>');
+      transaction.reject();
+    } else {
+      transaction.commit(queue);
+    }
+    return lines?.join(' ');
+  }
+
   Converter _autoConverter(Type T) => (T == bool)
       ? Convert.toBool
       : (T == int)
