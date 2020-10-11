@@ -24,7 +24,7 @@ abstract class FieldGenerator {
         ? (element.type as ParameterizedType).typeArguments.first
         : element.type;
     if (AnnotationReader.hasAnnotation<text>(element)) {
-      return TextFieldGenerator(element.name, fieldType, context, isList);
+      return TextFieldGenerator(element, fieldType, context, isList);
     }
     return (!isList && _isPrimitive(fieldType))
         ? AttributeFieldGenerator(element, fieldType, context)
@@ -79,12 +79,15 @@ class TextFieldGenerator extends FieldGenerator {
   @override
   final section = Section.textSection;
 
-  TextFieldGenerator(fieldName, type, context, isList)
-      : super(fieldName, type, context, isList);
+  final String whitespace;
+
+  TextFieldGenerator(element, type, context, isList)
+      : whitespace = AnnotationReader.getAnnotation<text>(element, 'mode'),
+        super(element.name, type, context, isList);
 
   @override
   String get toAction =>
-      'final $fieldName = await _pr.textOf(events, ${context.startVar});';
+      "final $fieldName = await _pr.textOf(events, ${context.startVar}, '$whitespace');";
 }
 
 mixin ChildGenerator on FieldGenerator {

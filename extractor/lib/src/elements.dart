@@ -45,7 +45,7 @@ class TextRun {
 
 @tag('w:t')
 class Text {
-  @text()
+  @text('msOffice')
   final String value;
 
   Text(this.value);
