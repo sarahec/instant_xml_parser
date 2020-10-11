@@ -59,7 +59,8 @@ class ParserRuntime {
     final attribute = element.attributes.firstWhere(
         (a) =>
             (a.name == attributeName) ||
-            (_stripNamespace(a.name) == attributeName),
+            (_stripNamespace(a.name) ==
+                attributeName), // TODO: Disallow namespace stripping in strict mode
         orElse: () => null);
     final value = attribute?.value;
 

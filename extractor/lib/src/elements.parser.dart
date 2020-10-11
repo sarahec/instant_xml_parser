@@ -91,7 +91,7 @@ class Parser {
     final _text =
         await _pr.startOf(events, name: TextName, failOnMismatch: true);
     if (_text == null) return null;
-    final space = await _pr.namedAttribute<String>(_text, 'space');
+    final space = await _pr.namedAttribute<String>(_text, 'xml:space');
     final rawValue = await _pr.textOf(events, _text);
 
     await _pr.endOf(events, _text);

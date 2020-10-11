@@ -71,7 +71,7 @@ class AttributeFieldGenerator extends FieldGenerator {
         conversion = ', convert: Convert.ifMatches($trueIfMatches}';
       }
     }
-    return "final $fieldName = await _pr.namedAttribute<$typeName>(${context.startVar}, '$fieldName' $conversion);";
+    return "final $fieldName = await _pr.namedAttribute<$typeName>(${context.startVar}, '$attribute' $conversion);";
   }
 }
 
