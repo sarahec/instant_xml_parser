@@ -5,9 +5,9 @@ import 'package:code_builder/code_builder.dart';
 import 'package:runtime/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'import_uris.dart';
+import '../import_uris.dart';
 import 'method.dart';
-import 'method_info.dart';
+import '../info/method_info.dart';
 
 class LibraryGenerator {
   final Iterable<MethodGenerator> methodEntries;

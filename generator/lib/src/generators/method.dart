@@ -6,8 +6,8 @@ import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 
 import 'fields.dart';
-import 'import_uris.dart';
-import 'method_info.dart';
+import '../import_uris.dart';
+import '../info/method_info.dart';
 
 class MethodGenerator {
   final MethodInfo info;

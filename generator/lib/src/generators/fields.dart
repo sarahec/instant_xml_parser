@@ -4,8 +4,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:runtime/annotations.dart';
 
-import 'annotation_reader.dart';
-import 'method_info.dart';
+import '../utils/annotation_reader.dart';
+import '../info/method_info.dart';
 
 enum Section { attributesSection, textSection, childSection }
 

@@ -3,7 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:recase/recase.dart';
 import 'package:runtime/annotations.dart';
 
-import 'annotation_reader.dart';
+import '../utils/annotation_reader.dart';
 
 class MethodInfo {
   final String tagName;

@@ -4,7 +4,7 @@ import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'src/library.dart';
+import 'src/generators/library.dart';
 
 import 'package:dart_style/dart_style.dart';
 
