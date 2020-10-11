@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:runtime/annotations.dart';
 
 @tag('w:document')
@@ -34,7 +36,7 @@ class Paragraph {
 
 @tag('w:r')
 class TextRun {
-  final List<Text> segments;
+  final List<TextSegment> segments;
 
   TextRun(this.segments);
 
@@ -43,20 +45,31 @@ class TextRun {
   String toString() => segments?.join('') ?? 'null';
 }
 
+abstract class Text {
+  String get value;
+
+  /// Added for testing purposes, not required when generating a parser
+  @override
+  String toString() => value ?? 'null';
+}
+
 @tag('w:t')
-class Text {
+class TextSegment extends Text {
   @alias('xml:space')
   final String space;
 
   @text()
   final String rawValue;
 
-  Text(this.space, this.rawValue);
+  TextSegment(this.space, this.rawValue);
 
+  @override
   String get value =>
       space != null && space == 'preserve' ? rawValue : rawValue.trim();
+}
 
-  /// Added for testing purposes, not required when generating a parser
+@tag('w:cr')
+class CR extends Text {
   @override
-  String toString() => value ?? 'null';
+  String get value => '\n';
 }
