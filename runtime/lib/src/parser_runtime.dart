@@ -54,8 +54,13 @@ class ParserRuntime {
 
     final element = await Future.value(elementFuture);
 
-    final attribute = element.attributes
-        .firstWhere((a) => a.name == attributeName, orElse: () => null);
+    // if the name has a namespace, match exactly. If it doesn't,
+    // try a namespace-free match
+    final attribute = element.attributes.firstWhere(
+        (a) =>
+            (a.name == attributeName) ||
+            (_stripNamespace(a.name) == attributeName),
+        orElse: () => null);
     final value = attribute?.value;
 
     if (value == null) {
@@ -104,6 +109,8 @@ class ParserRuntime {
     transaction.reject();
     return null;
   }
+
+  String _stripNamespace(String s) => s.split(':').last;
 
   Future<String> textOf(
       StreamQueue<XmlEvent> events, XmlStartElementEvent startEvent) async {
