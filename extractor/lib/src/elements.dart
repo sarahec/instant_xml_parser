@@ -45,10 +45,16 @@ class TextRun {
 
 @tag('w:t')
 class Text {
-  @text()
-  final String value;
+  @alias('xml:space')
+  final String space;
 
-  Text(this.value);
+  @text()
+  final String rawValue;
+
+  Text(this.space, this.rawValue);
+
+  String get value =>
+      space != null && space == 'preserve' ? rawValue : rawValue.trim();
 
   /// Added for testing purposes, not required when generating a parser
   @override

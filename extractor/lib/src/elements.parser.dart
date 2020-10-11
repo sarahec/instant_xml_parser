@@ -91,11 +91,12 @@ class Parser {
     final _text =
         await _pr.startOf(events, name: TextName, failOnMismatch: true);
     if (_text == null) return null;
-
-    final value = await _pr.textOf(events, _text);
+    final space = await _pr.namedAttribute<String>(_text, 'space');
+    final value = await _pr.namedAttribute<String>(_text, 'value');
+    final rawValue = await _pr.textOf(events, _text);
 
     await _pr.endOf(events, _text);
-    return Text(value);
+    return Text(space, rawValue);
   }
 
   Future<TextRun> extractTextRun(StreamQueue<XmlEvent> events) async {
@@ -122,5 +123,6 @@ class Parser {
 
   ParserRuntime get _pr => ParserRuntime();
   StreamQueue<XmlEvent> generateEventStream(Stream<String> source) =>
-      StreamQueue(source.toXmlEvents().withParentEvents().flatten());
+      StreamQueue(
+          source.toXmlEvents().withParentEvents().normalizeEvents().flatten());
 }

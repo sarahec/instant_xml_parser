@@ -16,7 +16,9 @@ class MethodGenerator {
 
   MethodGenerator.fromElement(ClassElement element, MethodInfo info)
       : info = info,
-        fields = element.fields.map((f) => FieldGenerator.fromElement(f, info)),
+        fields = element.fields
+            .where((f) => f.getter.variable != null)
+            .map((f) => FieldGenerator.fromElement(f, info)),
         constructorElement = element.constructors.first;
 
   String get constructor {
