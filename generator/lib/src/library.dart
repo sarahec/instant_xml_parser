@@ -19,15 +19,31 @@ class LibraryGenerator {
                 MethodGenerator.fromElement(e.element, MethodInfo(e.element)));
 
   Class get classWrapper => Class((b) => b
-    ..name = 'Parser' // BUGBUG Add name of source file, uing Pascal case
+    ..name = 'Parser' // TODO: Add name of source file, using Pascal case
     ..fields.addAll(constants)
     ..methods.addAll(methods)
-    ..methods.add(Method((b) => b
-      ..name = '_pr'
-      ..type = MethodType.getter
-      ..lambda = true
-      ..returns = Reference('ParserRuntime', ParserRuntime)
-      ..body = Code('ParserRuntime()'))));
+    ..methods.add(runtimeGetter)
+    ..methods.add(streamUtility));
+
+  Method get runtimeGetter => Method((b) => b
+    ..name = '_pr'
+    ..type = MethodType.getter
+    ..lambda = true
+    ..returns = Reference('ParserRuntime', ParserRuntime)
+    ..body = Code('ParserRuntime()'));
+
+  Method get streamUtility => Method((b) => b
+    ..name = 'generateEventStream'
+    ..returns = Reference('StreamQueue<XmlEvent>')
+    ..requiredParameters.add(Parameter((b) => b
+      ..name = 'source'
+      ..type = Reference('Stream<String>')))
+    ..lambda = true
+    ..body = Code('''StreamQueue(source
+        .toXmlEvents()
+        .withParentEvents()
+        .normalizeEvents()
+        .flatten())'''));
 
   Iterable<Field> get constants => methodEntries.map((c) => Field((b) => b
     ..name = c.info.constantName
