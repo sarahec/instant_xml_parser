@@ -17,7 +17,7 @@ class MethodGenerator {
   MethodGenerator.fromElement(ClassElement element, MethodInfo info)
       : info = info,
         fields = element.fields
-            .where((f) => f.getter.variable != null)
+            .where((f) => f.getter.isGetter && !f.isSynthetic)
             .map((f) => FieldGenerator.fromElement(f, info)),
         constructorElement = element.constructors.first;
 
