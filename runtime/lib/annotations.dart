@@ -1,7 +1,5 @@
 library annotations;
 
-import 'package:meta/meta.dart';
-
 const optional = 'optional';
 
 class alias {
