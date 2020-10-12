@@ -1,22 +1,19 @@
 library parse_generator;
 
-import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:runtime/annotations.dart';
+import 'package:generator/src/info/library_info.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../import_uris.dart';
 import 'method.dart';
-import '../info/method_info.dart';
 
 class LibraryGenerator {
-  final Iterable<MethodGenerator> methodEntries;
-  final AssetId sourceAsset;
+  final LibraryInfo info;
 
-  LibraryGenerator.fromLibrary(LibraryReader library, this.sourceAsset)
-      : methodEntries = library.annotatedWith(TypeChecker.fromRuntime(tag)).map(
-            (e) =>
-                MethodGenerator.fromElement(e.element, MethodInfo(e.element)));
+  // final Iterable<MethodGenerator> methodEntries;
+
+  LibraryGenerator.fromLibrary(LibraryReader library, sourceAsset)
+      : info = LibraryInfo.fromReader(library, sourceAsset);
 
   Class get classWrapper => Class((b) => b
     ..name = 'Parser' // TODO: Add name of source file, using Pascal case
@@ -45,20 +42,18 @@ class LibraryGenerator {
         .normalizeEvents()
         .flatten())'''));
 
-  Iterable<Field> get constants => methodEntries.map((c) => Field((b) => b
-    ..name = c.info.constantName
-    ..assignment = Code("'${c.info.tagName}'")
-    ..static = true
-    ..modifier = FieldModifier.constant));
+  Iterable<Method> get methods =>
+      [for (var info in info.symtable.methods) MethodGenerator(info).toMethod];
 
-  List<Method> get methods {
-    final entries = methodEntries.map((c) => c.toMethod).toList();
-    entries.sort((a, b) => a.name.compareTo(b.name));
-    return entries;
-  }
+  Iterable<Field> get constants =>
+      info.symtable.methods.map((c) => Field((b) => b
+        ..name = c.classInfo.constantName
+        ..assignment = Code("'${c.classInfo.tagName}'")
+        ..static = true
+        ..modifier = FieldModifier.constant));
 
   Library get toCode => Library((b) => b
-    ..directives.add(Directive.import(sourceAsset.pathSegments.last))
+    ..directives.add(Directive.import(info.sourceAsset.pathSegments.last))
     ..body.add(classWrapper));
 
   String get toSource => DartEmitter().visitLibrary(toCode).toString();

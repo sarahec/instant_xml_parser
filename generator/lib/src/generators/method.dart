@@ -11,15 +11,8 @@ import '../info/method_info.dart';
 
 class MethodGenerator {
   final MethodInfo info;
-  final Iterable<FieldGenerator> fields;
-  final ConstructorElement constructorElement;
 
-  MethodGenerator.fromElement(ClassElement element, MethodInfo info)
-      : info = info,
-        fields = element.fields
-            .where((f) => f.getter.isGetter && !f.isSynthetic)
-            .map((f) => FieldGenerator.fromElement(f, info)),
-        constructorElement = element.constructors.first;
+  MethodGenerator(this.info);
 
   String get constructor {
     final params =
@@ -27,7 +20,7 @@ class MethodGenerator {
     return '${info.typeName}($params)';
   }
 
-  String blockOf(Section section) => fields
+  String blockOf(Section section) => info.fields
       .where((f) => f.section == section)
       .map((f) => f.toAction)
       .join('\n');
@@ -38,7 +31,8 @@ class MethodGenerator {
     final attributesBlock = blockOf(Section.attributesSection);
     final textExtractionBlock = blockOf(Section.textSection);
 
-    final children = fields.where((f) => f.section == Section.childSection);
+    final children =
+        info.fields.where((f) => f.section == Section.childSection);
     final childVars =
         children.map((f) => (f as ChildGenerator).vardecl).join('\n');
 
@@ -51,7 +45,7 @@ class MethodGenerator {
         switch (probe.qualifiedName) {
           ${blockOf(Section.childSection)}
         default:
-          await _pr.logUnknown(probe, ${info.constantName});
+          await _pr.logUnknown(probe, ${info.classInfo.constantName});
       }
       await events.skip(1);
       probe = await _pr.startOf(events, parent: $startVar);
@@ -59,7 +53,7 @@ class MethodGenerator {
 
     final startBlock = '''
       final  $startVar = 
-        await _pr.startOf(events, name: ${info.constantName}, failOnMismatch: true);
+        await _pr.startOf(events, name: ${info.classInfo.constantName}, failOnMismatch: true);
       if ($startVar == null) return null;''';
 
     final endBlock = 'await _pr.endOf(events, $startVar);';

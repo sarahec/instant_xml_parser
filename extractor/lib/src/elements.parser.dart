@@ -19,7 +19,9 @@ class Parser {
 
   static const TextRunName = 'w:r';
 
-  static const TextName = 'w:t';
+  static const TextSegmentName = 'w:t';
+
+  static const CRName = 'w:cr';
 
   Future<Body> extractBody(StreamQueue<XmlEvent> events) async {
     final _body =
@@ -41,6 +43,14 @@ class Parser {
     }
     await _pr.endOf(events, _body);
     return Body(paragraphs);
+  }
+
+  Future<CR> extractCR(StreamQueue<XmlEvent> events) async {
+    final _cr = await _pr.startOf(events, name: CRName, failOnMismatch: true);
+    if (_cr == null) return null;
+
+    await _pr.endOf(events, _cr);
+    return CR();
   }
 
   Future<Document> extractDocument(StreamQueue<XmlEvent> events) async {
@@ -87,28 +97,17 @@ class Parser {
     return Paragraph(textRuns);
   }
 
-  Future<Text> extractText(StreamQueue<XmlEvent> events) async {
-    final _text =
-        await _pr.startOf(events, name: TextName, failOnMismatch: true);
-    if (_text == null) return null;
-    final space = await _pr.namedAttribute<String>(_text, 'xml:space');
-    final rawValue = await _pr.textOf(events, _text);
-
-    await _pr.endOf(events, _text);
-    return Text(space, rawValue);
-  }
-
   Future<TextRun> extractTextRun(StreamQueue<XmlEvent> events) async {
     final _textRun =
         await _pr.startOf(events, name: TextRunName, failOnMismatch: true);
     if (_textRun == null) return null;
 
-    var segments = <Text>[];
+    var segments = <TextSegment>[];
     var probe = await _pr.startOf(events, parent: _textRun);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case TextName:
-          segments.add(await extractText(events));
+        case TextSegmentName:
+          segments.add(await extractTextSegment(events));
           break;
         default:
           await _pr.logUnknown(probe, TextRunName);
@@ -118,6 +117,17 @@ class Parser {
     }
     await _pr.endOf(events, _textRun);
     return TextRun(segments);
+  }
+
+  Future<TextSegment> extractTextSegment(StreamQueue<XmlEvent> events) async {
+    final _textSegment =
+        await _pr.startOf(events, name: TextSegmentName, failOnMismatch: true);
+    if (_textSegment == null) return null;
+    final space = await _pr.namedAttribute<String>(_textSegment, 'xml:space');
+    final rawValue = await _pr.textOf(events, _textSegment);
+
+    await _pr.endOf(events, _textSegment);
+    return TextSegment(space, rawValue);
   }
 
   ParserRuntime get _pr => ParserRuntime();
