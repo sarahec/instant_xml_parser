@@ -5,7 +5,7 @@ import 'package:generator/src/info/library_info.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../import_uris.dart';
-import 'method.dart';
+import 'method_gen.dart';
 
 class LibraryGenerator {
   final LibraryInfo library;

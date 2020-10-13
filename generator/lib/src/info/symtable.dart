@@ -14,6 +14,9 @@ class Symtable {
 
   ClassInfo classNamed(name) => _classes[name];
 
+  MethodInfo methodReturning(String desiredType) =>
+      methods.firstWhere((m) => m.typeName == desiredType);
+
   Iterable<ClassInfo> subclassesOf(ClassInfo info) {
     if (!_subclasses.containsKey(info)) {
       _subclasses[info] = _classes.values

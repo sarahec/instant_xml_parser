@@ -25,9 +25,13 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
   MethodInfo get method =>
       needsMethod ? MethodInfo.fromClassInfo(this, element.fields) : null;
 
+  @nullable
   @memoized
-  ConstructorInfo get constructor => ConstructorInfo.fromElement(
-      type.constructors.where((c) => c.isDefaultConstructor).first);
+  ConstructorInfo get constructor {
+    final ctor = element.constructors
+        .firstWhere((c) => !c.isFactory && !c.isPrivate, orElse: () => null);
+    return (ctor == null) ? null : ConstructorInfo.fromElement(ctor);
+  }
 
   bool get needsMethod => tagName != null;
 

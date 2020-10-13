@@ -11,17 +11,17 @@ import 'package:runtime/runtime.dart';
 import 'elements.dart';
 
 class Parser {
-  static const DocumentName = 'w:document';
-
   static const BodyName = 'w:body';
+
+  static const CRName = 'w:cr';
+
+  static const DocumentName = 'w:document';
 
   static const ParagraphName = 'w:p';
 
   static const TextRunName = 'w:r';
 
   static const TextSegmentName = 'w:t';
-
-  static const CRName = 'w:cr';
 
   Future<Body> extractBody(StreamQueue<XmlEvent> events) async {
     final _body =
@@ -32,7 +32,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _body);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case ParagraphName:
+        case BodyName:
           paragraphs.add(await extractParagraph(events));
           break;
         default:
@@ -62,7 +62,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _document);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case BodyName:
+        case DocumentName:
           body = await extractBody(events);
           break;
         default:
@@ -84,7 +84,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _paragraph);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case TextRunName:
+        case ParagraphName:
           textRuns.add(await extractTextRun(events));
           break;
         default:
@@ -106,7 +106,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _textRun);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case TextSegmentName:
+        case TextRunName:
           segments.add(await extractTextSegment(events));
           break;
         default:

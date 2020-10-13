@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 
 import '../import_uris.dart';
 import '../info/method_info.dart';
-import 'fields.dart';
+import 'field_gen.dart';
 
 class MethodGenerator {
   final MethodInfo method;
@@ -15,7 +15,8 @@ class MethodGenerator {
   MethodGenerator(this.method, this.symtable);
 
   String get constructor {
-    final params = method.classInfo.constructor.parameterNames?.join(',') ?? '';
+    final params =
+        method.classInfo.constructor?.parameterNames?.join(',') ?? '';
     return '${method.typeName}($params)';
   }
 
@@ -43,16 +44,18 @@ class MethodGenerator {
 
   @visibleForTesting
   Block get methodBody {
-    var cgen = childFieldGenerators;
+    final cgen = childFieldGenerators;
+    final vars = [for (var c in cgen) c.vardecl].join('\n');
+    final cases = [for (var c in cgen) c.toAction].join('\n');
 
     final childBlock = cgen.isEmpty
         ? ''
         : '''
-      ${[for (var c in cgen) c.vardecl]}
+      $vars
       var probe = await _pr.startOf(events, parent: ${method.startVar});
       while (probe != null) {
         switch (probe.qualifiedName) {
-          ${[for (var c in cgen) c.toAction]}
+          $cases
         default:
           await _pr.logUnknown(probe, ${method.classInfo.constantName});
       }

@@ -34,7 +34,7 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   bool get isXmlTextField => AnnotationReader.hasAnnotation<text>(element);
 
   @memoized
-  String get name => element.getDisplayString(withNullability: false);
+  String get name => element.name;
 
   String get trueIfEquals =>
       AnnotationReader.getAnnotation<ifEquals>(element, 'value');
