@@ -12,23 +12,18 @@ class _$ClassInfo extends ClassInfo {
   @override
   final Iterable<ClassInfo> subclasses;
   @override
-  final String tagName;
-  @override
   final InterfaceType type;
   MethodInfo __method;
-  ConstructorElement __constructor;
+  ConstructorInfo __constructor;
+  String __tagName;
   String __typeName;
 
   factory _$ClassInfo([void Function(ClassInfoBuilder) updates]) =>
       (new ClassInfoBuilder()..update(updates)).build();
 
-  _$ClassInfo._({this.element, this.subclasses, this.tagName, this.type})
-      : super._() {
+  _$ClassInfo._({this.element, this.subclasses, this.type}) : super._() {
     if (element == null) {
       throw new BuiltValueNullFieldError('ClassInfo', 'element');
-    }
-    if (tagName == null) {
-      throw new BuiltValueNullFieldError('ClassInfo', 'tagName');
     }
     if (type == null) {
       throw new BuiltValueNullFieldError('ClassInfo', 'type');
@@ -39,7 +34,10 @@ class _$ClassInfo extends ClassInfo {
   MethodInfo get method => __method ??= super.method;
 
   @override
-  ConstructorElement get constructor => __constructor ??= super.constructor;
+  ConstructorInfo get constructor => __constructor ??= super.constructor;
+
+  @override
+  String get tagName => __tagName ??= super.tagName;
 
   @override
   String get typeName => __typeName ??= super.typeName;
@@ -57,16 +55,13 @@ class _$ClassInfo extends ClassInfo {
     return other is ClassInfo &&
         element == other.element &&
         subclasses == other.subclasses &&
-        tagName == other.tagName &&
         type == other.type;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(
-        $jc($jc($jc(0, element.hashCode), subclasses.hashCode),
-            tagName.hashCode),
-        type.hashCode));
+    return $jf(
+        $jc($jc($jc(0, element.hashCode), subclasses.hashCode), type.hashCode));
   }
 
   @override
@@ -74,7 +69,6 @@ class _$ClassInfo extends ClassInfo {
     return (newBuiltValueToStringHelper('ClassInfo')
           ..add('element', element)
           ..add('subclasses', subclasses)
-          ..add('tagName', tagName)
           ..add('type', type))
         .toString();
   }
@@ -92,10 +86,6 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   set subclasses(Iterable<ClassInfo> subclasses) =>
       _$this._subclasses = subclasses;
 
-  String _tagName;
-  String get tagName => _$this._tagName;
-  set tagName(String tagName) => _$this._tagName = tagName;
-
   InterfaceType _type;
   InterfaceType get type => _$this._type;
   set type(InterfaceType type) => _$this._type = type;
@@ -106,7 +96,6 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
     if (_$v != null) {
       _element = _$v.element;
       _subclasses = _$v.subclasses;
-      _tagName = _$v.tagName;
       _type = _$v.type;
       _$v = null;
     }
@@ -129,11 +118,7 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   @override
   _$ClassInfo build() {
     final _$result = _$v ??
-        new _$ClassInfo._(
-            element: element,
-            subclasses: subclasses,
-            tagName: tagName,
-            type: type);
+        new _$ClassInfo._(element: element, subclasses: subclasses, type: type);
     replace(_$result);
     return _$result;
   }

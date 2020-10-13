@@ -8,46 +8,33 @@ part of 'field_info.dart';
 
 class _$FieldInfo extends FieldInfo {
   @override
-  final String attribute;
-  @override
-  final bool isList;
-  @override
-  final bool isText;
-  @override
-  final String name;
-  @override
-  final String trueIfEquals;
-  @override
-  final String trueIfMatches;
-  @override
-  final DartType type;
+  final FieldElement element;
+  String __attributeName;
+  bool __isXmlTextField;
+  String __name;
+  DartType __type;
   String __typeName;
 
   factory _$FieldInfo([void Function(FieldInfoBuilder) updates]) =>
       (new FieldInfoBuilder()..update(updates)).build();
 
-  _$FieldInfo._(
-      {this.attribute,
-      this.isList,
-      this.isText,
-      this.name,
-      this.trueIfEquals,
-      this.trueIfMatches,
-      this.type})
-      : super._() {
-    if (isList == null) {
-      throw new BuiltValueNullFieldError('FieldInfo', 'isList');
-    }
-    if (isText == null) {
-      throw new BuiltValueNullFieldError('FieldInfo', 'isText');
-    }
-    if (name == null) {
-      throw new BuiltValueNullFieldError('FieldInfo', 'name');
-    }
-    if (type == null) {
-      throw new BuiltValueNullFieldError('FieldInfo', 'type');
+  _$FieldInfo._({this.element}) : super._() {
+    if (element == null) {
+      throw new BuiltValueNullFieldError('FieldInfo', 'element');
     }
   }
+
+  @override
+  String get attributeName => __attributeName ??= super.attributeName;
+
+  @override
+  bool get isXmlTextField => __isXmlTextField ??= super.isXmlTextField;
+
+  @override
+  String get name => __name ??= super.name;
+
+  @override
+  DartType get type => __type ??= super.type;
 
   @override
   String get typeName => __typeName ??= super.typeName;
@@ -62,40 +49,17 @@ class _$FieldInfo extends FieldInfo {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is FieldInfo &&
-        attribute == other.attribute &&
-        isList == other.isList &&
-        isText == other.isText &&
-        name == other.name &&
-        trueIfEquals == other.trueIfEquals &&
-        trueIfMatches == other.trueIfMatches &&
-        type == other.type;
+    return other is FieldInfo && element == other.element;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(
-        $jc(
-            $jc(
-                $jc(
-                    $jc($jc($jc(0, attribute.hashCode), isList.hashCode),
-                        isText.hashCode),
-                    name.hashCode),
-                trueIfEquals.hashCode),
-            trueIfMatches.hashCode),
-        type.hashCode));
+    return $jf($jc(0, element.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('FieldInfo')
-          ..add('attribute', attribute)
-          ..add('isList', isList)
-          ..add('isText', isText)
-          ..add('name', name)
-          ..add('trueIfEquals', trueIfEquals)
-          ..add('trueIfMatches', trueIfMatches)
-          ..add('type', type))
+    return (newBuiltValueToStringHelper('FieldInfo')..add('element', element))
         .toString();
   }
 }
@@ -103,46 +67,15 @@ class _$FieldInfo extends FieldInfo {
 class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
   _$FieldInfo _$v;
 
-  String _attribute;
-  String get attribute => _$this._attribute;
-  set attribute(String attribute) => _$this._attribute = attribute;
-
-  bool _isList;
-  bool get isList => _$this._isList;
-  set isList(bool isList) => _$this._isList = isList;
-
-  bool _isText;
-  bool get isText => _$this._isText;
-  set isText(bool isText) => _$this._isText = isText;
-
-  String _name;
-  String get name => _$this._name;
-  set name(String name) => _$this._name = name;
-
-  String _trueIfEquals;
-  String get trueIfEquals => _$this._trueIfEquals;
-  set trueIfEquals(String trueIfEquals) => _$this._trueIfEquals = trueIfEquals;
-
-  String _trueIfMatches;
-  String get trueIfMatches => _$this._trueIfMatches;
-  set trueIfMatches(String trueIfMatches) =>
-      _$this._trueIfMatches = trueIfMatches;
-
-  DartType _type;
-  DartType get type => _$this._type;
-  set type(DartType type) => _$this._type = type;
+  FieldElement _element;
+  FieldElement get element => _$this._element;
+  set element(FieldElement element) => _$this._element = element;
 
   FieldInfoBuilder();
 
   FieldInfoBuilder get _$this {
     if (_$v != null) {
-      _attribute = _$v.attribute;
-      _isList = _$v.isList;
-      _isText = _$v.isText;
-      _name = _$v.name;
-      _trueIfEquals = _$v.trueIfEquals;
-      _trueIfMatches = _$v.trueIfMatches;
-      _type = _$v.type;
+      _element = _$v.element;
       _$v = null;
     }
     return this;
@@ -163,15 +96,7 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
 
   @override
   _$FieldInfo build() {
-    final _$result = _$v ??
-        new _$FieldInfo._(
-            attribute: attribute,
-            isList: isList,
-            isText: isText,
-            name: name,
-            trueIfEquals: trueIfEquals,
-            trueIfMatches: trueIfMatches,
-            type: type);
+    final _$result = _$v ?? new _$FieldInfo._(element: element);
     replace(_$result);
     return _$result;
   }

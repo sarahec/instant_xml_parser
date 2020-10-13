@@ -8,42 +8,44 @@ part 'field_info.g.dart';
 
 abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   factory FieldInfo([void Function(FieldInfoBuilder) updates]) = _$FieldInfo;
-  factory FieldInfo.fromElement(FieldElement element) => FieldInfo((b) => b
-    ..name = element.getDisplayString(withNullability: false)
-    ..type = element.type.isDartCoreList
-        ? (element.type as ParameterizedType).typeArguments.first
-        : element.type
-    ..isList = element.type.isDartCoreList
-    ..isText = AnnotationReader.hasAnnotation<text>(element)
-    ..attribute =
-        AnnotationReader.getAnnotation<alias>(element, 'name') ?? element.name
-    ..trueIfEquals = AnnotationReader.getAnnotation<ifEquals>(element, 'value')
-    ..trueIfMatches =
-        AnnotationReader.getAnnotation<ifMatches>(element, 'regex'));
+  factory FieldInfo.fromElement(FieldElement element) =>
+      FieldInfo((b) => b.element = element);
 
   FieldInfo._();
 
-  @nullable
-  String get attribute;
+  FieldElement get element;
 
-  bool get isList;
+  @memoized
+  String get attributeName =>
+      AnnotationReader.getAnnotation<alias>(element, 'name') ?? element.name;
+
+  bool get isAttributeField => isPrimitive && !isXmlTextField;
+
+  bool get isChildField => !isPrimitive && !isXmlTextField;
+
+  bool get isList => element.type.isDartCoreList;
 
   bool get isPrimitive => (type.isDartCoreBool ||
       type.isDartCoreDouble ||
       type.isDartCoreInt ||
       type.isDartCoreString);
 
-  bool get isText;
+  @memoized
+  bool get isXmlTextField => AnnotationReader.hasAnnotation<text>(element);
 
-  String get name;
+  @memoized
+  String get name => element.getDisplayString(withNullability: false);
 
-  @nullable
-  String get trueIfEquals;
+  String get trueIfEquals =>
+      AnnotationReader.getAnnotation<ifEquals>(element, 'value');
 
-  @nullable
-  String get trueIfMatches;
+  String get trueIfMatches =>
+      AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
 
-  DartType get type;
+  @memoized
+  DartType get type => element.type.isDartCoreList
+      ? (element.type as ParameterizedType).typeArguments.first
+      : element.type;
 
   @memoized
   String get typeName => type.getDisplayString(withNullability: false);

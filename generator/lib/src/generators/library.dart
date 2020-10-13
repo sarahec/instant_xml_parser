@@ -8,12 +8,12 @@ import '../import_uris.dart';
 import 'method.dart';
 
 class LibraryGenerator {
-  final LibraryInfo info;
+  final LibraryInfo library;
 
   // final Iterable<MethodGenerator> methodEntries;
 
   LibraryGenerator.fromLibrary(LibraryReader library, sourceAsset)
-      : info = LibraryInfo.fromReader(library, sourceAsset);
+      : library = LibraryInfo.fromReader(library, sourceAsset);
 
   Class get classWrapper => Class((b) => b
     ..name = 'Parser' // TODO: Add name of source file, using Pascal case
@@ -42,18 +42,20 @@ class LibraryGenerator {
         .normalizeEvents()
         .flatten())'''));
 
-  Iterable<Method> get methods =>
-      [for (var info in info.symtable.methods) MethodGenerator(info).toMethod];
+  Iterable<Method> get methods => [
+        for (var method in library.symtable.methods)
+          MethodGenerator(method, library.symtable).toMethod
+      ];
 
   Iterable<Field> get constants =>
-      info.symtable.methods.map((c) => Field((b) => b
+      library.symtable.methods.map((c) => Field((b) => b
         ..name = c.classInfo.constantName
         ..assignment = Code("'${c.classInfo.tagName}'")
         ..static = true
         ..modifier = FieldModifier.constant));
 
   Library get toCode => Library((b) => b
-    ..directives.add(Directive.import(info.sourceAsset.pathSegments.last))
+    ..directives.add(Directive.import(library.sourceAsset.pathSegments.last))
     ..body.add(classWrapper));
 
   String get toSource => DartEmitter().visitLibrary(toCode).toString();

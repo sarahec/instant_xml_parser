@@ -8,9 +8,7 @@ import 'method_info.dart';
 class Symtable {
   LinkedHashMap<String, ClassInfo> _classes;
   Map<ClassInfo, Iterable<ClassInfo>> _subclasses;
-
   final Iterable<MethodInfo> methods;
-  // final Map<String, List<FieldInfo>> _fields;
 
   bool hasClass(name) => _classes.containsKey(name);
 

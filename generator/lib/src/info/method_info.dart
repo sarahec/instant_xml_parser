@@ -15,16 +15,22 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
       MethodInfo((b) => b
         ..classInfo = info.toBuilder()
         ..prefix = prefix
-        ..name = '$prefix$typeName'
         ..fields = fields
             .where((f) => f.getter.isGetter && !f.isSynthetic)
             .map((f) => FieldInfo.fromElement(f)));
   MethodInfo._();
-  ClassInfo get classInfo;
 
+  ClassInfo get classInfo;
   Iterable<FieldInfo> get fields;
 
-  String get name;
+  Iterable<FieldInfo> get attributeFields =>
+      fields.where((f) => f.isAttributeField);
+
+  Iterable<FieldInfo> get textFields => fields.where((f) => f.isXmlTextField);
+
+  Iterable<FieldInfo> get childFields => fields.where((f) => f.isChildField);
+
+  String get name => '$prefix$typeName';
 
   String get prefix;
 

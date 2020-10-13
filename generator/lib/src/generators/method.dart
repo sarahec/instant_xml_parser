@@ -1,62 +1,64 @@
 library parse_generator;
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:generator/src/info/symtable.dart';
 import 'package:meta/meta.dart';
-import 'package:recase/recase.dart';
 
-import 'fields.dart';
 import '../import_uris.dart';
 import '../info/method_info.dart';
+import 'fields.dart';
 
 class MethodGenerator {
-  final MethodInfo info;
+  final MethodInfo method;
+  final Symtable symtable;
 
-  MethodGenerator(this.info);
+  MethodGenerator(this.method, this.symtable);
 
   String get constructor {
-    final params =
-        constructorElement?.parameters?.map((p) => p.name)?.join(',') ?? '';
-    return '${info.typeName}($params)';
+    final params = method.classInfo.constructor.parameterNames?.join(',') ?? '';
+    return '${method.typeName}($params)';
   }
 
-  String blockOf(Section section) => info.fields
-      .where((f) => f.section == section)
-      .map((f) => f.toAction)
-      .join('\n');
+  String get attributesBlock => [
+        for (var f in method.fields.where((f) => f.isAttributeField))
+          AttributeFieldGenerator(f, method, symtable).toAction
+      ].join('\n');
+
+  String get textExtractionBlock => [
+        for (var f in method.fields.where((f) => f.isXmlTextField))
+          TextFieldGenerator(f, method, symtable).toAction
+      ].join('\n');
+
+  Iterable<TagFieldGenerator> get childFieldGenerators => [
+        for (var f in method.fields.where((f) => f.isChildField))
+          TagFieldGenerator(f, method, symtable)
+      ];
+
+  String get startBlock => '''
+      final  ${method.startVar} = 
+        await _pr.startOf(events, name: ${method.classInfo.constantName}, failOnMismatch: true);
+      if (${method.startVar} == null) return null;''';
+
+  String get endBlock => 'await _pr.endOf(events, ${method.startVar});';
 
   @visibleForTesting
   Block get methodBody {
-    final startVar = '_${ReCase(info.typeName).camelCase}';
-    final attributesBlock = blockOf(Section.attributesSection);
-    final textExtractionBlock = blockOf(Section.textSection);
+    var cgen = childFieldGenerators;
 
-    final children =
-        info.fields.where((f) => f.section == Section.childSection);
-    final childVars =
-        children.map((f) => (f as ChildGenerator).vardecl).join('\n');
-
-    final childBlock = children.isEmpty
+    final childBlock = cgen.isEmpty
         ? ''
         : '''
-      $childVars
-      var probe = await _pr.startOf(events, parent: $startVar);
+      ${[for (var c in cgen) c.vardecl]}
+      var probe = await _pr.startOf(events, parent: ${method.startVar});
       while (probe != null) {
         switch (probe.qualifiedName) {
-          ${blockOf(Section.childSection)}
+          ${[for (var c in cgen) c.toAction]}
         default:
-          await _pr.logUnknown(probe, ${info.classInfo.constantName});
+          await _pr.logUnknown(probe, ${method.classInfo.constantName});
       }
       await events.skip(1);
-      probe = await _pr.startOf(events, parent: $startVar);
+      probe = await _pr.startOf(events, parent: ${method.startVar});
     }''';
-
-    final startBlock = '''
-      final  $startVar = 
-        await _pr.startOf(events, name: ${info.classInfo.constantName}, failOnMismatch: true);
-      if ($startVar == null) return null;''';
-
-    final endBlock = 'await _pr.endOf(events, $startVar);';
 
     return Block.of([
       startBlock,
@@ -69,7 +71,7 @@ class MethodGenerator {
   }
 
   Method get toMethod => Method((b) => b
-    ..name = info.name
+    ..name = method.name
     ..body = methodBody
     ..modifier = MethodModifier.async
     ..requiredParameters.add(Parameter((b) => b
@@ -87,7 +89,7 @@ class MethodGenerator {
       ..isNullable = false
       ..url = AsyncCoreLibrary
       ..types.add(TypeReference((b) => b
-            ..symbol = info.typeName
+            ..symbol = method.typeName
             ..isNullable = false
           /* ..url = SourceLibrary */))));
 
