@@ -33,10 +33,12 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
     return (ctor == null) ? null : ConstructorInfo.fromElement(ctor);
   }
 
+  bool get isAbstract => element.isAbstract;
+
   bool get needsMethod => tagName != null;
 
   @nullable
-  Iterable<ClassInfo> get subclasses;
+  Iterable<DartType> get subclasses;
 
   @memoized
   String get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');

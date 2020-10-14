@@ -2,28 +2,35 @@ import 'dart:collection';
 
 import 'package:generator/src/info/class_info.dart';
 import 'package:source_gen/source_gen.dart';
+import 'package:analyzer/dart/element/type.dart';
 
 import 'method_info.dart';
 
 class Symtable {
   LinkedHashMap<String, ClassInfo> _classes;
-  Map<ClassInfo, Iterable<ClassInfo>> _subclasses;
+  Map<DartType, Iterable<ClassInfo>> _subclasses;
   final Iterable<MethodInfo> methods;
 
   bool hasClass(name) => _classes.containsKey(name);
 
   ClassInfo classNamed(name) => _classes[name];
 
-  MethodInfo methodReturning(String desiredType) =>
-      methods.firstWhere((m) => m.typeName == desiredType);
+  Iterable<MethodInfo> methodsReturning(DartType desiredType,
+      [allowSubtypes = true]) {
+    var result = methods.where((m) => m.type == desiredType);
+    if (result.isEmpty && allowSubtypes) {
+      result = subclassesOf(desiredType)?.map((c) => c.method);
+    }
+    return (result == null || result.isEmpty) ? null : result;
+  }
 
-  Iterable<ClassInfo> subclassesOf(ClassInfo info) {
-    if (!_subclasses.containsKey(info)) {
-      _subclasses[info] = _classes.values
-          .where((ClassInfo c) => c.type.superclass == info.type)
+  Iterable<ClassInfo> subclassesOf(DartType type) {
+    if (!_subclasses.containsKey(type)) {
+      _subclasses[type] = _classes.values
+          .where((ClassInfo c) => c.type.superclass == type)
           .toList();
     }
-    return _subclasses[info];
+    return _subclasses[type];
   }
 
   // BuiltList<MethodInfo> get

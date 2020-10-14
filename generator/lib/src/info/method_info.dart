@@ -1,6 +1,7 @@
 import 'package:built_value/built_value.dart';
 import 'package:recase/recase.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 
 import 'class_info.dart';
 import 'field_info.dart';
@@ -36,6 +37,8 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
 
   @memoized
   String get startVar => '_' + ReCase(typeName).camelCase;
+
+  DartType get type => classInfo.type;
 
   String get typeName => classInfo.typeName;
 }

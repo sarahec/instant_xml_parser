@@ -46,18 +46,26 @@ class TagFieldGenerator {
 
   TagFieldGenerator(this.field, this.method, this.symtable);
 
-  String get action {
-    final foreignMethod = symtable.methodReturning(field.typeName);
-    if (foreignMethod == null) {
-      _log.warning('Extraction method not found for ${field.typeName}');
-    }
-    return 'await ${foreignMethod.name}(events)'; // TODO need methodname for field.type, get from symbol table?
+  String action(MethodInfo foreignMethod) {
+    return 'await ${foreignMethod.name}(events)';
   }
 
-  String get toAction => '''
-    case ${method.classInfo.constantName}:
-      ${field.isList ? '${field.name}.add($action)' : ' ${field.name}= $action'};
-    break;''';
+  String get toAction {
+    final methods = symtable.methodsReturning(field.type);
+    if (methods == null) {
+      final warning = 'No method found for ${field.typeName}';
+      _log.warning(warning);
+      return '// $warning\n';
+    }
+
+    return [
+      for (var m in methods)
+        '''
+        case ${m.classInfo.constantName}:
+          ${field.isList ? '${field.name}.add(${action(m)})' : ' ${field.name}= ${action(m)}'};
+        break;'''
+    ].join('\n\n');
+  }
 
   String get vardecl => field.isList
       ? 'var ${field.name} = <${field.typeName}>[];'

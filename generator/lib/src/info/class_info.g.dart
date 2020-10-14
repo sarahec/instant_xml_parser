@@ -10,7 +10,7 @@ class _$ClassInfo extends ClassInfo {
   @override
   final ClassElement element;
   @override
-  final Iterable<ClassInfo> subclasses;
+  final Iterable<DartType> subclasses;
   @override
   final InterfaceType type;
   MethodInfo __method;
@@ -81,9 +81,9 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   ClassElement get element => _$this._element;
   set element(ClassElement element) => _$this._element = element;
 
-  Iterable<ClassInfo> _subclasses;
-  Iterable<ClassInfo> get subclasses => _$this._subclasses;
-  set subclasses(Iterable<ClassInfo> subclasses) =>
+  Iterable<DartType> _subclasses;
+  Iterable<DartType> get subclasses => _$this._subclasses;
+  set subclasses(Iterable<DartType> subclasses) =>
       _$this._subclasses = subclasses;
 
   InterfaceType _type;

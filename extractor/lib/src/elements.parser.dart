@@ -32,7 +32,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _body);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case BodyName:
+        case ParagraphName:
           paragraphs.add(await extractParagraph(events));
           break;
         default:
@@ -62,7 +62,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _document);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case DocumentName:
+        case BodyName:
           body = await extractBody(events);
           break;
         default:
@@ -84,7 +84,7 @@ class Parser {
     var probe = await _pr.startOf(events, parent: _paragraph);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case ParagraphName:
+        case TextRunName:
           textRuns.add(await extractTextRun(events));
           break;
         default:
@@ -102,12 +102,16 @@ class Parser {
         await _pr.startOf(events, name: TextRunName, failOnMismatch: true);
     if (_textRun == null) return null;
 
-    var segments = <TextSegment>[];
+    var segments = <Text>[];
     var probe = await _pr.startOf(events, parent: _textRun);
     while (probe != null) {
       switch (probe.qualifiedName) {
-        case TextRunName:
+        case TextSegmentName:
           segments.add(await extractTextSegment(events));
+          break;
+
+        case CRName:
+          segments.add(await extractCR(events));
           break;
         default:
           await _pr.logUnknown(probe, TextRunName);

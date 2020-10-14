@@ -34,7 +34,7 @@ class Paragraph {
 
 @tag('w:r')
 class TextRun {
-  final List<TextSegment> segments;
+  final List<Text> segments;
 
   TextRun(this.segments);
 
