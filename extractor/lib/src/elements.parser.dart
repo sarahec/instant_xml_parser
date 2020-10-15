@@ -13,9 +13,11 @@ import 'elements.dart';
 class Parser {
   static const BodyName = 'w:body';
 
-  static const CRName = 'w:cr';
+  static const BreakName = 'w:br';
 
   static const DocumentName = 'w:document';
+
+  static const LineBreakName = 'w:cr';
 
   static const ParagraphName = 'w:p';
 
@@ -45,12 +47,14 @@ class Parser {
     return Body(paragraphs);
   }
 
-  Future<CR> extractCR(StreamQueue<XmlEvent> events) async {
-    final _cr = await _pr.startOf(events, name: CRName, failOnMismatch: true);
-    if (_cr == null) return null;
+  Future<Break> extractBreak(StreamQueue<XmlEvent> events) async {
+    final _break =
+        await _pr.startOf(events, name: BreakName, failOnMismatch: true);
+    if (_break == null) return null;
+    final breakType = await _pr.namedAttribute<String>(_break, 'w:type');
 
-    await _pr.endOf(events, _cr);
-    return CR();
+    await _pr.endOf(events, _break);
+    return Break();
   }
 
   Future<Document> extractDocument(StreamQueue<XmlEvent> events) async {
@@ -73,6 +77,15 @@ class Parser {
     }
     await _pr.endOf(events, _document);
     return Document(body);
+  }
+
+  Future<LineBreak> extractLineBreak(StreamQueue<XmlEvent> events) async {
+    final _lineBreak =
+        await _pr.startOf(events, name: LineBreakName, failOnMismatch: true);
+    if (_lineBreak == null) return null;
+
+    await _pr.endOf(events, _lineBreak);
+    return LineBreak();
   }
 
   Future<Paragraph> extractParagraph(StreamQueue<XmlEvent> events) async {
@@ -102,7 +115,7 @@ class Parser {
         await _pr.startOf(events, name: TextRunName, failOnMismatch: true);
     if (_textRun == null) return null;
 
-    var segments = <Text>[];
+    var segments = <RunSegment>[];
     var probe = await _pr.startOf(events, parent: _textRun);
     while (probe != null) {
       switch (probe.qualifiedName) {
@@ -110,8 +123,12 @@ class Parser {
           segments.add(await extractTextSegment(events));
           break;
 
-        case CRName:
-          segments.add(await extractCR(events));
+        case BreakName:
+          segments.add(await extractBreak(events));
+          break;
+
+        case LineBreakName:
+          segments.add(await extractLineBreak(events));
           break;
         default:
           await _pr.logUnknown(probe, TextRunName);

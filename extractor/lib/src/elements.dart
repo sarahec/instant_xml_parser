@@ -34,7 +34,7 @@ class Paragraph {
 
 @tag('w:r')
 class TextRun {
-  final List<Text> segments;
+  final List<RunSegment> segments;
 
   TextRun(this.segments);
 
@@ -43,7 +43,7 @@ class TextRun {
   String toString() => segments?.join('') ?? 'null';
 }
 
-abstract class Text {
+abstract class RunSegment {
   String get value;
 
   /// Added for testing purposes, not required when generating a parser
@@ -52,7 +52,7 @@ abstract class Text {
 }
 
 @tag('w:t')
-class TextSegment extends Text {
+class TextSegment extends RunSegment {
   @alias('xml:space')
   final String space;
 
@@ -66,8 +66,16 @@ class TextSegment extends Text {
       space != null && space == 'preserve' ? rawValue : rawValue.trim();
 }
 
-@tag('w:cr')
-class CR extends Text {
+@tag('w:br')
+class Break extends RunSegment {
+  @alias('w:type')
+  String breakType;
   @override
   String get value => '\n';
+}
+
+@tag('w:cr')
+class LineBreak extends RunSegment {
+  @override
+  String get value => '-break-';
 }
