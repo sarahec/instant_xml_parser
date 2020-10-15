@@ -56,16 +56,5 @@ void main() {
       expect(
           txp.extractEmptyTag(events), throwsA(TypeMatcher<MissingStartTag>()));
     });
-
-    // test('unexpected children in strict mode ', () {
-    //   var events = _eventsFrom('<emptyTag><foo/></emptyTag>');
-    //   expect(extractEmptyTag(events), throwsA(TypeMatcher<UnexpectedChild>()));
-    // });
-
-    // test('missing required attribute', () async {
-    //   var events = _eventsFrom('<attributesTest />');
-    //   expect(txp.extractAttributesTag(events),
-    //       throwsA(TypeMatcher<MissingAttribute>()));
-    // });
   });
 }
