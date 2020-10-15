@@ -17,9 +17,9 @@ class AttributeFieldGenerator {
     var conversion = ''; // if none match, write nothing
     if (field.type.isDartCoreBool) {
       if (field.trueIfEquals != null) {
-        conversion = ", convert: Convert.ifEquals('${field.trueIfEquals}'}";
+        conversion = ", convert: Convert.ifEquals('${field.trueIfEquals}')}";
       } else if (field.trueIfMatches != null) {
-        conversion = ', convert: Convert.ifMatches(${field.trueIfMatches}';
+        conversion = ", convert: Convert.ifMatches('${field.trueIfMatches}')";
       }
     }
     return "final ${field.name} = await _pr.namedAttribute<${field.typeName}>(${method.startVar}, '${field.attributeName}' $conversion);";

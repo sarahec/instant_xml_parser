@@ -14,5 +14,5 @@ class Convert {
 
   static Converter<bool> ifEquals(value) => (s) => value == s;
 
-  static Converter<bool> ifMatches(regexp) => (s) => regexp.hasMatch(s);
+  static Converter<bool> ifMatches(regexp) => (s) => RegExp(regexp).hasMatch(s);
 }
