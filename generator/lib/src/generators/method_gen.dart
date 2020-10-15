@@ -2,6 +2,7 @@ library parse_generator;
 
 import 'package:code_builder/code_builder.dart';
 import 'package:generator/src/info/symtable.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 import '../import_uris.dart';
@@ -11,12 +12,17 @@ import 'field_gen.dart';
 class MethodGenerator {
   final MethodInfo method;
   final Symtable symtable;
+  final Logger _log = Logger('MethodGenerator');
 
   MethodGenerator(this.method, this.symtable);
 
   String get constructor {
-    final params =
-        method.classInfo.constructor?.parameterNames?.join(',') ?? '';
+    final foundCtor = method.classInfo.constructor;
+    final params = foundCtor?.parameterNames?.join(',') ?? '';
+    if (foundCtor == null) {
+      _log.warning(
+          'No constructor found for ${method.typeName}, generating empty constructor call');
+    }
     return '${method.typeName}($params)';
   }
 
