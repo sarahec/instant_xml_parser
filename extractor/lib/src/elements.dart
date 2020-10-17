@@ -82,16 +82,3 @@ class LineBreak extends RunSegment {
   @override
   String get value => '\n';
 }
-
-// Formatting
-
-/*
-@tag('w:b')
-class Bold {
-  @alias('w:val')
-  @ifMatches(r'(on|1)')
-  final bool enabled;
-
-  Bold(this.enabled);
-}
-*/

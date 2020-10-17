@@ -26,7 +26,7 @@ class AttributeFieldGenerator {
       }
     }
 
-    return "final ${field.name} = await _pr.namedAttribute<${field.typeName}>(${method.startVar}, '${field.attributeName}' $conversion)$defaultValue;";
+    return "final ${field.name} = await pr.namedAttribute<${field.typeName}>(${method.startVar}, '${field.attributeName}' $conversion)$defaultValue;";
   }
 }
 
@@ -40,7 +40,7 @@ class TextFieldGenerator {
   String get toAction {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
-    return 'final ${field.name} = await _pr.textOf(events, ${method.startVar})$defaultValue;';
+    return 'final ${field.name} = await pr.textOf(events, ${method.startVar})$defaultValue;';
   }
 }
 
@@ -54,7 +54,7 @@ class TagFieldGenerator {
   TagFieldGenerator(this.field, this.method, this.symtable);
 
   String action(MethodInfo foreignMethod) {
-    return 'await ${foreignMethod.name}(events)';
+    return 'await ${foreignMethod.name}(events, pr)';
   }
 
   String get toAction {

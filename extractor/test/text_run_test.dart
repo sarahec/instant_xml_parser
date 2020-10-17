@@ -1,4 +1,5 @@
 import 'package:docx_extractor/docx_extractor.dart';
+import 'package:runtime/runtime.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -36,42 +37,37 @@ void main() {
             </w:r>
         </w:p>''';
 
+  final pr = ParserRuntime();
+
   group('extract text run', () {
-    Parser parser;
-
-    setUp(() {
-      parser = Parser();
-    });
-
     test('single', () async {
-      final stream = parser.generateEventStream(Stream.value(helloXML));
-      final result = await parser.extractParagraph(stream);
+      final stream = generateEventStream(Stream.value(helloXML));
+      final result = await extractParagraph(stream, pr);
       expect(result.toString(), equals('Hello, World'));
     });
 
     test('two-part', () async {
-      final stream = parser.generateEventStream(Stream.value(splitHelloXML));
-      final result = await parser.extractParagraph(stream);
+      final stream = generateEventStream(Stream.value(splitHelloXML));
+      final result = await extractParagraph(stream, pr);
       expect(result.toString(), equals('Hello,World'));
     });
 
     test('trims whitespace', () async {
-      final stream =
-          parser.generateEventStream(Stream.value(helloXMLWithSpace));
-      final result = await parser.extractParagraph(stream);
+      final stream = generateEventStream(Stream.value(helloXMLWithSpace));
+      final result = await extractParagraph(stream, pr);
       expect(result.toString(), equals('Hello, World'));
     });
 
     test('preserves whitespace', () async {
       final stream =
-          parser.generateEventStream(Stream.value(helloXMLWithPreservedSpace));
-      final result = await parser.extractParagraph(stream);
+          generateEventStream(Stream.value(helloXMLWithPreservedSpace));
+      final result = await extractParagraph(stream, pr);
       expect(result.toString(), equals('Hello, World '));
     });
 
     test('sees return character', () async {
-      final stream = parser.generateEventStream(Stream.value(helloXMLWithCR));
-      final result = await parser.extractParagraph(stream);
+      final stream = generateEventStream(Stream.value(helloXMLWithCR));
+      final result = await extractParagraph(stream, pr);
       expect(result.toString(), equals('Hello, World\nHow are you?'));
     });
   });

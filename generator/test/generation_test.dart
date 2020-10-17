@@ -21,12 +21,6 @@ void main() {
         }''');
     });
 
-    test('has class wrapper',
-        () => expect(generated, contains('class Parser {')));
-
-    test('has runtime getter',
-        () => expect(generated, contains('ParserRuntime get _pr')));
-
     test('ignores untagged class',
         () => expect(generated, isNot(contains('extractNoTag'))));
 

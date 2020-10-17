@@ -5,7 +5,7 @@ import 'package:generator/src/info/symtable.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
-import '../import_uris.dart';
+import '../import_uris.dart' as uri;
 import '../info/method_info.dart';
 import 'field_gen.dart';
 
@@ -50,10 +50,10 @@ class MethodGenerator {
 
   String get startBlock => '''
       final  ${method.startVar} = 
-        await _pr.startOf(events, name: ${method.classInfo.constantName}, failOnMismatch: true);
+        await pr.startOf(events, name: ${method.classInfo.constantName}, failOnMismatch: true);
       if (${method.startVar} == null) return null;''';
 
-  String get endBlock => 'await _pr.endOf(events, ${method.startVar});';
+  String get endBlock => 'await pr.endOf(events, ${method.startVar});';
 
   @visibleForTesting
   Block get methodBody {
@@ -65,15 +65,15 @@ class MethodGenerator {
         ? ''
         : '''
       $vars
-      var probe = await _pr.startOf(events, parent: ${method.startVar});
+      var probe = await pr.startOf(events, parent: ${method.startVar});
       while (probe != null) {
         switch (probe.qualifiedName) {
           $cases
         default:
-          await _pr.logUnknown(probe, ${method.classInfo.constantName});
-          await _pr.consume(events, 1);
+          await pr.logUnknown(probe, ${method.classInfo.constantName});
+          await pr.consume(events, 1);
       }
-      probe = await _pr.startOf(events, parent: ${method.startVar});
+      probe = await pr.startOf(events, parent: ${method.startVar});
     }''';
 
     return Block.of([
@@ -90,20 +90,28 @@ class MethodGenerator {
     ..name = method.name
     ..body = methodBody
     ..modifier = MethodModifier.async
-    ..requiredParameters.add(Parameter((b) => b
-      ..name = 'events'
-      ..type = TypeReference((b) => b
-        ..symbol = 'StreamQueue'
-        ..url = AsyncLibrary
-        ..isNullable = false
-        ..types.add(TypeReference((b) => b
-          ..symbol = 'XmlEvent'
-          ..url = XMLEventsLibrary
-          ..isNullable = false)))))
+    ..requiredParameters.addAll([
+      Parameter((b) => b
+        ..name = 'events'
+        ..type = TypeReference((b) => b
+          ..symbol = 'StreamQueue'
+          ..url = uri.AsyncLibrary
+          ..isNullable = false
+          ..types.add(TypeReference((b) => b
+            ..symbol = 'XmlEvent'
+            ..url = uri.XMLEventsLibrary
+            ..isNullable = false)))),
+      Parameter((b) => b
+        ..name = 'pr'
+        ..type = TypeReference((b) => b
+          ..symbol = 'ParserRuntime'
+          ..url = uri.ParserRuntime
+          ..isNullable = false))
+    ])
     ..returns = TypeReference((b) => b // Future<SomeType>
       ..symbol = 'Future'
       ..isNullable = false
-      ..url = AsyncCoreLibrary
+      ..url = uri.AsyncCoreLibrary
       ..types.add(TypeReference((b) => b
             ..symbol = method.typeName
             ..isNullable = false

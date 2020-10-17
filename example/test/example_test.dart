@@ -11,19 +11,19 @@ void main() {
       .normalizeEvents()
       .flatten());
 
-  final txp = Parser();
+  final pr = ParserRuntime();
 
   group('extraction', () {
     test('EmptyTag', () async {
       final events = _eventsFrom('<empty/>');
-      final emptyTag = await txp.extractEmptyTag(events);
+      final emptyTag = await extractEmptyTag(events, pr);
       expect(emptyTag, isA<EmptyTag>());
     });
 
     test('core attributes', () async {
       final eventsFrom = _eventsFrom(
           '<attributesTest name="foo" count="999" temperature="22.1" active="1" />');
-      final attributesTag = await txp.extractAttributesTag(eventsFrom);
+      final attributesTag = await extractAttributesTag(eventsFrom, pr);
       expect(attributesTag, isA<AttributesTag>());
       expect(attributesTag.name, equals('foo'));
       expect(attributesTag.count, equals(999));
@@ -33,7 +33,7 @@ void main() {
 
     test('default attribute value', () async {
       final eventsFrom = _eventsFrom('<attributesTest  />');
-      final attributesTag = await txp.extractAttributesTag(eventsFrom);
+      final attributesTag = await extractAttributesTag(eventsFrom, pr);
       expect(attributesTag, isA<AttributesTag>());
       // missing attributes return null if no default specified in constructor
       expect(attributesTag.name, isNull);
@@ -44,7 +44,7 @@ void main() {
 
     test('NameTag', () async {
       final events = _eventsFrom('<identification name="bar"/>');
-      final nameTag = await txp.extractNameTag(events);
+      final nameTag = await extractNameTag(events, pr);
       expect(nameTag, isA<NameTag>());
       expect(nameTag.name, equals('bar'));
     });
@@ -52,7 +52,7 @@ void main() {
     test('Registration (nested)', () async {
       final events = _eventsFrom(
           '<registration age="36"><identification name="bar"/><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309"/></registration>');
-      final registration = await txp.extractRegistration(events);
+      final registration = await extractRegistration(events, pr);
       expect(registration, isA<Registration>());
       expect(registration.age, equals(36));
       expect(registration.person, isA<NameTag>());
@@ -65,7 +65,7 @@ void main() {
     test('missing start tag ', () {
       final events = _eventsFrom('<badTag />');
       expect(
-          txp.extractEmptyTag(events), throwsA(TypeMatcher<MissingStartTag>()));
+          extractEmptyTag(events, pr), throwsA(TypeMatcher<MissingStartTag>()));
     });
   });
 }
