@@ -12,6 +12,9 @@ class WrappedGenerator {
   final Builder builder = LibraryBuilder(ParseMethodGenerator(),
       generatedExtension: '.parser.dart');
 
+  String error;
+  List<String> warnings;
+
   Future<String> generate(String source) async {
     var srcs = <String, String>{
       'runtime|lib/annotations.dart': annotationsSource,
@@ -20,7 +23,6 @@ class WrappedGenerator {
 
     // Capture any error from generation; if there is one, return that instead of
     // the generated output.
-    String error;
 
     void captureError(LogRecord logRecord) {
       if (logRecord.error is InvalidGenerationSourceError) {
@@ -29,6 +31,8 @@ class WrappedGenerator {
       }
     }
 
+    error = null;
+    warnings = <String>[];
     var writer = InMemoryAssetWriter();
     await testBuilder(builder, srcs,
         rootPackage: pkgName, writer: writer, onLog: captureError);
