@@ -54,7 +54,7 @@ class Parser {
     final breakType = await _pr.namedAttribute<String>(_break, 'w:type');
 
     await _pr.endOf(events, _break);
-    return Break();
+    return Break(breakType);
   }
 
   Future<Document> extractDocument(StreamQueue<XmlEvent> events) async {

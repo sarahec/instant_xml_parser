@@ -80,7 +80,7 @@ class Break extends RunSegment {
 @tag('w:cr')
 class LineBreak extends RunSegment {
   @override
-  String get value => '-break-';
+  String get value => '\n';
 }
 
 // Formatting
