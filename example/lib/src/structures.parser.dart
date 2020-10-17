@@ -11,13 +11,13 @@ import 'package:runtime/runtime.dart';
 import 'structures.dart';
 
 class Parser {
-  static const EmptyTagName = 'empty';
-
   static const AttributesTagName = 'attributesTest';
 
-  static const NameTagName = 'identification';
-
   static const ContactInfoName = 'ContactInfo';
+
+  static const EmptyTagName = 'empty';
+
+  static const NameTagName = 'identification';
 
   static const RegistrationName = 'registration';
 
@@ -71,6 +71,7 @@ class Parser {
         await _pr.startOf(events, name: RegistrationName, failOnMismatch: true);
     if (_registration == null) return null;
     final age = await _pr.namedAttribute<int>(_registration, 'age');
+
     var person;
     var contact;
     var probe = await _pr.startOf(events, parent: _registration);
@@ -79,14 +80,13 @@ class Parser {
         case NameTagName:
           person = await extractNameTag(events);
           break;
-
         case ContactInfoName:
           contact = await extractContactInfo(events);
           break;
         default:
           await _pr.logUnknown(probe, RegistrationName);
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: _registration);
     }
     await _pr.endOf(events, _registration);
@@ -94,4 +94,7 @@ class Parser {
   }
 
   ParserRuntime get _pr => ParserRuntime();
+  StreamQueue<XmlEvent> generateEventStream(Stream<String> source) =>
+      StreamQueue(
+          source.toXmlEvents().withParentEvents().normalizeEvents().flatten());
 }
