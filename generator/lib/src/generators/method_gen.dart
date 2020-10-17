@@ -18,11 +18,18 @@ class MethodGenerator {
 
   String get constructor {
     final foundCtor = method.classInfo.constructor;
-    final params = foundCtor?.parameterNames?.join(',') ?? '';
     if (foundCtor == null) {
       _log.warning(
           'No constructor found for ${method.typeName}, generating empty constructor call');
+      return '${method.typeName}()';
     }
+
+    final paramList = [
+      for (var p in foundCtor.parameters)
+        p.isNamed ? '${p.name}: ${p.name}' : p.name
+    ];
+    final params = paramList.join(',') ?? '';
+
     return '${method.typeName}($params)';
   }
 

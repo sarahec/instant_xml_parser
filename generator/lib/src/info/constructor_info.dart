@@ -16,8 +16,7 @@ abstract class ConstructorInfo
 
   String get name => element.name;
 
-  // TODO: Map these names back to the field names, derive the matching
-  // variable names, and return  the constructor call
+  Iterable<ParameterElement> get parameters => element.parameters;
 
   Iterable<String> get parameterNames =>
       [for (var p in element.parameters) p.name];

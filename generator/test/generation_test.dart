@@ -63,7 +63,7 @@ void main() {
           final double score;
           final bool registered;
 
-          NameTag(this.name, this.registered);
+          NameTag(this.name, this.registered, {this.id=0});
         }''');
     });
 
@@ -83,7 +83,9 @@ void main() {
     // test('warns about unused fields',
     //     () => expect(warnings, contains('Unused fields: id, score')));
 
-    test('creates object with known fields',
-        () => expect(generated, contains('return NameTag(name, registered)')));
+    test(
+        'creates object with known fields',
+        () => expect(
+            generated, contains('return NameTag(name, registered, id: id)')));
   });
 }
