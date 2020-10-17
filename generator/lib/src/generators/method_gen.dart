@@ -58,8 +58,8 @@ class MethodGenerator {
           $cases
         default:
           await _pr.logUnknown(probe, ${method.classInfo.constantName});
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: ${method.startVar});
     }''';
 

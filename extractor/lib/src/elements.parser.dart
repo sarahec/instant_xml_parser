@@ -37,8 +37,8 @@ class Parser {
           break;
         default:
           await _pr.logUnknown(probe, BodyName);
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: _body);
     }
     await _pr.endOf(events, _body);
@@ -67,8 +67,8 @@ class Parser {
           break;
         default:
           await _pr.logUnknown(probe, DocumentName);
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: _document);
     }
     await _pr.endOf(events, _document);
@@ -89,8 +89,8 @@ class Parser {
           break;
         default:
           await _pr.logUnknown(probe, ParagraphName);
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: _paragraph);
     }
     await _pr.endOf(events, _paragraph);
@@ -115,8 +115,8 @@ class Parser {
           break;
         default:
           await _pr.logUnknown(probe, TextRunName);
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: _textRun);
     }
     await _pr.endOf(events, _textRun);

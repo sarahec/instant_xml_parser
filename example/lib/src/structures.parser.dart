@@ -85,8 +85,8 @@ class Parser {
           break;
         default:
           await _pr.logUnknown(probe, RegistrationName);
+          await _pr.consume(events, 1);
       }
-      await events.skip(1);
       probe = await _pr.startOf(events, parent: _registration);
     }
     await _pr.endOf(events, _registration);
