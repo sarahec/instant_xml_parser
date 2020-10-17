@@ -31,6 +31,17 @@ void main() {
       expect(attributesTag.active, isTrue);
     });
 
+    test('default attribute value', () async {
+      final eventsFrom = _eventsFrom('<attributesTest  />');
+      final attributesTag = await txp.extractAttributesTag(eventsFrom);
+      expect(attributesTag, isA<AttributesTag>());
+      // missing attributes return null if no default specified in constructor
+      expect(attributesTag.name, isNull);
+      expect(attributesTag.count, equals(0)); // default from original source
+      expect(attributesTag.temperature, isNull);
+      expect(attributesTag.active, isNull);
+    });
+
     test('NameTag', () async {
       final events = _eventsFrom('<identification name="bar"/>');
       final nameTag = await txp.extractNameTag(events);

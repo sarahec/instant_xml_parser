@@ -12,7 +12,6 @@ class AttributesTag {
   final double temperature;
   final bool active;
 
-  // TODO Add default value back in once ctor scanning works
   AttributesTag(this.name, this.temperature, this.active, [this.count = 0]);
 }
 

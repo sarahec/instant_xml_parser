@@ -27,7 +27,7 @@ class Parser {
         name: AttributesTagName, failOnMismatch: true);
     if (_attributesTag == null) return null;
     final name = await _pr.namedAttribute<String>(_attributesTag, 'name');
-    final count = await _pr.namedAttribute<int>(_attributesTag, 'count');
+    final count = await _pr.namedAttribute<int>(_attributesTag, 'count') ?? 0;
     final temperature =
         await _pr.namedAttribute<double>(_attributesTag, 'temperature');
     final active = await _pr.namedAttribute<bool>(_attributesTag, 'active');
