@@ -69,9 +69,12 @@ class TextSegment extends RunSegment {
 @tag('w:br')
 class Break extends RunSegment {
   @alias('w:type')
-  String breakType;
+  final String breakType;
+
   @override
   String get value => '\n';
+
+  Break(this.breakType);
 }
 
 @tag('w:cr')
@@ -79,3 +82,16 @@ class LineBreak extends RunSegment {
   @override
   String get value => '-break-';
 }
+
+// Formatting
+
+/*
+@tag('w:b')
+class Bold {
+  @alias('w:val')
+  @ifMatches(r'(on|1)')
+  final bool enabled;
+
+  Bold(this.enabled);
+}
+*/
