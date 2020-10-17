@@ -14,6 +14,9 @@ class AttributeFieldGenerator {
   AttributeFieldGenerator(this.field, this.method, this.symtable);
 
   String get toAction {
+    final defaultValue =
+        (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
+
     var conversion = ''; // if none match, write nothing
     if (field.type.isDartCoreBool) {
       if (field.trueIfEquals != null) {
@@ -22,7 +25,8 @@ class AttributeFieldGenerator {
         conversion = ", convert: Convert.ifMatches('${field.trueIfMatches}')";
       }
     }
-    return "final ${field.name} = await _pr.namedAttribute<${field.typeName}>(${method.startVar}, '${field.attributeName}' $conversion);";
+
+    return "final ${field.name} = await _pr.namedAttribute<${field.typeName}>(${method.startVar}, '${field.attributeName}' $conversion)$defaultValue;";
   }
 }
 
@@ -33,8 +37,11 @@ class TextFieldGenerator {
 
   TextFieldGenerator(this.field, this.method, this.symtable);
 
-  String get toAction =>
-      'final ${field.name} = await _pr.textOf(events, ${method.startVar});';
+  String get toAction {
+    final defaultValue =
+        (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
+    return 'final ${field.name} = await _pr.textOf(events, ${method.startVar})$defaultValue;';
+  }
 }
 
 class TagFieldGenerator {
@@ -67,7 +74,12 @@ class TagFieldGenerator {
     ].join('\n\n');
   }
 
-  String get vardecl => field.isList
-      ? 'var ${field.name} = <${field.typeName}>[];'
-      : 'var ${field.name};';
+  String get vardecl {
+    final varInit = (field.defaultValueCode != null)
+        ? ' = ${field.defaultValueCode}'
+        : field.isList
+            ? ' = <${field.typeName}>[]'
+            : '';
+    return 'var ${field.name}$varInit;';
+  }
 }

@@ -9,6 +9,8 @@ part of 'field_info.dart';
 class _$FieldInfo extends FieldInfo {
   @override
   final FieldElement element;
+  @override
+  final String defaultValueCode;
   String __attributeName;
   bool __isXmlTextField;
   String __name;
@@ -18,7 +20,7 @@ class _$FieldInfo extends FieldInfo {
   factory _$FieldInfo([void Function(FieldInfoBuilder) updates]) =>
       (new FieldInfoBuilder()..update(updates)).build();
 
-  _$FieldInfo._({this.element}) : super._() {
+  _$FieldInfo._({this.element, this.defaultValueCode}) : super._() {
     if (element == null) {
       throw new BuiltValueNullFieldError('FieldInfo', 'element');
     }
@@ -49,17 +51,21 @@ class _$FieldInfo extends FieldInfo {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is FieldInfo && element == other.element;
+    return other is FieldInfo &&
+        element == other.element &&
+        defaultValueCode == other.defaultValueCode;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(0, element.hashCode));
+    return $jf($jc($jc(0, element.hashCode), defaultValueCode.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('FieldInfo')..add('element', element))
+    return (newBuiltValueToStringHelper('FieldInfo')
+          ..add('element', element)
+          ..add('defaultValueCode', defaultValueCode))
         .toString();
   }
 }
@@ -71,11 +77,17 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
   FieldElement get element => _$this._element;
   set element(FieldElement element) => _$this._element = element;
 
+  String _defaultValueCode;
+  String get defaultValueCode => _$this._defaultValueCode;
+  set defaultValueCode(String defaultValueCode) =>
+      _$this._defaultValueCode = defaultValueCode;
+
   FieldInfoBuilder();
 
   FieldInfoBuilder get _$this {
     if (_$v != null) {
       _element = _$v.element;
+      _defaultValueCode = _$v.defaultValueCode;
       _$v = null;
     }
     return this;
@@ -96,7 +108,8 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
 
   @override
   _$FieldInfo build() {
-    final _$result = _$v ?? new _$FieldInfo._(element: element);
+    final _$result = _$v ??
+        new _$FieldInfo._(element: element, defaultValueCode: defaultValueCode);
     replace(_$result);
     return _$result;
   }

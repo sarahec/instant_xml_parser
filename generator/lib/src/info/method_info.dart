@@ -11,14 +11,20 @@ part 'method_info.g.dart';
 abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
   factory MethodInfo([void Function(MethodInfoBuilder) updates]) = _$MethodInfo;
   factory MethodInfo.fromClassInfo(
-          ClassInfo info, Iterable<FieldElement> fields,
-          [prefix = 'extract']) =>
-      MethodInfo((b) => b
-        ..classInfo = info.toBuilder()
-        ..prefix = prefix
-        ..fields = fields
-            .where((f) => f.getter.isGetter && !f.isSynthetic)
-            .map((f) => FieldInfo.fromElement(f)));
+      ClassInfo info, Iterable<FieldElement> fields,
+      [prefix = 'extract']) {
+    final ctorParams = info.constructor?.parameters ?? [];
+    return MethodInfo((b) => b
+      ..classInfo = info.toBuilder()
+      ..prefix = prefix
+      ..fields = fields.where((f) => f.getter.isGetter && !f.isSynthetic).map(
+          (f) => FieldInfo.fromElement(
+              f,
+              ctorParams
+                  .firstWhere((p) => p.name == f.name, orElse: () => null)
+                  ?.defaultValueCode))); // should be .first
+  }
+
   MethodInfo._();
 
   ClassInfo get classInfo;

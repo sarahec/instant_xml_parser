@@ -51,7 +51,7 @@ void main() {
         () => expect(generated, contains('return EmptyTag()')));
   });
 
-  group('attribute extraction', () {
+  group('attributes', () {
     setUp(() async {
       generated = await g.generate('''
         import 'package:runtime/annotations.dart';
@@ -74,7 +74,7 @@ void main() {
 
     test('reads attributes', () {
       expect(generated, contains(".namedAttribute<String>(_nameTag, 'name')"));
-      expect(generated, contains(".namedAttribute<int>(_nameTag, 'id')"));
+      expect(generated, contains(".namedAttribute<int>(_nameTag, 'id') ?? 0;"));
       expect(generated, contains(".namedAttribute<double>(_nameTag, 'score')"));
       expect(
           generated, contains(".namedAttribute<bool>(_nameTag, 'registered')"));
@@ -87,5 +87,60 @@ void main() {
         'creates object with known fields',
         () => expect(
             generated, contains('return NameTag(name, registered, id: id)')));
+  });
+
+  group('text', () {
+    setUp(() async {
+      generated = await g.generate('''
+        import 'package:runtime/annotations.dart';
+
+        @tag('text')
+        class NameTag {
+          @text()
+          final String name;
+
+          NameTag({this.name='sam'});
+        }''');
+    });
+
+    test(
+        'extracts text',
+        () => expect(generated,
+            contains('final name = await _pr.textOf(events, _nameTag)')));
+    test(
+        'applies default',
+        () =>
+            expect(generated, contains("textOf(events, _nameTag) ?? 'sam';")));
+  });
+
+  group('children', () {
+    setUp(() async {
+      generated = await g.generate('''
+        import 'package:runtime/annotations.dart';
+
+        @tag('contact')
+        class ContactInfo {
+          final String email;
+          final String phone;
+
+          ContactInfo([this.email, this.phone]);
+        }
+
+        @tag('registration')
+        class Registration {
+          final NameTag person;
+          final ContactInfo contact;
+          final int age;
+
+          Registration(this.person, {this.contact=ContactInfo(), this.age=99});
+        }''');
+    });
+
+    test(
+        'extracts child',
+        () =>
+            expect(generated, contains('contact = await extractContactInfo')));
+    test('applies default',
+        () => expect(generated, contains('var contact = ContactInfo();')));
   });
 }

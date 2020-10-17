@@ -8,12 +8,19 @@ part 'field_info.g.dart';
 
 abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   factory FieldInfo([void Function(FieldInfoBuilder) updates]) = _$FieldInfo;
-  factory FieldInfo.fromElement(FieldElement element) =>
-      FieldInfo((b) => b.element = element);
+  factory FieldInfo.fromElement(
+          FieldElement element, String defaultValueCode) =>
+      FieldInfo((b) => b
+        ..element = element
+        ..defaultValueCode = defaultValueCode);
 
   FieldInfo._();
 
   FieldElement get element;
+
+  /// If this has a default value, contains its source code, else null
+  @nullable
+  String get defaultValueCode;
 
   @memoized
   String get attributeName =>
