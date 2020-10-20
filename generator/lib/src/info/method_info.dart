@@ -13,22 +13,26 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
   factory MethodInfo.fromClassInfo(
       ClassInfo info, Iterable<FieldElement> fields,
       [prefix = 'extract']) {
-    final ctorParams = info.constructor?.parameters ?? [];
     return MethodInfo((b) => b
       ..classInfo = info.toBuilder()
-      ..prefix = prefix
-      ..fields = fields.where((f) => f.getter.isGetter && !f.isSynthetic).map(
-          (f) => FieldInfo.fromElement(
-              f,
-              ctorParams
-                  .firstWhere((p) => p.name == f.name, orElse: () => null)
-                  ?.defaultValueCode))); // should be .first
+      ..prefix = prefix);
   }
 
   MethodInfo._();
 
   ClassInfo get classInfo;
-  Iterable<FieldInfo> get fields;
+
+  @memoized
+  Iterable<FieldInfo> get fields {
+    final ctorParams = classInfo.constructor?.parameters ?? [];
+    return classInfo.element.fields
+        .where((f) => f.getter.isGetter && !f.isSynthetic)
+        .map((f) => FieldInfo.fromElement(
+            f,
+            ctorParams
+                .firstWhere((p) => p.name == f.name, orElse: () => null)
+                ?.defaultValueCode)); // should be .first
+  }
 
   Iterable<FieldInfo> get attributeFields =>
       fields.where((f) => f.isAttributeField);

@@ -10,25 +10,24 @@ class _$MethodInfo extends MethodInfo {
   @override
   final ClassInfo classInfo;
   @override
-  final Iterable<FieldInfo> fields;
-  @override
   final String prefix;
+  Iterable<FieldInfo> __fields;
   String __startVar;
 
   factory _$MethodInfo([void Function(MethodInfoBuilder) updates]) =>
       (new MethodInfoBuilder()..update(updates)).build();
 
-  _$MethodInfo._({this.classInfo, this.fields, this.prefix}) : super._() {
+  _$MethodInfo._({this.classInfo, this.prefix}) : super._() {
     if (classInfo == null) {
       throw new BuiltValueNullFieldError('MethodInfo', 'classInfo');
-    }
-    if (fields == null) {
-      throw new BuiltValueNullFieldError('MethodInfo', 'fields');
     }
     if (prefix == null) {
       throw new BuiltValueNullFieldError('MethodInfo', 'prefix');
     }
   }
+
+  @override
+  Iterable<FieldInfo> get fields => __fields ??= super.fields;
 
   @override
   String get startVar => __startVar ??= super.startVar;
@@ -45,21 +44,18 @@ class _$MethodInfo extends MethodInfo {
     if (identical(other, this)) return true;
     return other is MethodInfo &&
         classInfo == other.classInfo &&
-        fields == other.fields &&
         prefix == other.prefix;
   }
 
   @override
   int get hashCode {
-    return $jf(
-        $jc($jc($jc(0, classInfo.hashCode), fields.hashCode), prefix.hashCode));
+    return $jf($jc($jc(0, classInfo.hashCode), prefix.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('MethodInfo')
           ..add('classInfo', classInfo)
-          ..add('fields', fields)
           ..add('prefix', prefix))
         .toString();
   }
@@ -73,10 +69,6 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
       _$this._classInfo ??= new ClassInfoBuilder();
   set classInfo(ClassInfoBuilder classInfo) => _$this._classInfo = classInfo;
 
-  Iterable<FieldInfo> _fields;
-  Iterable<FieldInfo> get fields => _$this._fields;
-  set fields(Iterable<FieldInfo> fields) => _$this._fields = fields;
-
   String _prefix;
   String get prefix => _$this._prefix;
   set prefix(String prefix) => _$this._prefix = prefix;
@@ -86,7 +78,6 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
   MethodInfoBuilder get _$this {
     if (_$v != null) {
       _classInfo = _$v.classInfo?.toBuilder();
-      _fields = _$v.fields;
       _prefix = _$v.prefix;
       _$v = null;
     }
@@ -111,8 +102,7 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
     _$MethodInfo _$result;
     try {
       _$result = _$v ??
-          new _$MethodInfo._(
-              classInfo: classInfo.build(), fields: fields, prefix: prefix);
+          new _$MethodInfo._(classInfo: classInfo.build(), prefix: prefix);
     } catch (_) {
       String _$failedField;
       try {
