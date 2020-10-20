@@ -19,6 +19,7 @@ class ParseMethodGenerator extends Generator {
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final emitter = DartEmitter(Allocator());
+    // skip files that lack the required annotation
     if (library.annotatedWithExact(TypeChecker.fromRuntime(tag)).isEmpty) {
       return '';
     }
