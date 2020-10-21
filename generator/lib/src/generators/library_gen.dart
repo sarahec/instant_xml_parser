@@ -1,32 +1,31 @@
 library parse_generator;
 
+import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:generator/src/info/library_info.dart';
-import 'package:source_gen/source_gen.dart';
+import 'package:generator/src/info/symtable.dart';
 
 import 'method_gen.dart';
 
 class LibraryGenerator {
-  final LibraryInfo library;
+  final AssetId sourceAsset;
+  final Symtable symtable;
 
   // final Iterable<MethodGenerator> methodEntries;
 
-  LibraryGenerator.fromLibrary(LibraryReader library, sourceAsset)
-      : library = LibraryInfo.fromReader(library, sourceAsset);
+  LibraryGenerator(this.symtable, this.sourceAsset);
 
   Iterable<Method> get methods => [
-        for (var method in library.symtable.methods)
-          MethodGenerator(method, library.symtable).toMethod
+        for (var method in symtable.methods)
+          MethodGenerator(method, symtable).toMethod
       ];
 
-  Iterable<Field> get constants =>
-      library.symtable.methods.map((c) => Field((b) => b
-        ..name = c.classInfo.constantName
-        ..assignment = Code("'${c.classInfo.tagName}'")
-        ..modifier = FieldModifier.constant));
+  Iterable<Field> get constants => symtable.methods.map((c) => Field((b) => b
+    ..name = c.classInfo.constantName
+    ..assignment = Code("'${c.classInfo.tagName}'")
+    ..modifier = FieldModifier.constant));
 
   Library get toCode => Library((b) => b
-    ..directives.add(Directive.import(library.sourceAsset.pathSegments.last))
+    ..directives.add(Directive.import(sourceAsset.pathSegments.last))
     ..body.addAll(constants)
     ..body.addAll(methods));
 

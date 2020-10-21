@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:generator/src/info/symtable.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -14,16 +15,18 @@ const asyncPackage = 'dart:async';
 
 class ParseMethodGenerator extends Generator {
   final _log = Logger('ParseMethodGenerator');
+  final _tagChecker = TypeChecker.fromRuntime(tag);
 
   /// Build an overall symbol table before generating the individual items
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
-    final emitter = DartEmitter(Allocator());
     // skip files that lack the required annotation
-    if (library.annotatedWithExact(TypeChecker.fromRuntime(tag)).isEmpty) {
-      return '';
+    if (library.annotatedWithExact(_tagChecker).isEmpty) {
+      return null;
     }
-    final gen = LibraryGenerator.fromLibrary(library, buildStep.inputId);
+    final symtable = Symtable.fromLibrary(library);
+    final gen = LibraryGenerator(symtable, buildStep.inputId);
+    final emitter = DartEmitter(Allocator());
     var source = '${gen.toCode.accept(emitter)}';
     _log.finest(source);
     return DartFormatter().format(source);
