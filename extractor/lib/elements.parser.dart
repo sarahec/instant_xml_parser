@@ -11,12 +11,15 @@ import 'package:runtime/runtime.dart';
 import 'elements.dart';
 
 const BodyName = 'w:body';
+const BoldName = 'w:b';
 const BreakName = 'w:br';
 const DocumentName = 'w:document';
+const ItalicName = 'w:i';
 const LineBreakName = 'w:cr';
 const ParagraphName = 'w:p';
 const TextRunName = 'w:r';
 const TextSegmentName = 'w:t';
+const UnderlineName = 'w:u';
 Future<Body> extractBody(StreamQueue<XmlEvent> events, ParserRuntime pr) async {
   final _body = await pr.startOf(events, name: BodyName, failOnMismatch: true);
   if (_body == null) return null;
@@ -36,6 +39,16 @@ Future<Body> extractBody(StreamQueue<XmlEvent> events, ParserRuntime pr) async {
   }
   await pr.endOf(events, _body);
   return Body(paragraphs);
+}
+
+Future<Bold> extractBold(StreamQueue<XmlEvent> events, ParserRuntime pr) async {
+  final _bold = await pr.startOf(events, name: BoldName, failOnMismatch: true);
+  if (_bold == null) return null;
+  final enabled = await pr.namedAttribute<bool>(_bold, 'w:val',
+      convert: Convert.ifMatches('(on|1)'));
+
+  await pr.endOf(events, _bold);
+  return Bold(enabled);
 }
 
 Future<Break> extractBreak(
@@ -70,6 +83,18 @@ Future<Document> extractDocument(
   }
   await pr.endOf(events, _document);
   return Document(body);
+}
+
+Future<Italic> extractItalic(
+    StreamQueue<XmlEvent> events, ParserRuntime pr) async {
+  final _italic =
+      await pr.startOf(events, name: ItalicName, failOnMismatch: true);
+  if (_italic == null) return null;
+  final enabled = await pr.namedAttribute<bool>(_italic, 'w:val',
+      convert: Convert.ifMatches('(on|1)'));
+
+  await pr.endOf(events, _italic);
+  return Italic(enabled);
 }
 
 Future<LineBreak> extractLineBreak(
@@ -146,4 +171,16 @@ Future<TextSegment> extractTextSegment(
 
   await pr.endOf(events, _textSegment);
   return TextSegment(space, rawValue);
+}
+
+Future<Underline> extractUnderline(
+    StreamQueue<XmlEvent> events, ParserRuntime pr) async {
+  final _underline =
+      await pr.startOf(events, name: UnderlineName, failOnMismatch: true);
+  if (_underline == null) return null;
+  final enabled = await pr.namedAttribute<bool>(_underline, 'w:val',
+      convert: Convert.ifMatches('(on|1)'));
+
+  await pr.endOf(events, _underline);
+  return Underline(enabled);
 }
