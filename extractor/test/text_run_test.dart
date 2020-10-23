@@ -1,4 +1,4 @@
-import 'package:docx_extractor/docx_extractor.dart';
+import 'package:docx_extractor/elements.parser.dart';
 import 'package:runtime/runtime.dart';
 import 'package:test/test.dart';
 
