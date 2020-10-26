@@ -100,7 +100,7 @@ void main() {
     test(
         'extracts text',
         () => expect(generated,
-            contains('final name = await _pr.textOf(events, _nameTag)')));
+            contains('final name = await pr.textOf(events, _nameTag)')));
     test(
         'applies default',
         () =>
