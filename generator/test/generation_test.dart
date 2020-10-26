@@ -101,10 +101,14 @@ void main() {
         'extracts text',
         () => expect(generated,
             contains('final name = await pr.textOf(events, _nameTag)')));
+
     test(
         'applies default',
         () =>
             expect(generated, contains("textOf(events, _nameTag) ?? 'sam';")));
+
+    test('uses named parameter in constructor',
+        () => expect(generated, contains('return NameTag(name: name);')));
   });
 
   group('children', () {
