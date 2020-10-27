@@ -111,6 +111,32 @@ void main() {
         () => expect(generated, contains('return NameTag(name: name);')));
   });
 
+  group('subclassing', () {
+    setUp(() async {
+      generated = await g.generate('''
+        import 'package:runtime/annotations.dart';
+
+        abstract class Foo {
+          final String name;
+
+          Foo(this.name);
+        }
+
+        @tag('bar')
+        class Bar extends Foo {
+          
+          Bar(name) : Foo(name);
+        }''');
+    });
+
+    test(
+        'collects superclass field',
+        () => expect(
+            generated,
+            contains(
+                "final name = await pr.namedAttribute<String>(_bar, 'name');")));
+  });
+
   group('children', () {
     setUp(() async {
       generated = await g.generate('''

@@ -15,6 +15,9 @@ class Symtable {
 
   ClassInfo classNamed(name) => _classes[name];
 
+  ClassInfo classForType(DartType t) =>
+      _classes.values.firstWhere((v) => v.type == t, orElse: () => null);
+
   Iterable<MethodInfo> methodsReturning(DartType desiredType,
       [allowSubtypes = true]) {
     var result = methods.where((m) => m.type == desiredType);

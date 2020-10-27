@@ -11,7 +11,6 @@ class _$MethodInfo extends MethodInfo {
   final ClassInfo classInfo;
   @override
   final String prefix;
-  Iterable<FieldInfo> __fields;
   String __startVar;
 
   factory _$MethodInfo([void Function(MethodInfoBuilder) updates]) =>
@@ -25,9 +24,6 @@ class _$MethodInfo extends MethodInfo {
       throw new BuiltValueNullFieldError('MethodInfo', 'prefix');
     }
   }
-
-  @override
-  Iterable<FieldInfo> get fields => __fields ??= super.fields;
 
   @override
   String get startVar => __startVar ??= super.startVar;

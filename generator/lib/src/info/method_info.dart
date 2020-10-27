@@ -1,4 +1,5 @@
 import 'package:built_value/built_value.dart';
+import 'package:generator/src/info/symtable.dart';
 import 'package:recase/recase.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -23,23 +24,23 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
   ClassInfo get classInfo;
 
   @memoized
-  Iterable<FieldInfo> get fields {
+  Iterable<FieldInfo> fields(Symtable symtable) {
+    final superclasses = [
+      for (var st in classInfo.supertypes) symtable.classForType(st)
+    ];
+    final _fields = [for (var c in superclasses) c?.element?.fields ?? []]
+        .expand((e) => e)
+        .toList();
+    _fields.addAll(classInfo.element.fields);
+
     final ctorParams = classInfo.constructor?.parameters ?? [];
-    return classInfo.element.fields
-        .where((f) => f.getter.isGetter && !f.isSynthetic)
-        .map((f) => FieldInfo.fromElement(
+    return _fields.where((f) => f.getter.isGetter && !f.isSynthetic).map((f) =>
+        FieldInfo.fromElement(
             f,
             ctorParams
                 .firstWhere((p) => p.name == f.name, orElse: () => null)
                 ?.defaultValueCode)); // should be .first
   }
-
-  Iterable<FieldInfo> get attributeFields =>
-      fields.where((f) => f.isAttributeField);
-
-  Iterable<FieldInfo> get textFields => fields.where((f) => f.isXmlTextField);
-
-  Iterable<FieldInfo> get childFields => fields.where((f) => f.isChildField);
 
   String get name => '$prefix$typeName';
 

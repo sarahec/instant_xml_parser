@@ -1,6 +1,7 @@
 library parse_generator;
 
 import 'package:code_builder/code_builder.dart';
+import 'package:generator/src/info/field_info.dart';
 import 'package:generator/src/info/symtable.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
@@ -12,9 +13,11 @@ import 'field_gen.dart';
 class MethodGenerator {
   final MethodInfo method;
   final Symtable symtable;
+  final Iterable<FieldInfo> fields;
   final Logger _log = Logger('MethodGenerator');
 
-  MethodGenerator(this.method, this.symtable);
+  MethodGenerator(this.method, this.symtable)
+      : fields = method.fields(symtable);
 
   String get constructor {
     final foundCtor = method.classInfo.constructor;
@@ -34,17 +37,17 @@ class MethodGenerator {
   }
 
   String get attributesBlock => [
-        for (var f in method.fields.where((f) => f.isAttributeField))
+        for (var f in fields.where((f) => f.isAttributeField))
           AttributeFieldGenerator(f, method, symtable).toAction
       ].join('\n');
 
   String get textExtractionBlock => [
-        for (var f in method.fields.where((f) => f.isXmlTextField))
+        for (var f in fields.where((f) => f.isXmlTextField))
           TextFieldGenerator(f, method, symtable).toAction
       ].join('\n');
 
   Iterable<TagFieldGenerator> get childFieldGenerators => [
-        for (var f in method.fields.where((f) => f.isChildField))
+        for (var f in fields.where((f) => f.isChildField))
           TagFieldGenerator(f, method, symtable)
       ];
 

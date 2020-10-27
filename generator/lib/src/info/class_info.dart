@@ -40,6 +40,8 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
   @nullable
   Iterable<DartType> get subclasses;
 
+  Iterable<DartType> get supertypes => element.allSupertypes;
+
   @memoized
   String get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');
 
