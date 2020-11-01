@@ -53,5 +53,11 @@ class tag {
 class text {
   const text();
 }
+
+class convert {
+  final String source;
+
+  const convert(this.source);
+}
 ''';
 }

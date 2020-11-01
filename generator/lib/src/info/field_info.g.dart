@@ -12,6 +12,8 @@ class _$FieldInfo extends FieldInfo {
   @override
   final String defaultValueCode;
   String __attributeName;
+  String __conversion;
+  bool __hasConversion;
   bool __isXmlTextField;
   String __name;
   DartType __type;
@@ -28,6 +30,12 @@ class _$FieldInfo extends FieldInfo {
 
   @override
   String get attributeName => __attributeName ??= super.attributeName;
+
+  @override
+  String get conversion => __conversion ??= super.conversion;
+
+  @override
+  bool get hasConversion => __hasConversion ??= super.hasConversion;
 
   @override
   bool get isXmlTextField => __isXmlTextField ??= super.isXmlTextField;

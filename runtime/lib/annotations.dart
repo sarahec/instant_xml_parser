@@ -7,6 +7,12 @@ class alias {
   const alias(this.name);
 }
 
+class convert {
+  final String source;
+
+  const convert(this.source);
+}
+
 class ifEquals {
   final String value;
 

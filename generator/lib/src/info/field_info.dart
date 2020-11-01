@@ -26,9 +26,17 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   String get attributeName =>
       AnnotationReader.getAnnotation<alias>(element, 'name') ?? element.name;
 
-  bool get isAttributeField => isPrimitive && !isXmlTextField;
+  @memoized
+  String get conversion =>
+      AnnotationReader.getAnnotation<convert>(element, 'source');
 
-  bool get isChildField => !isPrimitive && !isXmlTextField;
+  @memoized
+  bool get hasConversion => AnnotationReader.hasAnnotation<convert>(element);
+
+  bool get isAttributeField =>
+      (hasConversion || isPrimitive) && !isXmlTextField;
+
+  bool get isChildField => !isAttributeField && !isXmlTextField;
 
   bool get isList => element.type.isDartCoreList;
 

@@ -18,7 +18,9 @@ class AttributeFieldGenerator {
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
 
     var conversion = ''; // if none match, write nothing
-    if (field.type.isDartCoreBool) {
+    if (field.hasConversion) {
+      conversion = ', convert: ${field.conversion}';
+    } else if (field.type.isDartCoreBool) {
       if (field.trueIfEquals != null) {
         conversion = ", convert: Convert.ifEquals('${field.trueIfEquals}')}";
       } else if (field.trueIfMatches != null) {
@@ -40,7 +42,10 @@ class TextFieldGenerator {
   String get toAction {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
-    return 'final ${field.name} = await pr.textOf(events, ${method.startVar})$defaultValue;';
+    final textOf = 'await pr.textOf(events, ${method.startVar})$defaultValue';
+    final extraction =
+        field.hasConversion ? '${field.conversion}($textOf)' : textOf;
+    return 'final ${field.name} = $extraction;';
   }
 }
 
@@ -53,9 +58,8 @@ class TagFieldGenerator {
 
   TagFieldGenerator(this.field, this.method, this.symtable);
 
-  String action(MethodInfo foreignMethod) {
-    return 'await ${foreignMethod.name}(events, pr)';
-  }
+  String action(MethodInfo foreignMethod) =>
+      'await ${foreignMethod.name}(events, pr)';
 
   String get toAction {
     final methods = symtable.methodsReturning(field.type);

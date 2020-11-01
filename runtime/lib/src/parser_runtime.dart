@@ -217,8 +217,7 @@ class ParserRuntime {
 
   /// Returns a converter from String to the specified built-in type.
   ///
-  /// May be overriden in a subclass to add new converter types,
-  /// but TODO: use the ```@converter``` tag for a better approach.
+  /// Use the ```@converter``` tag for non-primitive types instead
   Converter autoConverter(Type T) => (T == bool)
       ? Convert.toBool
       : (T == int)

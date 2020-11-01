@@ -111,6 +111,45 @@ void main() {
         () => expect(generated, contains('return NameTag(name: name);')));
   });
 
+  group('conversion', () {
+    setUp(() async {
+      generated = await g.generate('''
+        import 'package:runtime/annotations.dart';
+
+        @tag('loc')
+        class Location {
+          final String foo; 
+
+          @text()
+          @convert('Uri.parse')
+          final Uri loc;
+
+          @convert('Uri.parse')
+          final Uri altLoc;
+
+          NameTag(this.loc, this.altLoc);
+        }''');
+    });
+
+    test(
+        'foo',
+        () => expect(
+            generated, contains(".namedAttribute<String>(_location, 'foo')")));
+    test(
+        'attribute',
+        () => expect(
+            generated,
+            contains(
+                ".namedAttribute<Uri>(_location, 'altLoc', convert: Uri.parse)")));
+
+    test(
+        '@text',
+        () => expect(
+            generated,
+            contains(
+                'final loc = Uri.parse(await pr.textOf(events, _location))')));
+  });
+
   group('subclassing', () {
     setUp(() async {
       generated = await g.generate('''
