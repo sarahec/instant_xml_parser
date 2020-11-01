@@ -2,22 +2,34 @@ library parse_generator;
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:generator/src/info/library_info.dart';
 import 'package:generator/src/info/symtable.dart';
 
 import 'method_gen.dart';
 
 class LibraryGenerator {
+  final LibraryInfo info;
   final AssetId sourceAsset;
   final Symtable symtable;
 
-  // final Iterable<MethodGenerator> methodEntries;
+  var _importUris;
 
-  LibraryGenerator(this.symtable, this.sourceAsset);
+  LibraryGenerator(this.info, this.sourceAsset) : symtable = info.symtable;
 
   Iterable<Method> get methods => [
         for (var method in symtable.methods)
           MethodGenerator(method, symtable).toMethod
       ];
+
+  Iterable<String> get importUris {
+    if (_importUris == null) {
+      _importUris = <String>[];
+      _importUris.add(sourceAsset.pathSegments.last);
+      _importUris.addAll(info.importUris.where((s) =>
+          !(s.contains('runtime/annotations.dart') || s.contains('/src/'))));
+    }
+    return _importUris;
+  }
 
   Iterable<Field> get constants => symtable.methods.map((c) => Field((b) => b
     ..name = c.classInfo.constantName
@@ -25,9 +37,7 @@ class LibraryGenerator {
     ..modifier = FieldModifier.constant));
 
   Library get toCode => Library((b) => b
-    ..directives.add(Directive.import(sourceAsset.pathSegments.last))
+    ..directives.addAll(importUris.map((i) => Directive.import(i)))
     ..body.addAll(constants)
     ..body.addAll(methods));
-
-  // String get toSource => DartEmitter().visitLibrary(toCode).toString();
 }

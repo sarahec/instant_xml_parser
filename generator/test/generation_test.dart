@@ -206,4 +206,25 @@ void main() {
     test('applies default',
         () => expect(generated, contains('var contact = ContactInfo();')));
   });
+
+  group('imports', () {
+    setUp(() async {
+      generated = await g.generate('''
+        import 'package:runtime/annotations.dart';
+        import 'other.dart';
+
+        @tag('contact')
+        class ContactInfo {
+          final String email;
+          final String phone;
+
+          ContactInfo([this.email, this.phone]);
+        }
+
+        }''');
+    });
+
+    test('passes to generated code',
+        () => expect(generated, contains("import 'other.dart';")));
+  });
 }
