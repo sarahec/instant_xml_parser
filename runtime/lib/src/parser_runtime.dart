@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 import 'package:xml/xml_events.dart';
 
 import 'converters.dart';
@@ -110,8 +111,7 @@ class ParserRuntime {
     final attribute = element.attributes.firstWhere(
         (a) =>
             (a.name == attributeName) ||
-            (_stripNamespace(a.name) ==
-                attributeName), // TODO: Disallow namespace stripping in strict mode
+            (_stripNamespace(a.name) == attributeName),
         orElse: () => null);
     final value = attribute?.value;
 
@@ -136,7 +136,7 @@ class ParserRuntime {
   /// leaves the event queue untouched.
   ///
   /// [events] incoming event queue
-  /// [parent] (optional) if supplied, returns only children of this node
+  /// [ancestor] (optional) if supplied, returns only descendants of this node
   /// [name] (optional) if supplied, returns only nodes with this qualified name
   /// [failOnMismatch] (optional) if true, throw ```Future.error``` if the next
   /// start tag found doesn't match expectations.
@@ -145,7 +145,7 @@ class ParserRuntime {
   /// ```final _startTag = _pr.startOf(events, name: SomeTagName)```
   Future<XmlStartElementEvent> startOf(StreamQueue<XmlEvent> events,
       {String name,
-      XmlStartElementEvent parent,
+      XmlStartElementEvent ancestor,
       failOnMismatch = false}) async {
     // Scan for a start tag
     var transaction = events.startTransaction();
@@ -154,15 +154,20 @@ class ParserRuntime {
     while (await queue.hasNext) {
       var probe = await queue.peek;
       if (probe is XmlStartElementEvent) {
-        if ((parent == null || probe.parentEvent == parent) &&
+        if ((ancestor == null || descendsFrom(probe, ancestor)) &&
             (name == null || probe.qualifiedName == name)) {
           transaction.commit(queue);
           return probe;
-        }
-        if (failOnMismatch) {
-          // found, no match, reject
+        } else if (ancestor != null) {
+          // no descendants found
+          _log.finest('Found <${probe.qualifiedName}> outside parent');
           transaction.reject();
-          _log.fine('Missing start tag <$name>, found <${probe.name}>');
+          return failOnMismatch
+              ? Future.error(MissingStartTag(name, foundTag: probe.name))
+              : null;
+        } else if (failOnMismatch) {
+          _log.finest('Found <${probe.qualifiedName}> instead of <$name>');
+          transaction.reject();
           return Future.error(MissingStartTag(name, foundTag: probe.name));
         }
       }
@@ -171,6 +176,18 @@ class ParserRuntime {
     _log.finest('Reached end of stream looking for start tag');
     transaction.reject();
     return null;
+  }
+
+  @visibleForTesting
+  bool descendsFrom(element, ancestor) =>
+      ancestor == null ? false : ancestors(element).contains(ancestor);
+
+  Iterable<XmlStartElementEvent> ancestors(element) sync* {
+    var probe = element?.parentEvent;
+    while (probe != null) {
+      yield probe;
+      probe = probe?.parentEvent;
+    }
   }
 
   String _stripNamespace(String s) => s.split(':').last;

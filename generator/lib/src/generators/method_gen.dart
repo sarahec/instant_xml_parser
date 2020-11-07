@@ -68,7 +68,7 @@ class MethodGenerator {
         ? ''
         : '''
       $vars
-      var probe = await pr.startOf(events, parent: ${method.startVar});
+      var probe = await pr.startOf(events, ancestor: ${method.startVar});
       while (probe != null) {
         switch (probe.qualifiedName) {
           $cases
@@ -76,7 +76,7 @@ class MethodGenerator {
           await pr.logUnknown(probe, ${method.classInfo.constantName});
           await pr.consume(events, 1);
       }
-      probe = await pr.startOf(events, parent: ${method.startVar});
+      probe = await pr.startOf(events, ancestor: ${method.startVar});
     }''';
 
     return Block.of([

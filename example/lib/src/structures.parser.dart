@@ -72,7 +72,7 @@ Future<Registration> extractRegistration(
 
   var person;
   var contact;
-  var probe = await pr.startOf(events, parent: _registration);
+  var probe = await pr.startOf(events, ancestor: _registration);
   while (probe != null) {
     switch (probe.qualifiedName) {
       case NameTagName:
@@ -85,7 +85,7 @@ Future<Registration> extractRegistration(
         await pr.logUnknown(probe, RegistrationName);
         await pr.consume(events, 1);
     }
-    probe = await pr.startOf(events, parent: _registration);
+    probe = await pr.startOf(events, ancestor: _registration);
   }
   await pr.endOf(events, _registration);
   return Registration(person, contact, age);
