@@ -16,3 +16,14 @@ class Convert {
 
   static Converter<bool> ifMatches(regexp) => (s) => RegExp(regexp).hasMatch(s);
 }
+
+/// Returns a converter from String to the specified built-in type.
+///
+/// Use the ```@converter``` tag for non-primitive types instead
+Converter autoConverter(Type T) => (T == bool)
+    ? Convert.toBool
+    : (T == int)
+        ? Convert.toInt
+        : (T == double)
+            ? Convert.toDouble
+            : null;

@@ -1,6 +1,7 @@
 library runtime;
 
-export 'src/converters.dart';
+export 'src/conversion.dart';
+export 'src/extensions/event_queue_extension.dart';
+export 'src/extensions/start_element_extension.dart';
 export 'src/errors.dart';
-export 'src/parser_runtime.dart';
 export 'src/tools.dart';
