@@ -2,6 +2,7 @@ library parse_generator;
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:generator/src/import_uris.dart';
 import 'package:generator/src/info/library_info.dart';
 import 'package:generator/src/info/symtable.dart';
 
@@ -27,6 +28,7 @@ class LibraryGenerator {
       _importUris.add(sourceAsset.pathSegments.last);
       _importUris.addAll(info.importUris.where((s) =>
           !(s.contains('runtime/annotations.dart') || s.contains('/src/'))));
+      _importUris.add(Runtime);
     }
     return _importUris;
   }

@@ -52,11 +52,10 @@ class MethodGenerator {
       ];
 
   String get startBlock => '''
-      final  ${method.startVar} = 
-        await pr.startOf(events, name: ${method.classInfo.constantName}, failOnMismatch: true);
-      if (${method.startVar} == null) return null;''';
+      final ${method.startVar} = await events.start(name: ${method.classInfo.constantName}, 
+      throwsOnError: true);''';
 
-  String get endBlock => 'await pr.endOf(events, ${method.startVar});';
+  String get endBlock => 'await events.end(${method.startVar});';
 
   @visibleForTesting
   Block get methodBody {
@@ -68,15 +67,15 @@ class MethodGenerator {
         ? ''
         : '''
       $vars
-      var probe = await pr.startOf(events, ancestor: ${method.startVar});
-      while (probe != null) {
+        var probe = ${method.startVar};
+        for (;;) {
+        probe = await events.start(after: probe);
+        if (probe == null || await events.atEnd(${method.startVar})) break;
         switch (probe.qualifiedName) {
           $cases
         default:
-          await pr.logUnknown(probe, ${method.classInfo.constantName});
-          await pr.consume(events, 1);
+          probe.logUnknown(expected: ${method.classInfo.constantName});
       }
-      probe = await pr.startOf(events, ancestor: ${method.startVar});
     }''';
 
     return Block.of([
@@ -103,13 +102,7 @@ class MethodGenerator {
           ..types.add(TypeReference((b) => b
             ..symbol = 'XmlEvent'
             ..url = uri.XMLEventsLibrary
-            ..isNullable = false)))),
-      Parameter((b) => b
-        ..name = 'pr'
-        ..type = TypeReference((b) => b
-          ..symbol = 'ParserRuntime'
-          ..url = uri.ParserRuntime
-          ..isNullable = false))
+            ..isNullable = false))))
     ])
     ..returns = TypeReference((b) => b // Future<SomeType>
       ..symbol = 'Future'

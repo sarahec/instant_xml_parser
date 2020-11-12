@@ -28,7 +28,7 @@ class AttributeFieldGenerator {
       }
     }
 
-    return "final ${field.name} = await pr.namedAttribute<${field.typeName}>(${method.startVar}, '${field.attributeName}' $conversion)$defaultValue;";
+    return "final ${field.name} = await ${method.startVar}.namedAttribute<${field.typeName}>('${field.attributeName}' $conversion)$defaultValue;";
   }
 }
 
@@ -42,7 +42,7 @@ class TextFieldGenerator {
   String get toAction {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
-    final textOf = 'await pr.textOf(events, ${method.startVar})$defaultValue';
+    final textOf = 'await events.textValue()$defaultValue';
     final extraction =
         field.hasConversion ? '${field.conversion}($textOf)' : textOf;
     return 'final ${field.name} = $extraction;';
@@ -59,7 +59,7 @@ class TagFieldGenerator {
   TagFieldGenerator(this.field, this.method, this.symtable);
 
   String action(MethodInfo foreignMethod) =>
-      'await ${foreignMethod.name}(events, pr)';
+      'await ${foreignMethod.name}(events)';
 
   String get toAction {
     final methods = symtable.methodsReturning(field.type);

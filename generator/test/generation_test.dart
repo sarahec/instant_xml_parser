@@ -33,13 +33,8 @@ void main() {
     test('includes tag constant',
         () => expect(generated, contains("const EmptyTagName = 'empty'")));
 
-    test(
-        'finds tag in stream',
-        () =>
-            expect(generated, contains('.startOf(events, name: EmptyTagName')));
-
     test('consumes to end',
-        () => expect(generated, contains('.endOf(events, _emptyTag)')));
+        () => expect(generated, contains('events.endOf(_emptyTag)')));
 
     test('creates object',
         () => expect(generated, contains('return EmptyTag()')));
@@ -67,11 +62,11 @@ void main() {
             generated, contains("const NameTagName = 'identification'")));
 
     test('reads attributes', () {
-      expect(generated, contains(".namedAttribute<String>(_nameTag, 'name')"));
-      expect(generated, contains(".namedAttribute<int>(_nameTag, 'id') ?? 0;"));
-      expect(generated, contains(".namedAttribute<double>(_nameTag, 'score')"));
+      expect(generated, contains("_nameTag.namedAttribute<String>('name')"));
+      expect(generated, contains("_nameTag.namedAttribute<int>('id') ?? 0;"));
+      expect(generated, contains("_nameTag.namedAttribute<double>('score')"));
       expect(
-          generated, contains(".namedAttribute<bool>(_nameTag, 'registered')"));
+          generated, contains("_nameTag.namedAttribute<bool>('registered')"));
     });
 
     // test('warns about unused fields',
@@ -99,13 +94,11 @@ void main() {
 
     test(
         'extracts text',
-        () => expect(generated,
-            contains('final name = await pr.textOf(events, _nameTag)')));
+        () => expect(
+            generated, contains('final name = await events.textValue()')));
 
-    test(
-        'applies default',
-        () =>
-            expect(generated, contains("textOf(events, _nameTag) ?? 'sam';")));
+    test('applies default',
+        () => expect(generated, contains("events.textValue() ?? 'sam';")));
 
     test('uses named parameter in constructor',
         () => expect(generated, contains('return NameTag(name: name);')));
@@ -131,23 +124,17 @@ void main() {
         }''');
     });
 
-    test(
-        'foo',
-        () => expect(
-            generated, contains(".namedAttribute<String>(_location, 'foo')")));
+    test('foo',
+        () => expect(generated, contains(".namedAttribute<String>('foo')")));
     test(
         'attribute',
-        () => expect(
-            generated,
-            contains(
-                ".namedAttribute<Uri>(_location, 'altLoc', convert: Uri.parse)")));
+        () => expect(generated,
+            contains("namedAttribute<Uri>('altLoc', convert: Uri.parse)")));
 
     test(
         '@text',
-        () => expect(
-            generated,
-            contains(
-                'final loc = Uri.parse(await pr.textOf(events, _location))')));
+        () => expect(generated,
+            contains('final loc = Uri.parse(await events.textValue())')));
   });
 
   group('subclassing', () {
@@ -173,7 +160,7 @@ void main() {
         () => expect(
             generated,
             contains(
-                "final name = await pr.namedAttribute<String>(_bar, 'name');")));
+                "final name = await _bar.namedAttribute<String>('name');")));
   });
 
   group('children', () {

@@ -1,11 +1,7 @@
-import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
 import 'package:runtime/runtime.dart';
 import 'package:xml/xml_events.dart';
 
-extension StartElementExtensions on XmlStartElementEvent {
-  static final _log = Logger('ElementExtensions');
-
+extension AttributeExtension on XmlStartElementEvent {
   /// Extracts an attribute from an element, converting it into a desired type.
   ///
   /// Looks for the named attribute on the supplied element, supplying a
@@ -53,23 +49,4 @@ extension StartElementExtensions on XmlStartElementEvent {
   }
 
   String _stripNamespace(String s) => s.split(':').last;
-
-  bool descendsFrom(ancestor) =>
-      ancestor == null ? false : ancestors.contains(ancestor);
-
-  Iterable<XmlStartElementEvent> get ancestors sync* {
-    var probe = parentEvent;
-    while (probe != null) {
-      yield probe;
-      probe = probe?.parentEvent;
-    }
-  }
-
-  /// Utility to log an "unknown tag" message, typically called by generated
-  /// parsers.
-  ///
-  /// [elementFuture] the found start element
-  /// [parentName] the parent tag being parsed
-  void logUnknown({expected = '(any)'}) => _log.fine(
-      'Skipping unknown tag <${qualifiedName}> in <$parentEvent>, expected $expected');
 }
