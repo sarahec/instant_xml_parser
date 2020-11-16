@@ -11,7 +11,7 @@ extension ParseUtils on StreamQueue<XmlEvent> {
   static final _log = Logger('ParseUtils');
 
   Future<XmlStartElementEvent> start(
-      {String name, XmlEvent after, throwsOnError = false}) async {
+      {String name, XmlEvent after, throwsOnError = true}) async {
     final ok = await withTransaction((queue) async {
       if (after != null && await queue.peek == after) {
         await queue.take(1);
@@ -52,7 +52,7 @@ extension ParseUtils on StreamQueue<XmlEvent> {
   ///
   /// Leaves the next tag at the top of the queue.
   /// [tag] the current start tag
-  Future<bool> end(XmlStartElementEvent tag) async {
+  Future<bool> end(XmlStartElementEvent tag, {throwsOnError = true}) async {
     return withTransaction((queue) async {
       while (await queue.hasNext) {
         if (await queue.atEnd(tag)) {
@@ -60,8 +60,13 @@ extension ParseUtils on StreamQueue<XmlEvent> {
         }
         await queue.next;
       }
-      _log.finest('</${tag.qualifiedName}>} not found');
-      return false;
+      final error = '</${tag.qualifiedName}>} not found';
+      _log.finest(error);
+
+      return throwsOnError
+          ? Future.error(MissingEndTag(tag.qualifiedName))
+          : false;
+      ;
     });
   }
 }

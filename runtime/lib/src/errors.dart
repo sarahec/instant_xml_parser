@@ -20,13 +20,22 @@ class MissingAttribute implements ParsingError {
 }
 
 class MissingStartTag implements ParsingError {
-  final String wantedTag;
-  final String foundTag;
+  final String wanted;
+  final String found;
 
-  MissingStartTag(this.wantedTag, {this.foundTag = ''});
+  MissingStartTag(this.wanted, {this.found = ''});
 
   @override
-  String get message => 'Expected <$wantedTag> at start';
+  String get message => 'Expected <$wanted> at start';
+}
+
+class MissingEndTag implements ParsingError {
+  final String wanted;
+
+  MissingEndTag(this.wanted);
+
+  @override
+  String get message => 'Expected </$wanted>';
 }
 
 class UnexpectedChild implements ParsingError {
