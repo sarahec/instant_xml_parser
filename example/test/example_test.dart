@@ -60,14 +60,14 @@ void main() {
 
     test('address book', () async {
       final events = _eventsFrom(
-          '<addressBook><ContactInfo email="alice@example.com" /><ContactInfo email="bob@example.com" /></addressBook>');
+          '<addressBook><ContactInfo email="alice@example.com">Birthday: April 1</ContactInfo><ContactInfo email="bob@example.com">Birthday: Oct 31</ContactInfo></addressBook>');
       final addressBook = await extractAddressBook(events);
       expect(addressBook, isNotNull);
       expect(
           addressBook.contacts,
           containsAllInOrder([
-            ContactInfo('alice@example.com'),
-            ContactInfo('bob@example.com')
+            ContactInfo('alice@example.com', notes: 'Birthday: April 1'),
+            ContactInfo('bob@example.com', notes: 'Birthday: Oct 31')
           ]));
     });
   });

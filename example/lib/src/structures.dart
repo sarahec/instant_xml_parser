@@ -28,18 +28,24 @@ class NameTag {
 class ContactInfo {
   final String email;
   final String phone;
+  @text()
+  final String notes;
 
   // You can add getters and methods.
   // The unit tests for the parser require == on this class
   @override
   bool operator ==(Object other) =>
-      other is ContactInfo && other.email == email && other.phone == phone;
+      other is ContactInfo &&
+      other.email == email &&
+      other.phone == phone &&
+      other.notes == notes;
 
   // ...and if you override ==, override hashCode.
   @override
-  int get hashCode => email.hashCode ^ (phone ?? 'none').hashCode;
+  int get hashCode =>
+      email.hashCode ^ (phone ?? 'none').hashCode ^ notes.hashCode;
 
-  ContactInfo(this.email, [this.phone]);
+  ContactInfo(this.email, {this.phone, this.notes = ''});
 }
 
 @tag('registration')

@@ -56,9 +56,10 @@ Future<ContactInfo> extractContactInfo(StreamQueue<XmlEvent> events) async {
       await events.start(name: ContactInfoName, throwsOnError: true);
   final email = await _contactInfo.namedAttribute<String>('email');
   final phone = await _contactInfo.namedAttribute<String>('phone');
+  final notes = await events.textValue() ?? '';
 
   await events.end(_contactInfo);
-  return ContactInfo(email, phone);
+  return ContactInfo(email, phone: phone, notes: notes);
 }
 
 Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events) async {
