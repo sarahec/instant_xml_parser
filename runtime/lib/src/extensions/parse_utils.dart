@@ -11,7 +11,7 @@ extension ParseUtils on StreamQueue<XmlEvent> {
   static final _log = Logger('ParseUtils');
 
   Future<XmlStartElementEvent> start(
-      {String name, XmlEvent after, throwsOnError = true}) async {
+      {String name, XmlEvent after, throwsOnError = false}) async {
     final ok = await withTransaction((queue) async {
       if (after != null && await queue.peek == after) {
         await queue.take(1);
