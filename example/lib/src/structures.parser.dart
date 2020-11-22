@@ -18,7 +18,6 @@ const ContactInfoName = 'ContactInfo';
 const EmptyTagName = 'empty';
 const NameTagName = 'identification';
 const NoteName = 'note';
-const NoteTextName = 't';
 const NotebookName = 'notebook';
 const RegistrationName = 'registration';
 final _log = Logger('parser');
@@ -43,6 +42,7 @@ Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events,
         break;
       default:
         probe.logUnknown(expected: AddressBookName);
+        await events.next;
     }
   }
   _log.finest('consume addressBook');
@@ -136,41 +136,14 @@ Future<Note> extractNote(StreamQueue<XmlEvent> events,
   }
   _log.fine('in note');
 
-  var text;
-  for (;;) {
-    var probe = await events.findInTransaction(startTag(inside(_note)),
-        keepFound: true) as XmlStartElementEvent;
-    if (probe == null) break;
-    switch (probe.qualifiedName) {
-      case NoteTextName:
-        text = await extractNoteText(events);
-        break;
-      default:
-        probe.logUnknown(expected: NoteName);
-    }
-  }
-  _log.finest('consume note');
-  await events.consume(inside(_note));
-  return Note(text);
-}
-
-Future<NoteText> extractNoteText(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _noteText = await events
-      .findInTransaction(startTag(named(NoteTextName))) as XmlStartElementEvent;
-  if (_noteText == null) {
-    return optional ? null : Future.error(MissingStartTag(NoteTextName));
-  }
-  _log.fine('in t');
-
-  final text = (await events.findInTransaction(textElement(inside(_noteText)))
+  final text = (await events.findInTransaction(textElement(inside(_note)))
               as XmlTextEvent)
           ?.text ??
       '?';
 
-  _log.finest('consume t');
-  await events.consume(inside(_noteText));
-  return NoteText(text);
+  _log.finest('consume note');
+  await events.consume(inside(_note));
+  return Note(text);
 }
 
 Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events,
@@ -228,6 +201,7 @@ Future<Registration> extractRegistration(StreamQueue<XmlEvent> events,
         break;
       default:
         probe.logUnknown(expected: RegistrationName);
+        await events.next;
     }
   }
   _log.finest('consume registration');

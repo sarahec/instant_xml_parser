@@ -59,9 +59,10 @@ class Registration {
 
 @tag('note')
 class Note {
-  final NoteText text;
+  @textElement
+  final String text;
 
-  Note(this.text);
+  Note([this.text = '?']);
 
   @override
   bool operator ==(Object other) => other is Note && other.text == text;
@@ -70,18 +71,11 @@ class Note {
   int get hashCode => 12345 ^ (text ?? '').hashCode;
 }
 
-@tag('t')
-class NoteText {
-  @textElement
-  final String text;
+@tag('notebook')
+class Notebook {
+  final List<Note> notes;
 
-  NoteText([this.text = '?']);
-
-  @override
-  bool operator ==(Object other) => other is NoteText && other.text == text;
-
-  @override
-  int get hashCode => 37 ^ (text ?? '').hashCode;
+  Notebook(this.notes);
 }
 
 @tag('addressBook')
@@ -89,11 +83,4 @@ class AddressBook {
   final List<ContactInfo> contacts;
 
   AddressBook(this.contacts);
-}
-
-@tag('notebook')
-class Notebook {
-  final List<Note> notes;
-
-  Notebook(this.notes);
 }
