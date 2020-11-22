@@ -7,10 +7,6 @@ void main() {
   // this needs an explicit type to enable the extension methods
   StreamQueue<XmlEvent> events;
 
-  String getID(element) => element.attributes
-      .firstWhere((a) => a.qualifiedName == 'id', orElse: () => null)
-      ?.value;
-
   setUp(() {
     final xml =
         '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
