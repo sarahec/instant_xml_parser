@@ -18,7 +18,7 @@ class AttributesTag {
 @tag('identification')
 class NameTag {
   final String name;
-  @text()
+  @textElement
   final String nickname;
 
   NameTag(this.name, {this.nickname});
@@ -28,7 +28,7 @@ class NameTag {
 class ContactInfo {
   final String email;
   final String phone;
-  @text()
+  @textElement
   final String notes;
 
   // You can add getters and methods.
@@ -57,9 +57,43 @@ class Registration {
   Registration(this.person, this.contact, this.age);
 }
 
+@tag('note')
+class Note {
+  final NoteText text;
+
+  Note(this.text);
+
+  @override
+  bool operator ==(Object other) => other is Note && other.text == text;
+
+  @override
+  int get hashCode => 12345 ^ (text ?? '').hashCode;
+}
+
+@tag('t')
+class NoteText {
+  @textElement
+  final String text;
+
+  NoteText([this.text = '?']);
+
+  @override
+  bool operator ==(Object other) => other is NoteText && other.text == text;
+
+  @override
+  int get hashCode => 37 ^ (text ?? '').hashCode;
+}
+
 @tag('addressBook')
 class AddressBook {
   final List<ContactInfo> contacts;
 
   AddressBook(this.contacts);
+}
+
+@tag('notebook')
+class Notebook {
+  final List<Note> notes;
+
+  Notebook(this.notes);
 }

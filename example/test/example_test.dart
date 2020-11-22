@@ -78,9 +78,16 @@ void main() {
           ]));
     });
   });
-
   group('integration', () {
     setUp(() => Logger.root.level = Level.ALL);
+
+    test('homogeneous events', () async {
+      final events = _eventsFrom(
+          '<notebook><note><t>a</t></note><note><t>b</t></note><note/></notebook>');
+      final notebook = await extractNotebook(events);
+      expect(notebook, isNotNull);
+      expect(notebook.notes.length, equals(3));
+    });
 
     test('mixed sequence', () async {
       final events = _eventsFrom(

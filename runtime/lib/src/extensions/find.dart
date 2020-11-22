@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:logging/logging.dart';
 import 'package:xml/xml_events.dart';
 
 import 'matcher.dart';
+
+final _log = Logger('find:');
 
 extension Find on StreamQueue<XmlEvent> {
   /// Scans the current queue for a match. Returns the found element or null.
@@ -42,7 +45,8 @@ extension Find on StreamQueue<XmlEvent> {
         if (match(probe)) {
           return probe;
         }
-      } catch (_) {
+      } catch (e) {
+        _log.fine(e);
         return null;
       }
       probe = await queue.next;

@@ -17,6 +17,9 @@ const AttributesTagName = 'attributesTest';
 const ContactInfoName = 'ContactInfo';
 const EmptyTagName = 'empty';
 const NameTagName = 'identification';
+const NoteName = 'note';
+const NoteTextName = 't';
+const NotebookName = 'notebook';
 const RegistrationName = 'registration';
 final _log = Logger('parser');
 Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events,
@@ -122,6 +125,80 @@ Future<NameTag> extractNameTag(StreamQueue<XmlEvent> events,
   _log.finest('consume identification');
   await events.consume(inside(_nameTag));
   return NameTag(name, nickname: nickname);
+}
+
+Future<Note> extractNote(StreamQueue<XmlEvent> events,
+    {optional = true}) async {
+  final _note = await events.findInTransaction(startTag(named(NoteName)))
+      as XmlStartElementEvent;
+  if (_note == null) {
+    return optional ? null : Future.error(MissingStartTag(NoteName));
+  }
+  _log.fine('in note');
+
+  var text;
+  for (;;) {
+    var probe = await events.findInTransaction(startTag(inside(_note)),
+        keepFound: true) as XmlStartElementEvent;
+    if (probe == null) break;
+    switch (probe.qualifiedName) {
+      case NoteTextName:
+        text = await extractNoteText(events);
+        break;
+      default:
+        probe.logUnknown(expected: NoteName);
+    }
+  }
+  _log.finest('consume note');
+  await events.consume(inside(_note));
+  return Note(text);
+}
+
+Future<NoteText> extractNoteText(StreamQueue<XmlEvent> events,
+    {optional = true}) async {
+  final _noteText = await events
+      .findInTransaction(startTag(named(NoteTextName))) as XmlStartElementEvent;
+  if (_noteText == null) {
+    return optional ? null : Future.error(MissingStartTag(NoteTextName));
+  }
+  _log.fine('in t');
+
+  final text = (await events.findInTransaction(textElement(inside(_noteText)))
+              as XmlTextEvent)
+          ?.text ??
+      '?';
+
+  _log.finest('consume t');
+  await events.consume(inside(_noteText));
+  return NoteText(text);
+}
+
+Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events,
+    {optional = true}) async {
+  final _notebook = await events
+      .findInTransaction(startTag(named(NotebookName))) as XmlStartElementEvent;
+  if (_notebook == null) {
+    return optional ? null : Future.error(MissingStartTag(NotebookName));
+  }
+  _log.fine('in notebook');
+
+  var notes = <Note>[];
+  for (;;) {
+    var probe = await events.findInTransaction(startTag(inside(_notebook)),
+        keepFound: true) as XmlStartElementEvent;
+    if (probe == null) break;
+    switch (probe.qualifiedName) {
+      case NoteName:
+        notes.add(await extractNote(events));
+        break;
+      default:
+        probe.logUnknown(expected: NotebookName);
+        await events.next;
+    }
+  }
+  _log.finest('consume notebook');
+  await events.consume(inside(_notebook));
+  return Notebook(notes);
 }
 
 Future<Registration> extractRegistration(StreamQueue<XmlEvent> events,
