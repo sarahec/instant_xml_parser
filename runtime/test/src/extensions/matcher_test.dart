@@ -3,13 +3,11 @@ import 'package:runtime/runtime.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 
+import 'get_id.dart';
+
 void main() {
   // this needs an explicit type to enable the extension methods
   StreamQueue<XmlEvent> events;
-
-  String getID(element) => element.attributes
-      .firstWhere((a) => a.qualifiedName == 'id', orElse: () => null)
-      ?.text;
 
   setUp(() {
     final xml =
