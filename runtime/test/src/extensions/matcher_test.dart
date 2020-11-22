@@ -9,7 +9,7 @@ void main() {
 
   String getID(element) => element.attributes
       .firstWhere((a) => a.qualifiedName == 'id', orElse: () => null)
-      ?.value;
+      ?.text;
 
   setUp(() {
     final xml =

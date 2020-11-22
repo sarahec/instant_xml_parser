@@ -46,7 +46,8 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
       type.isDartCoreString);
 
   @memoized
-  bool get isXmlTextField => AnnotationReader.hasAnnotation<text>(element);
+  bool get isXmlTextField =>
+      AnnotationReader.hasAnnotation<TextElement>(element);
 
   @memoized
   String get name => element.name;

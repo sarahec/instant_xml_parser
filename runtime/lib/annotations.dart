@@ -31,6 +31,8 @@ class tag {
   const tag(this.value);
 }
 
-class text {
-  const text();
+const textElement = TextElement();
+
+class TextElement {
+  const TextElement();
 }
