@@ -52,7 +52,7 @@ class MethodGenerator {
       ];
 
   String get startBlock => '''
-      final ${method.startVar} = await events.findInTransaction(startTag(named(${method.classInfo.constantName}))) as XmlStartElementEvent; 
+      final ${method.startVar} = await events.find(startTag(named(${method.classInfo.constantName}))) as XmlStartElementEvent; 
       if(${method.startVar} == null) {
         return optional ? null : Future.error(MissingStartTag(${method.classInfo.constantName}));
       }
@@ -74,7 +74,7 @@ class MethodGenerator {
         : '''
       $vars
         for (;;) {
-        var probe = await events.findInTransaction(startTag(inside(${method.startVar})), keepFound: true) as XmlStartElementEvent;
+        var probe = await events.find(startTag(inside(${method.startVar})), keepFound: true) as XmlStartElementEvent;
         if (probe == null) break;
         switch (probe.qualifiedName) {
           $cases

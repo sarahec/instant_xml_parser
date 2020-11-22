@@ -43,7 +43,7 @@ class TextFieldGenerator {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
     final textOf =
-        ' (await events.findInTransaction(textElement(inside(${method.startVar}))) as XmlTextEvent)?.text $defaultValue';
+        ' (await events.find(textElement(inside(${method.startVar}))) as XmlTextEvent)?.text $defaultValue';
     final extraction =
         field.hasConversion ? '${field.conversion}($textOf)' : textOf;
     return 'final ${field.name} = $extraction;';

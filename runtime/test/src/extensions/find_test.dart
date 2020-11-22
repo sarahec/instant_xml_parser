@@ -20,7 +20,7 @@ void main() {
       expect(startTag.qualifiedName, equals('foo'));
     });
 
-    test('drops found vaue', () async {
+    test('drops found vaue by default', () async {
       final XmlStartElementEvent startTag =
           await events.find((e) => e is XmlStartElementEvent);
       final XmlStartElementEvent duplicateTag =
@@ -45,15 +45,12 @@ void main() {
       final tag = await events.find((e) => throw NoSuchMethodError);
       expect(tag, isNull);
     });
-  });
 
-  group('findInTransaction', () {
     test('leaves queue unchanged on no match', () async {
       final xml = '<!-- comment only -->';
       events = generateEventStream(Stream.value(xml));
       final comment = await events.peek;
-      final tag =
-          await events.findInTransaction((e) => e is XmlStartElementEvent);
+      final tag = await events.find((e) => e is XmlStartElementEvent);
       expect(tag, isNull);
       expect(comment, same(await events.peek));
     });

@@ -14,7 +14,7 @@ extension Find on StreamQueue<XmlEvent> {
   ///
   /// [match] Function that returns true when found.
   /// [keepFound] if true, keeps the found value at the start if the queue.
-  Future<XmlEvent> findInTransaction(Matcher match, {keepFound = false}) async {
+  Future<XmlEvent> find(Matcher match, {keepFound = false}) async {
     var probe;
     await withTransaction((queue) async {
       probe = await _find(match, queue);
@@ -26,7 +26,14 @@ extension Find on StreamQueue<XmlEvent> {
     return probe;
   }
 
-  Future<XmlEvent> find(Matcher match, {keepFound = false}) async {
+  /// Scans the current queue for a match. Returns the found element or null.
+  /// Consumes up to the found element (and consumes the found element
+  /// unless ```keepFound``` is true.)
+  ///
+  /// [match] Function that returns true when found.
+  /// [keepFound] if true, keeps the found value at the start if the queue.
+  @deprecated
+  Future<XmlEvent> findDestructively(Matcher match, {keepFound = false}) async {
     final probe = await _find(match, this);
     if (probe != null && !keepFound && await hasNext) {
       await next; // drop from queue
@@ -34,6 +41,8 @@ extension Find on StreamQueue<XmlEvent> {
     return probe;
   }
 
+  // Consume unmatched elements up until the found element. Returns the
+  // found element or null;
   Future<XmlEvent> _find(Matcher match, StreamQueue<XmlEvent> queue) async {
     var probe;
     for (;;) {
