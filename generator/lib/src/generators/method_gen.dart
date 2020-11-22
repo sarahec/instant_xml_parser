@@ -80,6 +80,7 @@ class MethodGenerator {
           $cases
         default:
           probe.logUnknown(expected: ${method.classInfo.constantName});
+          await events.next;
       }
     }''';
 
