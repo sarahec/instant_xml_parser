@@ -1,6 +1,7 @@
 import 'package:xml/xml_events.dart';
+import 'package:xml/src/xml_events/utils/parented.dart';
 
-extension Ancestors on XmlEvent {
+extension Ancestors on XmlParented {
   bool descendsFrom(ancestor) =>
       ancestor == null ? false : ancestors.contains(ancestor);
 

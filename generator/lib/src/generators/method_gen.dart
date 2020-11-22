@@ -52,10 +52,16 @@ class MethodGenerator {
       ];
 
   String get startBlock => '''
-      final ${method.startVar} = await events.start(name: ${method.classInfo.constantName}, 
-      throwsOnError: true);''';
+      final ${method.startVar} = await events.findInTransaction(startTag(named(${method.classInfo.constantName}))) as XmlStartElementEvent; 
+      if(${method.startVar} == null) {
+        return optional ? null : Future.error(MissingStartTag(${method.classInfo.constantName}));
+      }
+      _log.fine('in ${method.classInfo.tagName}');
+      ''';
 
-  String get endBlock => 'await events.end(${method.startVar});';
+  String get endBlock => '''
+    _log.finest('consume ${method.classInfo.tagName}'); 
+    await events.consume(inside(${method.startVar}));''';
 
   @visibleForTesting
   Block get methodBody {
@@ -67,10 +73,9 @@ class MethodGenerator {
         ? ''
         : '''
       $vars
-        var probe = ${method.startVar};
         for (;;) {
-        probe = await events.start(after: probe);
-        if (probe == null || await events.atEnd(${method.startVar})) break;
+        var probe = await events.findInTransaction(startTag(inside(${method.startVar})), keepFound: true) as XmlStartElementEvent;
+        if (probe == null) break;
         switch (probe.qualifiedName) {
           $cases
         default:
@@ -104,6 +109,10 @@ class MethodGenerator {
             ..url = uri.XMLEventsLibrary
             ..isNullable = false))))
     ])
+    ..optionalParameters.add(Parameter((b) => b
+      ..name = 'optional'
+      ..named = true
+      ..defaultTo = Code('true')))
     ..returns = TypeReference((b) => b // Future<SomeType>
       ..symbol = 'Future'
       ..isNullable = false

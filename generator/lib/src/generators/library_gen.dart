@@ -28,7 +28,7 @@ class LibraryGenerator {
       _importUris.add(sourceAsset.pathSegments.last);
       _importUris.addAll(info.importUris.where((s) =>
           !(s.contains('runtime/annotations.dart') || s.contains('/src/'))));
-      _importUris.add(Runtime);
+      _importUris.addAll([Logging, Runtime]);
     }
     return _importUris;
   }
@@ -41,5 +41,6 @@ class LibraryGenerator {
   Library get toCode => Library((b) => b
     ..directives.addAll(importUris.map((i) => Directive.import(i)))
     ..body.addAll(constants)
+    ..body.add(Code("final _log = Logger('parser');"))
     ..body.addAll(methods));
 }
