@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:runtime/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'src/generators/library_gen.dart';
+import 'src/codegen/library_gen.dart';
 
 class ParseMethodGenerator extends Generator {
   final _log = Logger('ParseMethodGenerator');
