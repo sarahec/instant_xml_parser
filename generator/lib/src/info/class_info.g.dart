@@ -6,6 +6,67 @@ part of 'class_info.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+Serializer<ClassInfo> _$classInfoSerializer = new _$ClassInfoSerializer();
+
+class _$ClassInfoSerializer implements StructuredSerializer<ClassInfo> {
+  @override
+  final Iterable<Type> types = const [ClassInfo, _$ClassInfo];
+  @override
+  final String wireName = 'ClassInfo';
+
+  @override
+  Iterable<Object> serialize(Serializers serializers, ClassInfo object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object>[
+      'element',
+      serializers.serialize(object.element,
+          specifiedType: const FullType(ClassElement)),
+      'type',
+      serializers.serialize(object.type,
+          specifiedType: const FullType(InterfaceType)),
+    ];
+    if (object.subclasses != null) {
+      result
+        ..add('subclasses')
+        ..add(serializers.serialize(object.subclasses,
+            specifiedType:
+                const FullType(Iterable, const [const FullType(DartType)])));
+    }
+    return result;
+  }
+
+  @override
+  ClassInfo deserialize(Serializers serializers, Iterable<Object> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new ClassInfoBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current as String;
+      iterator.moveNext();
+      final dynamic value = iterator.current;
+      switch (key) {
+        case 'element':
+          result.element = serializers.deserialize(value,
+              specifiedType: const FullType(ClassElement)) as ClassElement;
+          break;
+        case 'subclasses':
+          result.subclasses = serializers.deserialize(value,
+                  specifiedType: const FullType(
+                      Iterable, const [const FullType(DartType)]))
+              as Iterable<DartType>;
+          break;
+        case 'type':
+          result.type = serializers.deserialize(value,
+              specifiedType: const FullType(InterfaceType)) as InterfaceType;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
 class _$ClassInfo extends ClassInfo {
   @override
   final ClassElement element;

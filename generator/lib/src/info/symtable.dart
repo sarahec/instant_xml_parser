@@ -1,9 +1,9 @@
 import 'dart:collection';
 
-import 'package:generator/src/info/class_info.dart';
-import 'package:source_gen/source_gen.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:generator/src/info/class_info.dart';
 
+import 'library_info.dart';
 import 'method_info.dart';
 
 class Symtable {
@@ -37,10 +37,9 @@ class Symtable {
   }
 
   // BuiltList<MethodInfo> get
-  factory Symtable.fromLibrary(LibraryReader library) {
-    final classList = {for (var c in library.classes) ClassInfo.fromElement(c)};
-    final classMap = {for (var info in classList) info.typeName: info};
-    final methodList = classList
+  factory Symtable.fromLibraryInfo(LibraryInfo library) {
+    final classMap = {for (var info in library.classes) info.typeName: info};
+    final methodList = library.classes
         .map((c) => c.method)
         .where((c) => c != null)
         .toList(growable: false);

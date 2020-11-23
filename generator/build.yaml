@@ -8,8 +8,8 @@ targets:
 
 builders:
   generator:
-    import: "package:generator/builder.dart"
-    builder_factories: ["parseMethodBuilder"]
+    import: "package:generator/src/builders/parser_builder.dart"
+    builder_factories: ["parserBuilder"]
     build_extensions: {".dart": [".parser.dart"]}
     auto_apply: dependents
     build_to: source

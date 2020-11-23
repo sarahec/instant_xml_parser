@@ -15,7 +15,8 @@ class LibraryGenerator {
 
   var _importUris;
 
-  LibraryGenerator(this.info, this.sourceAsset) : symtable = info.symtable;
+  LibraryGenerator(this.info, this.sourceAsset)
+      : symtable = Symtable.fromLibraryInfo(info);
 
   Iterable<Method> get methods => [
         for (var method in symtable.methods)

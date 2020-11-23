@@ -6,22 +6,85 @@ part of 'library_info.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+Serializer<LibraryInfo> _$libraryInfoSerializer = new _$LibraryInfoSerializer();
+
+class _$LibraryInfoSerializer implements StructuredSerializer<LibraryInfo> {
+  @override
+  final Iterable<Type> types = const [LibraryInfo, _$LibraryInfo];
+  @override
+  final String wireName = 'LibraryInfo';
+
+  @override
+  Iterable<Object> serialize(Serializers serializers, LibraryInfo object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object>[
+      'uri',
+      serializers.serialize(object.uri, specifiedType: const FullType(Uri)),
+      'classes',
+      serializers.serialize(object.classes,
+          specifiedType:
+              const FullType(Iterable, const [const FullType(ClassInfo)])),
+      'element',
+      serializers.serialize(object.element,
+          specifiedType: const FullType(LibraryElement)),
+    ];
+
+    return result;
+  }
+
+  @override
+  LibraryInfo deserialize(Serializers serializers, Iterable<Object> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new LibraryInfoBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current as String;
+      iterator.moveNext();
+      final dynamic value = iterator.current;
+      switch (key) {
+        case 'uri':
+          result.uri = serializers.deserialize(value,
+              specifiedType: const FullType(Uri)) as Uri;
+          break;
+        case 'classes':
+          result.classes = serializers.deserialize(value,
+                  specifiedType: const FullType(
+                      Iterable, const [const FullType(ClassInfo)]))
+              as Iterable<ClassInfo>;
+          break;
+        case 'element':
+          result.element = serializers.deserialize(value,
+              specifiedType: const FullType(LibraryElement)) as LibraryElement;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
 class _$LibraryInfo extends LibraryInfo {
   @override
-  final LibraryElement element;
+  final Uri uri;
   @override
-  final Symtable symtable;
+  final Iterable<ClassInfo> classes;
+  @override
+  final LibraryElement element;
   Iterable<String> __importUris;
 
   factory _$LibraryInfo([void Function(LibraryInfoBuilder) updates]) =>
       (new LibraryInfoBuilder()..update(updates)).build();
 
-  _$LibraryInfo._({this.element, this.symtable}) : super._() {
+  _$LibraryInfo._({this.uri, this.classes, this.element}) : super._() {
+    if (uri == null) {
+      throw new BuiltValueNullFieldError('LibraryInfo', 'uri');
+    }
+    if (classes == null) {
+      throw new BuiltValueNullFieldError('LibraryInfo', 'classes');
+    }
     if (element == null) {
       throw new BuiltValueNullFieldError('LibraryInfo', 'element');
-    }
-    if (symtable == null) {
-      throw new BuiltValueNullFieldError('LibraryInfo', 'symtable');
     }
   }
 
@@ -39,20 +102,23 @@ class _$LibraryInfo extends LibraryInfo {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is LibraryInfo &&
-        element == other.element &&
-        symtable == other.symtable;
+        uri == other.uri &&
+        classes == other.classes &&
+        element == other.element;
   }
 
   @override
   int get hashCode {
-    return $jf($jc($jc(0, element.hashCode), symtable.hashCode));
+    return $jf(
+        $jc($jc($jc(0, uri.hashCode), classes.hashCode), element.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('LibraryInfo')
-          ..add('element', element)
-          ..add('symtable', symtable))
+          ..add('uri', uri)
+          ..add('classes', classes)
+          ..add('element', element))
         .toString();
   }
 }
@@ -60,20 +126,25 @@ class _$LibraryInfo extends LibraryInfo {
 class LibraryInfoBuilder implements Builder<LibraryInfo, LibraryInfoBuilder> {
   _$LibraryInfo _$v;
 
+  Uri _uri;
+  Uri get uri => _$this._uri;
+  set uri(Uri uri) => _$this._uri = uri;
+
+  Iterable<ClassInfo> _classes;
+  Iterable<ClassInfo> get classes => _$this._classes;
+  set classes(Iterable<ClassInfo> classes) => _$this._classes = classes;
+
   LibraryElement _element;
   LibraryElement get element => _$this._element;
   set element(LibraryElement element) => _$this._element = element;
-
-  Symtable _symtable;
-  Symtable get symtable => _$this._symtable;
-  set symtable(Symtable symtable) => _$this._symtable = symtable;
 
   LibraryInfoBuilder();
 
   LibraryInfoBuilder get _$this {
     if (_$v != null) {
+      _uri = _$v.uri;
+      _classes = _$v.classes;
       _element = _$v.element;
-      _symtable = _$v.symtable;
       _$v = null;
     }
     return this;
@@ -94,8 +165,8 @@ class LibraryInfoBuilder implements Builder<LibraryInfo, LibraryInfoBuilder> {
 
   @override
   _$LibraryInfo build() {
-    final _$result =
-        _$v ?? new _$LibraryInfo._(element: element, symtable: symtable);
+    final _$result = _$v ??
+        new _$LibraryInfo._(uri: uri, classes: classes, element: element);
     replace(_$result);
     return _$result;
   }
