@@ -15,7 +15,7 @@ This is especially useful when you have a piece of complex XML \*cough\*OOXML\*c
 ### Your source
 
 ```dart
-import 'package:runtime/annotations.dart';
+import 'package:ixp_runtime/annotations.dart';
 
 @tag('ContactInfo')
 class ContactInfo {
@@ -40,24 +40,20 @@ class AddressBook {
 ```yaml
 name: example
 description: Annotates data classes for XML deserialization
-# version: 1.0.0
-# homepage: https://www.example.com
 
 environment:
   sdk: '>=2.10.0 <3.0.0'
 
 dependencies:
+  ixp_runtime: ^0.7.0
   logging: ^0.11.4
   xml: ^4.4.0
-  runtime:
-    path: ../runtime/
 
 dev_dependencies:
   build_runner: ^1.0.0
   build_test: ^0.10.3
+  ixp_generator: ^0.7.0
   test: ^1.14.4
-  generator:
-    path: ../generator/
 ```
 
 ### Generate your parser from the command line:

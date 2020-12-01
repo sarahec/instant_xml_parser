@@ -10,7 +10,7 @@ import 'package:xml/xml_events.dart';
 import 'structures.dart';
 import 'dart:core';
 import 'package:logging/logging.dart';
-import 'package:runtime/runtime.dart';
+import 'package:ixp_runtime/runtime.dart';
 
 const AddressBookName = 'addressBook';
 const AttributesTagName = 'attributesTest';

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import 'package:async/async.dart';
-import 'package:runtime/runtime.dart';
+import 'package:ixp_runtime/runtime.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 

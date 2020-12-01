@@ -23,7 +23,7 @@ targets:
 
 builders:
   generator:
-    import: "package:generator/src/builders/parser_builder.dart"
+    import: "package:ixp_generator/builders.dart"
     builder_factories: ["parserBuilder"]
     build_extensions: {".dart": [".parser.dart"]}
     auto_apply: dependents

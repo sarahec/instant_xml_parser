@@ -15,7 +15,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
-import 'package:runtime/annotations.dart';
+import 'package:ixp_runtime/annotations.dart';
 
 import '../utils/annotation_reader.dart';
 import 'constructor_info.dart';
