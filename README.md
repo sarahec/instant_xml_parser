@@ -100,7 +100,10 @@ import 'package:xml/xml_events.dart';
 
 ## Limitations
 
-* Assumes well-formed XML, but will ignore unknown tags/attributes/text in the input stream.
+This is not an officially supported Google product.
+
+* Assumes well-formed XML, and will ignore unknown tags/attributes/text in the input 
+  stream (but will log such).
 * Declaration all has to be in one file (no cross-file references)
 * Does nothing with XML comments, processing instructions, etc.
 
@@ -109,3 +112,4 @@ import 'package:xml/xml_events.dart';
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [tracker]: https://github.com/sarahec/instant_xml_parser/issues
+
