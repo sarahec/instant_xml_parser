@@ -22,6 +22,7 @@ import 'field_info.dart';
 
 part 'method_info.g.dart';
 
+/// A single method, parsed. Created using ```built_value```
 abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
   factory MethodInfo([void Function(MethodInfoBuilder) updates]) = _$MethodInfo;
   factory MethodInfo.fromClassInfo(
@@ -36,6 +37,7 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
 
   ClassInfo get classInfo;
 
+  /// Lazily parse the fields
   @memoized
   Iterable<FieldInfo> fields(Symtable symtable) {
     final superclasses = [
@@ -57,8 +59,10 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
 
   String get name => '$prefix$typeName';
 
+  /// Parser method names are ${prefix}ClassName. Default prefix is 'extract'
   String get prefix;
 
+  /// The variable name representing this tag
   @memoized
   String get startVar => '_' + ReCase(typeName).camelCase;
 

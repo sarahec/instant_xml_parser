@@ -23,6 +23,7 @@ import 'method_info.dart';
 
 part 'class_info.g.dart';
 
+// A single class, parsed. Created using ```built_value```
 abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
   static Serializer<ClassInfo> get serializer => _$classInfoSerializer;
 
@@ -33,14 +34,18 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
         ..type = element.thisType);
   ClassInfo._();
 
+  /// Parsed class
   ClassElement get element;
 
+  /// Constant name to use for this tag
   String get constantName => typeName + 'Name';
 
+  /// The method code for this class or null (if not marked wiuth @tag)
   @memoized
   MethodInfo get method =>
       needsMethod ? MethodInfo.fromClassInfo(this, element.fields) : null;
 
+  /// Constructor using this class' fields
   @nullable
   @memoized
   ConstructorInfo get constructor {
@@ -49,20 +54,30 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
     return (ctor == null) ? null : ConstructorInfo.fromElement(ctor);
   }
 
+  /// Is this an abstract class?
+  ///
+  /// No parser method if so; will be implemented as a method for each concrete
+  /// subclass.
   bool get isAbstract => element.isAbstract;
 
+  /// Has this class been annotated with @tag?
   bool get needsMethod => tagName != null;
 
+  /// All of the immediate sublclasses of this class (in this source file only)
   @nullable
   Iterable<DartType> get subclasses;
 
+  /// What are this class' superclasses?
   Iterable<DartType> get supertypes => element.allSupertypes;
 
+  /// What's the XML tag?
   @memoized
   String get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');
 
+  /// Stored class type
   InterfaceType get type;
 
+  /// String name of this class (generated only once, then memoized)
   @memoized
   String get typeName => type.getDisplayString(withNullability: false);
 }

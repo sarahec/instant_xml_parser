@@ -19,6 +19,7 @@ import 'package:ixp_generator/src/info/class_info.dart';
 import 'library_info.dart';
 import 'method_info.dart';
 
+/// Classes, subclasses, and methods included in this source file.
 class Symtable {
   LinkedHashMap<String, ClassInfo> _classes;
   Map<DartType, Iterable<ClassInfo>> _subclasses;
@@ -49,7 +50,6 @@ class Symtable {
     return _subclasses[type];
   }
 
-  // BuiltList<MethodInfo> get
   factory Symtable.fromLibraryInfo(LibraryInfo library) {
     final classMap = {for (var info in library.classes) info.typeName: info};
     final methodList = library.classes

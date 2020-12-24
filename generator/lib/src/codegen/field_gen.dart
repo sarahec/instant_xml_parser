@@ -1,3 +1,8 @@
+/// Pluggable code emitters for attributes, text fields, and child tags.
+///
+/// Don't confuse the name "Generator" here with the generators used by
+/// ```source_gen```, these generate code fragments for use within a parser.
+
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,13 +24,24 @@ import 'package:logging/logging.dart';
 
 import '../info/method_info.dart';
 
+/// Emits the code for reading a single attribute (with optional type
+/// conversion.)
+///
+/// This handles: type conversion (```@convert```), boolean matching,
+/// and default values (if specified in the constructor).
 class AttributeFieldGenerator {
+  /// Parsed information from the source field
   final FieldInfo field;
+
+  /// Parsed information about the containing method
   final MethodInfo method;
+
+  /// Parsed information about the containing file
   final Symtable symtable;
 
   AttributeFieldGenerator(this.field, this.method, this.symtable);
 
+  /// Generate the code
   String get toAction {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
@@ -45,6 +61,10 @@ class AttributeFieldGenerator {
   }
 }
 
+/// Emits the code for reading an XML text event.
+///
+/// This handles: type conversion (```@convert```)
+/// and default values (if specified in the constructor).
 class TextFieldGenerator {
   final FieldInfo field;
   final MethodInfo method;
@@ -52,6 +72,7 @@ class TextFieldGenerator {
 
   TextFieldGenerator(this.field, this.method, this.symtable);
 
+  /// Generate the code
   String get toAction {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
@@ -63,6 +84,14 @@ class TextFieldGenerator {
   }
 }
 
+/// Emits the code for reading a child tag from within a parent.
+///
+/// See [MethodGenerator.methodBody] for context.
+///
+/// The emitted code is in two parts:
+/// 1. A variable declaration to hold the result
+/// 2. The ```case``` statement that recognizes the tag and calls its parsing
+/// method.
 class TagFieldGenerator {
   final FieldInfo field;
   final MethodInfo method;
@@ -72,9 +101,10 @@ class TagFieldGenerator {
 
   TagFieldGenerator(this.field, this.method, this.symtable);
 
-  String action(MethodInfo foreignMethod) =>
+  String _action(MethodInfo foreignMethod) =>
       'await ${foreignMethod.name}(events)';
 
+  /// Generate the case statement
   String get toAction {
     final methods = symtable.methodsReturning(field.type);
     if (methods == null) {
@@ -87,11 +117,12 @@ class TagFieldGenerator {
       for (var m in methods)
         '''
         case ${m.classInfo.constantName}:
-          ${field.isList ? '${field.name}.add(${action(m)})' : ' ${field.name}= ${action(m)}'};
+          ${field.isList ? '${field.name}.add(${_action(m)})' : ' ${field.name}= ${_action(m)}'};
         break;'''
     ].join('\n\n');
   }
 
+  /// Generate the variable declaration (which may be a list)
   String get vardecl {
     final varInit = (field.defaultValueCode != null)
         ? ' = ${field.defaultValueCode}'

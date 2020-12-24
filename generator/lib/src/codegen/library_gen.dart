@@ -21,9 +21,17 @@ import 'package:ixp_generator/src/info/symtable.dart';
 
 import 'method_gen.dart';
 
+/// Emits one parser file.
+
 class LibraryGenerator {
+  /// The result of parsing the source file.
   final LibraryInfo info;
+
+  /// Name, location, etc. of the source file (needed to import that into
+  /// its parser)
   final AssetId sourceAsset;
+
+  /// Classes, subclasses, and methods to include in this parser
   final Symtable symtable;
 
   var _importUris;
@@ -31,11 +39,13 @@ class LibraryGenerator {
   LibraryGenerator(this.info, this.sourceAsset)
       : symtable = Symtable.fromLibraryInfo(info);
 
+  /// Get the source for all methods
   Iterable<Method> get methods => [
         for (var method in symtable.methods)
           MethodGenerator(method, symtable).toMethod
       ];
 
+  /// Get the source for all import statements
   Iterable<String> get importUris {
     if (_importUris == null) {
       _importUris = <String>[];
@@ -47,11 +57,13 @@ class LibraryGenerator {
     return _importUris;
   }
 
+  /// Get the source for the tag name constands
   Iterable<Field> get constants => symtable.methods.map((c) => Field((b) => b
     ..name = c.classInfo.constantName
     ..assignment = Code("'${c.classInfo.tagName}'")
     ..modifier = FieldModifier.constant));
 
+  /// Assemble everything into a finished file
   Library get toCode => Library((b) => b
     ..directives.addAll(importUris.map((i) => Directive.import(i)))
     ..body.addAll(constants)

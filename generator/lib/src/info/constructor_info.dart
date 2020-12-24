@@ -16,6 +16,7 @@ import 'package:built_value/built_value.dart';
 
 part 'constructor_info.g.dart';
 
+/// A single constructor, parsed. Created using ```built_value```
 abstract class ConstructorInfo
     implements Built<ConstructorInfo, ConstructorInfoBuilder> {
   ConstructorInfo._();

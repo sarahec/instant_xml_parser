@@ -23,11 +23,22 @@ import 'package:source_gen/source_gen.dart';
 
 import '../codegen/library_gen.dart';
 
+/// Creates the parser by reading annotated Dart code.
+///
+/// Note: If buile_runner isn't returing an output, turn on extra-verbose
+/// logging to see the generated code before it goes through the formatter:
+/// ```sh
+/// dart pub run build_runner build -vv
+/// ```
 class ParseMethodGenerator extends Generator {
   final _log = Logger('ParseMethodGenerator');
   final _tagChecker = TypeChecker.fromRuntime(tag);
 
-  /// Build an overall symbol table before generating the individual items
+  /// Reads a single Dart file and emits the matching parser. Called once per
+  /// source file.
+  ///
+  /// Note this will only emit a parser if the file contains at least one
+  /// class annotated with ```@tag```.
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     // skip files that lack the required annotation

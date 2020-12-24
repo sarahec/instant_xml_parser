@@ -19,6 +19,7 @@ import 'package:ixp_runtime/annotations.dart';
 
 part 'field_info.g.dart';
 
+/// A single field, parsed. Created using ```built_value```
 abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   factory FieldInfo([void Function(FieldInfoBuilder) updates]) = _$FieldInfo;
   factory FieldInfo.fromElement(
@@ -35,20 +36,25 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   @nullable
   String get defaultValueCode;
 
+  /// Either the name specified in @alias, or the element's name
   @memoized
   String get attributeName =>
       AnnotationReader.getAnnotation<alias>(element, 'name') ?? element.name;
 
+  /// Contents of the @convert tag, if present, else null
   @memoized
   String get conversion =>
       AnnotationReader.getAnnotation<convert>(element, 'source');
 
+  /// True if annotated with @convert
   @memoized
   bool get hasConversion => AnnotationReader.hasAnnotation<convert>(element);
 
+  /// Attribute heuristic: primitive type or annotated w/ @convert, not xml text.
   bool get isAttributeField =>
       (hasConversion || isPrimitive) && !isXmlTextField;
 
+  /// Is this a child tag?
   bool get isChildField => !isAttributeField && !isXmlTextField;
 
   bool get isList => element.type.isDartCoreList;
@@ -65,9 +71,11 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   @memoized
   String get name => element.name;
 
+  /// Contents of @trueIfEquals annotation, if present
   String get trueIfEquals =>
       AnnotationReader.getAnnotation<ifEquals>(element, 'value');
 
+  /// Contents of @trueIfMatches annotation, if present
   String get trueIfMatches =>
       AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
 
