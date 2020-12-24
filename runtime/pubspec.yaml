@@ -14,9 +14,9 @@
 # limitations under the License.
 
 name: ixp_runtime
-description: Extracts text from .docx format files (e.g. Microsoft Word)
-version: 0.7.0
-# homepage: https://www.example.com
+description: Runtime utilities for generated XML parsers (as used in instant_xml_parser)
+version: 0.9.0
+homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:
   sdk: '>=2.10.0 <3.0.0'

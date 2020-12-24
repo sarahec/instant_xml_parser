@@ -14,9 +14,9 @@
 # limitations under the License.
 
 name: ixp_generator
-description: Annotates data classes for XML deserialization
-# version: 1.0.0
-# homepage: https://www.example.com
+description: Code generator for instant_xml_parser. Reads specially annotated Dart code an emits an XML parser/deserializer to match.
+version: 0.9.0
+homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:
   sdk: '>=2.10.0 <3.0.0'
@@ -29,8 +29,7 @@ dependencies:
   code_builder: ^3.0.0
   logging: ^0.11.4
   recase: ^3.0.0
-  ixp_runtime:
-    path: ../runtime/
+  ixp_runtime: ^0.9.0
   source_gen: ^0.9.6
   xml: ^4.4.1
 
