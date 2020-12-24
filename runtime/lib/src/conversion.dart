@@ -15,24 +15,30 @@ library runtime;
 
 typedef Converter<T> = T Function(String s);
 
+/// Conversion methods from String to the Dart primitive types.
 class Convert {
-  static Converter<String> get identity => (s) => s;
-
+  /// Converts '1', 'true', and 'TRUE' to ```true```.
   static Converter<bool> get toBool =>
       (s) => s != null && (s == '1' || s == 'true' || s == 'TRUE');
 
+  /// Parses a double fron a string.
   static Converter<double> get toDouble => (s) => double.parse(s);
 
+  /// Parses an int from a string.
   static Converter<int> get toInt => (s) => int.parse(s);
 
+  /// Returns ```true``` if an attribute's string matches this value. Used by
+  /// ```@ifEquals```.
   static Converter<bool> ifEquals(value) => (s) => value == s;
 
+  /// Returns ```true``` if an attribute's string matches a regular expression.
+  /// The expression is a raw string (```r'foo'```).
   static Converter<bool> ifMatches(regexp) => (s) => RegExp(regexp).hasMatch(s);
 }
 
-/// Returns a converter from String to the specified built-in type.
+/// Returns a converter from String to the specified primitive type.
 ///
-/// Use the ```@converter``` tag for non-primitive types instead
+/// Note: Use the [convert] annotation for all other types.
 Converter autoConverter(Type T) => (T == bool)
     ? Convert.toBool
     : (T == int)

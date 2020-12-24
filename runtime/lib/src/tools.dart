@@ -16,5 +16,12 @@ library runtime;
 import 'package:async/async.dart';
 import 'package:xml/xml_events.dart';
 
+/// Converts a stream of Strings, such as from a file, to to a StreamQueue of
+/// XML Events ready for parsing.
+///
+/// The converted stream has three important features: every event contains a
+/// reference to its "parent" (enclosing) event, comments have been stripped,
+/// and runs of XML Text events have been coalesced together. The parser
+/// utilities need these three things to be true.
 StreamQueue<XmlEvent> generateEventStream(Stream<String> source) => StreamQueue(
     source.toXmlEvents().withParentEvents().normalizeEvents().flatten());

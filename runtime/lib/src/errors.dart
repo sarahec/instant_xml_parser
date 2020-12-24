@@ -13,6 +13,8 @@
 // limitations under the License.
 library runtime;
 
+/// Indicates that the parser ran out of XML Events while looking for the
+/// end of a tag.
 class EndOfQueue implements ParsingError {
   final String reason;
 
@@ -22,6 +24,7 @@ class EndOfQueue implements ParsingError {
   String get message => 'End of queue $reason';
 }
 
+/// Indicates that an expected attribute wasn't found.
 class MissingAttribute implements ParsingError {
   final String tag;
   final String attribute;
@@ -32,6 +35,7 @@ class MissingAttribute implements ParsingError {
   String get message => 'Missing attribute value $tag::$attribute';
 }
 
+/// Indicates that an expected (and required) start tag wasn't found.
 class MissingStartTag implements ParsingError {
   final String wanted;
   final String found;
@@ -42,6 +46,7 @@ class MissingStartTag implements ParsingError {
   String get message => 'Expected <$wanted> at start';
 }
 
+/// Indicates that an end tag wasn't found for the current star tag.
 class MissingEndTag implements ParsingError {
   final String wanted;
 

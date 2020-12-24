@@ -15,11 +15,15 @@ import 'package:xml/xml_events.dart';
 import 'package:xml/src/xml_events/utils/parented.dart';
 
 extension Ancestors on XmlParented {
-  bool descendsFrom(ancestor) =>
+  /// Returns true if this element is nested within the specified element.
+  ///
+  /// [ancestor] should contain an ```XmlStartElementEvent```.
+  bool descendsFrom(XmlParented ancestor) =>
       // can't use '.contains' since it depends on equality, so will return false
       // positives for two events of the same type without any attributes
       ancestor == null ? false : ancestors.any((e) => identical(e, ancestor));
 
+  /// Returns all the parents for this event.
   Iterable<XmlEvent> get ancestors sync* {
     var probe = parentEvent;
     while (probe != null) {

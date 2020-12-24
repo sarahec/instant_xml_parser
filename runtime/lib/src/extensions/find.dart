@@ -39,23 +39,8 @@ extension Find on StreamQueue<XmlEvent> {
     return probe;
   }
 
-  /// Scans the current queue for a match. Returns the found element or null.
-  /// Consumes up to the found element (and consumes the found element
-  /// unless ```keepFound``` is true.)
-  ///
-  /// [match] Function that returns true when found.
-  /// [keepFound] if true, keeps the found value at the start if the queue.
-  @deprecated
-  Future<XmlEvent> findDestructively(Matcher match, {keepFound = false}) async {
-    final probe = await _find(match, this);
-    if (probe != null && !keepFound && await hasNext) {
-      await next; // drop from queue
-    }
-    return probe;
-  }
-
   // Consume unmatched elements up until the found element. Returns the
-  // found element or null;
+  // found element or null.
   Future<XmlEvent> _find(Matcher match, StreamQueue<XmlEvent> queue) async {
     var probe;
     for (;;) {

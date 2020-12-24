@@ -20,6 +20,9 @@ import 'matcher.dart';
 final _log = Logger('consume:');
 
 extension Consume on StreamQueue<XmlEvent> {
+  /// Skips all events while the matcher returns true.
+  ///
+  /// Slipped elements are logged at the ```finest``` level.
   void consume(Matcher matching) async {
     while (await hasNext && matching(await peek)) {
       var p = await peek;
