@@ -23,7 +23,7 @@ targets:
 
 builders:
   generator:
-    import: "package:instant_xml_parser/builders.dart"
+    import: "package:instant_xml_parser/instant_xml_parser.dart"
     builder_factories: ["parserBuilder"]
     build_extensions: {".dart": [".parser.dart"]}
     auto_apply: dependents
