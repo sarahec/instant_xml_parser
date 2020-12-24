@@ -14,8 +14,8 @@
 library parse_generator;
 
 import 'package:code_builder/code_builder.dart';
-import 'package:ixp_generator/src/info/field_info.dart';
-import 'package:ixp_generator/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/info/field_info.dart';
+import 'package:instant_xml_parser/src/info/symtable.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 

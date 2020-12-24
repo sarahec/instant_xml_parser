@@ -22,7 +22,7 @@ void main() {
   group('boilerplate', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
 
         @tag('empty')
         class EmptyTag {
@@ -58,7 +58,7 @@ void main() {
   group('attributes', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
 
         @tag('identification')
         class NameTag {
@@ -96,7 +96,7 @@ void main() {
   group('text', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
 
         @tag('text')
         class NameTag {
@@ -127,7 +127,7 @@ void main() {
   group('conversion', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
 
         @tag('loc')
         class Location {
@@ -161,7 +161,7 @@ void main() {
   group('subclassing', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
 
         abstract class Foo {
           final String name;
@@ -187,7 +187,7 @@ void main() {
   group('children', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
 
         @tag('contact')
         class ContactInfo {
@@ -218,7 +218,7 @@ void main() {
   group('imports', () {
     setUp(() async {
       generated = await g.generate('''
-        import 'package:runtime/annotations.dart';
+        import 'package:ixp_runtime/annotations.dart';
         import 'other.dart';
 
         @tag('contact')

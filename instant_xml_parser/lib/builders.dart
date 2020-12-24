@@ -14,7 +14,7 @@
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'package:ixp_generator/src/generators/parse_method_generator.dart';
+import 'package:instant_xml_parser/src/generators/parse_method_generator.dart';
 
 /// Entry point to the generation process. Called from ```build.yaml```.
 Builder parserBuilder(BuilderOptions options) =>

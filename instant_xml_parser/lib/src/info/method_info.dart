@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import 'package:built_value/built_value.dart';
-import 'package:ixp_generator/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/info/symtable.dart';
 import 'package:recase/recase.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';

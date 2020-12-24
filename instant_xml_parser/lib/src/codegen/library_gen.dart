@@ -15,9 +15,9 @@ library parse_generator;
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:ixp_generator/src/import_uris.dart';
-import 'package:ixp_generator/src/info/library_info.dart';
-import 'package:ixp_generator/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/import_uris.dart';
+import 'package:instant_xml_parser/src/info/library_info.dart';
+import 'package:instant_xml_parser/src/info/symtable.dart';
 
 import 'method_gen.dart';
 

@@ -18,8 +18,8 @@
 // limitations under the License.
 library parse_generator;
 
-import 'package:ixp_generator/src/info/field_info.dart';
-import 'package:ixp_generator/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/info/field_info.dart';
+import 'package:instant_xml_parser/src/info/symtable.dart';
 import 'package:logging/logging.dart';
 
 import '../info/method_info.dart';

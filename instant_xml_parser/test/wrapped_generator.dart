@@ -13,7 +13,7 @@
 // limitations under the License.
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
-import 'package:ixp_generator/src/generators/parse_method_generator.dart';
+import 'package:instant_xml_parser/src/generators/parse_method_generator.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -30,7 +30,7 @@ class WrappedGenerator {
 
   Future<String> generate(String source) async {
     var srcs = <String, String>{
-      'runtime|lib/annotations.dart': annotationsSource,
+      'ixp_runtime|lib/annotations.dart': annotationsSource,
       '$pkgName|lib/structures.dart': source,
     };
 

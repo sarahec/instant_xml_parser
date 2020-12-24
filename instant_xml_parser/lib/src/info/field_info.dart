@@ -14,7 +14,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_value/built_value.dart';
-import 'package:ixp_generator/src/utils/annotation_reader.dart';
+import 'package:instant_xml_parser/src/utils/annotation_reader.dart';
 import 'package:ixp_runtime/annotations.dart';
 
 part 'field_info.g.dart';

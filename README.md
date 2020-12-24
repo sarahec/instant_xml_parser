@@ -45,14 +45,14 @@ environment:
   sdk: '>=2.10.0 <3.0.0'
 
 dependencies:
-  ixp_runtime: ^0.7.0
+  ixp_runtime: ^0.9.0
   logging: ^0.11.4
   xml: ^4.4.0
 
 dev_dependencies:
   build_runner: ^1.0.0
   build_test: ^0.10.3
-  ixp_generator: ^0.7.0
+  instant_xml_parser: ^0.9.0
   test: ^1.14.4
 ```
 

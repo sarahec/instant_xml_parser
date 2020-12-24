@@ -14,7 +14,7 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/type.dart';
-import 'package:ixp_generator/src/info/class_info.dart';
+import 'package:instant_xml_parser/src/info/class_info.dart';
 
 import 'library_info.dart';
 import 'method_info.dart';
