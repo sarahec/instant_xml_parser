@@ -51,7 +51,7 @@ class AttributeFieldGenerator {
       conversion = ', convert: ${field.conversion}';
     } else if (field.type.isDartCoreBool) {
       if (field.trueIfEquals != null) {
-        conversion = ", convert: Convert.ifEquals('${field.trueIfEquals}')}";
+        conversion = ", convert: Convert.ifEquals('${field.trueIfEquals}')";
       } else if (field.trueIfMatches != null) {
         conversion = ", convert: Convert.ifMatches('${field.trueIfMatches}')";
       }
