@@ -52,7 +52,7 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
 
   /// Attribute heuristic: primitive type or annotated w/ @convert, not xml text.
   bool get isAttributeField =>
-      (hasConversion || isPrimitive) && !isXmlTextField;
+      (hasConversion || isPrimitive || isUri) && !isXmlTextField;
 
   /// Is this a child tag?
   bool get isChildField => !isAttributeField && !isXmlTextField;
@@ -63,6 +63,10 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
       type.isDartCoreDouble ||
       type.isDartCoreInt ||
       type.isDartCoreString);
+
+  @memoized
+  bool get isUri =>
+      element.type.getDisplayString(withNullability: false) == 'Uri';
 
   @memoized
   bool get isXmlTextField =>

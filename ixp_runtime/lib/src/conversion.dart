@@ -27,6 +27,9 @@ class Convert {
   /// Parses an int from a string.
   static Converter<int> get toInt => (s) => int.parse(s);
 
+  /// Parses an int from a string.
+  static Converter<Uri> get toUri => (s) => Uri.parse(s);
+
   /// Returns ```true``` if an attribute's string matches this value. Used by
   /// ```@ifEquals```.
   static Converter<bool> ifEquals(value) => (s) => value == s;
@@ -45,4 +48,6 @@ Converter autoConverter(Type T) => (T == bool)
         ? Convert.toInt
         : (T == double)
             ? Convert.toDouble
-            : null;
+            : (T == Uri)
+                ? Convert.toUri
+                : null;
