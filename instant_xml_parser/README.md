@@ -92,7 +92,7 @@ import 'package:xml/xml_events.dart';
 
 ## Features
 
-* Attributes: Non-class fields read as attributes (with implicit or explicit conversion from String)
+* Attributes: Non-class fields read as attributes (with implicit or explicit conversion from String). To load a class from an attribute, ensure the class has a static method to instantiate from a String (e.g. ```static Foo parse(String s)```) and annotate field with ```@convert('Foo.parse')```.
 * Text: Annotate a field with ```@textElement``` to read its XML text
 * Classes: Annotate a class definition with ```@tag('qualified_name')``` to generate a parsing method
 * Classes: Classes referenced from other classes automatically call that parsing method
