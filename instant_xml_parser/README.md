@@ -96,7 +96,7 @@ import 'package:xml/xml_events.dart';
 * Text: Annotate a field with ```@textElement``` to read its XML text
 * Classes: Annotate a class definition with ```@tag('qualified_name')``` to generate a parsing method
 * Classes: Classes referenced from other classes automatically call that parsing method
-* Subclasses: Subclass to implement alternate tags (e.g. if a field can take ```<a1>```, ```<a2>)```, or ```<a3>```, give these a common superclass and use it)
+* Subclasses: Subclass to implement alternate tags (e.g. if a field can take ```<a1>```, ```<a2>```, or ```<a3>```, give these a common superclass and use it)
 
 ## Limitations
 
