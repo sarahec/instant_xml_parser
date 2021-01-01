@@ -60,7 +60,7 @@ class MethodGenerator {
       ].join('\n');
 
   Iterable<TagFieldGenerator> get childFieldGenerators => [
-        for (var f in fields.where((f) => f.isChildField))
+        for (var f in fields.where((f) => f.isChildField && !f.isCustom))
           TagFieldGenerator(f, method, symtable)
       ];
 
@@ -72,7 +72,20 @@ class MethodGenerator {
       _log.fine('in ${method.classInfo.tagName}');
       ''';
 
+  String get resolveCustomClasses => [
+        for (var f
+            in fields.where((f) => f.isChildField && f.isCustom && !f.isList))
+          TagFieldGenerator(f, method, symtable).customCode
+      ].join('\n');
+
+  String get resolveDeferredAttributes => [
+        for (var f in fields.where((f) => f.isAttributeField && f.isDeferred))
+          AttributeFieldGenerator(f, method, symtable).resolveDeferred
+      ].join('\n');
+
   String get endBlock => '''
+    $resolveCustomClasses
+    $resolveDeferredAttributes
     _log.finest('consume ${method.classInfo.tagName}'); 
     await events.consume(inside(${method.startVar}));''';
 

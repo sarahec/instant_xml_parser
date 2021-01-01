@@ -46,6 +46,11 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   String get conversion =>
       AnnotationReader.getAnnotation<convert>(element, 'source');
 
+  /// Contents of the @convert tag, if present, else null
+  @memoized
+  String get customTemplate =>
+      AnnotationReader.getAnnotation<custom>(element, 'template');
+
   /// True if annotated with @convert
   @memoized
   bool get hasConversion => AnnotationReader.hasAnnotation<convert>(element);
@@ -57,21 +62,33 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   /// Is this a child tag?
   bool get isChildField => !isAttributeField && !isXmlTextField;
 
+  /// Has this been annotated with ```@custom```
+  @memoized
+  bool get isCustom => AnnotationReader.hasAnnotation<custom>(element);
+
+  /// True for custom fields, as they need to be assigned just before the constructor
+  bool get isDeferred => isCustom && isAttributeField;
+
+  /// True if this field contains a list
   bool get isList => element.type.isDartCoreList;
 
+  /// True if this field is ```bool```, ```double```, ```int```, or ```String```
   bool get isPrimitive => (type.isDartCoreBool ||
       type.isDartCoreDouble ||
       type.isDartCoreInt ||
       type.isDartCoreString);
 
+  /// True if this field is a ```Uri``` (used to convert via ```Uri.parse```)
   @memoized
   bool get isUri =>
       element.type.getDisplayString(withNullability: false) == 'Uri';
 
+  /// True if this field should come from ```XmlTextEvent```
   @memoized
   bool get isXmlTextField =>
       AnnotationReader.hasAnnotation<TextElement>(element);
 
+  /// Field name
   @memoized
   String get name => element.name;
 
@@ -83,11 +100,13 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   String get trueIfMatches =>
       AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
 
+  /// Field type
   @memoized
   DartType get type => element.type.isDartCoreList
       ? (element.type as ParameterizedType).typeArguments.first
       : element.type;
 
+  /// Field type as String
   @memoized
   String get typeName => type.getDisplayString(withNullability: false);
 }

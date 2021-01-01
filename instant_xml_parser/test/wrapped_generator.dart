@@ -75,5 +75,10 @@ class convert {
   const convert(this.source);
 }
 
+class custom {
+  final String template;
+
+  const custom(this.template);
+}
 ''';
 }

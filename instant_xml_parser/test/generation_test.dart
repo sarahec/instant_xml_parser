@@ -158,6 +158,31 @@ void main() {
         skip: 'Need to rewrite after stripping newlines');
   });
 
+  group('custom', () {
+    setUp(() async {
+      generated = await g.generate('''
+        import 'package:ixp_runtime/annotations.dart';
+
+        @tag('loc')
+        class Location {
+          @custom("'Hello, world'")
+          final String foo; 
+
+          @textElement
+          final Uri loc;
+
+          final Uri altLoc;
+
+          NameTag(this.loc, this.altLoc);
+        }''');
+    });
+
+    test(
+        'foo',
+        () => expect(
+            generated, contains("fooCompleter.complete('Hello, world')")));
+  });
+
   group('subclassing', () {
     setUp(() async {
       generated = await g.generate('''

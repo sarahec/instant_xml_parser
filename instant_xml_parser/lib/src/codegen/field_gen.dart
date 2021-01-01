@@ -42,7 +42,19 @@ class AttributeFieldGenerator {
   AttributeFieldGenerator(this.field, this.method, this.symtable);
 
   /// Generate the code
-  String get toAction {
+  String get toAction => field.isCustom ? setupDeferred : readAttribute;
+
+  /// If this is a ```@custom``` field, final initialization won't happen until
+  /// just before the constructor. This generates a [Completer] for
+  /// deferred initialization.
+  String get setupDeferred =>
+      '''final ${field.name}Completer = Completer<${field.typeName}>(); 
+      var ${field.name} = ${field.name}Completer.future;
+      ''';
+
+  /// Generate the code for reading and converting the attribute now, with
+  /// type conversion from String and default value (if specified)
+  String get readAttribute {
     final defaultValue =
         (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
 
@@ -58,6 +70,16 @@ class AttributeFieldGenerator {
     }
 
     return "final ${field.name} = await ${method.startVar}.namedAttribute<${field.typeName}>('${field.attributeName}' $conversion)$defaultValue;";
+  }
+
+  String get resolveDeferred {
+    final defaultValue =
+        (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
+    final textOf =
+        ' (await events.find(textElement(inside(${method.startVar}))) as XmlTextEvent)?.text $defaultValue';
+    final extraction =
+        field.hasConversion ? '${field.conversion}($textOf)' : textOf;
+    return 'final ${field.name} = $extraction;';
   }
 }
 
@@ -100,6 +122,8 @@ class TagFieldGenerator {
   final _log = Logger('TagFieldGenerator');
 
   TagFieldGenerator(this.field, this.method, this.symtable);
+
+  get customCode => 'final ${field.name} = ${field.customTemplate};';
 
   String _action(MethodInfo foreignMethod) =>
       'await ${foreignMethod.name}(events)';

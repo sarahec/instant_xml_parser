@@ -55,6 +55,21 @@ class convert {
   const convert(this.source);
 }
 
+/// Injects  code into the parser to set up the current attribute
+/// (e.g. when ```@convert``` isn't adequate)
+///
+/// [template] the string to be injected to the target code. Use a raw
+/// string if you want to include string interpolation.
+///
+/// Example:
+/// ```
+/// class Script
+class custom {
+  final String template;
+
+  const custom(this.template);
+}
+
 /// Defines a ```bool``` that is true when the field contains a certain string.
 ///
 /// [value] The string to match (case-sensitive)

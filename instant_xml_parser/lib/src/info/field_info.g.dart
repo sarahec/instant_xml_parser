@@ -13,7 +13,9 @@ class _$FieldInfo extends FieldInfo {
   final String defaultValueCode;
   String __attributeName;
   String __conversion;
+  String __customTemplate;
   bool __hasConversion;
+  bool __isCustom;
   bool __isUri;
   bool __isXmlTextField;
   String __name;
@@ -36,7 +38,13 @@ class _$FieldInfo extends FieldInfo {
   String get conversion => __conversion ??= super.conversion;
 
   @override
+  String get customTemplate => __customTemplate ??= super.customTemplate;
+
+  @override
   bool get hasConversion => __hasConversion ??= super.hasConversion;
+
+  @override
+  bool get isCustom => __isCustom ??= super.isCustom;
 
   @override
   bool get isUri => __isUri ??= super.isUri;
