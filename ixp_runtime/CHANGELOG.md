@@ -6,4 +6,8 @@
 
 ## 0.10.0
 
+- Bugfix for boolean attribute generation
+
+## 0.10.0
+
 - Added ```@custom``` annotation for attribute fields
