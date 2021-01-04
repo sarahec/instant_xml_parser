@@ -2,8 +2,8 @@
 
 ## 0.9.0
 
-- First release to pub.dev.
+- First release to pub.dev
 
-## 0.9.1
+## 0.10.0
 
 - Added ```@custom``` annotation for attribute fields

@@ -15,7 +15,7 @@
 
 name: instant_xml_parser
 description: Code generator for instant_xml_parser. Reads specially annotated Dart code an emits an XML parser/deserializer to match.
-version: 0.9.1
+version: 0.10.0
 homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:
@@ -32,7 +32,7 @@ dependencies:
   logging: ^0.11.4
   meta: ^1.2.4
   recase: ^3.0.0
-  ixp_runtime: ^0.9.1
+  ixp_runtime: ^0.10.0
   source_gen: ^0.9.6
   xml: ^4.4.1
 
