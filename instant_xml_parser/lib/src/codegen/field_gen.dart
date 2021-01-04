@@ -123,7 +123,7 @@ class TagFieldGenerator {
 
   TagFieldGenerator(this.field, this.method, this.symtable);
 
-  get customCode => 'final ${field.name} = ${field.customTemplate};';
+  String get customCode => 'final ${field.name} = ${field.customTemplate};';
 
   String _action(MethodInfo foreignMethod) =>
       'await ${foreignMethod.name}(events)';
