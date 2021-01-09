@@ -37,7 +37,7 @@ extension AttributeExtension on XmlStartElementEvent {
   /// Typical call:
   /// ```final name = _pr.namedAttribute<String>(_startTag, 'name')```
   Future<T> namedAttribute<T>(String attributeName,
-      {Converter<T> convert, isRequired = false, T defaultValue}) async {
+      {Converter<T>? convert, isRequired = false, T? defaultValue}) async {
     convert = convert ?? autoConverter(T);
     assert(convert != null || T == String, 'converter required');
 
@@ -47,7 +47,7 @@ extension AttributeExtension on XmlStartElementEvent {
         (a) =>
             (a.name == attributeName) ||
             (_stripNamespace(a.name) == attributeName),
-        orElse: () => null);
+        orElse: () => null as XmlEventAttribute);
     final value = attribute?.value;
 
     if (value == null) {
@@ -55,7 +55,7 @@ extension AttributeExtension on XmlStartElementEvent {
         return Future.error(MissingAttribute(name, attributeName));
       }
       // If we're returning the default value, we can bypass the converter
-      return value ?? defaultValue;
+      return (value ?? defaultValue) as T;
     }
 
     return convert == null ? value : convert(value);

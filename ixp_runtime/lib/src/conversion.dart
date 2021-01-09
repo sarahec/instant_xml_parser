@@ -13,7 +13,7 @@
 // limitations under the License.
 library runtime;
 
-typedef Converter<T> = T Function(String s);
+typedef Converter<T> = dynamic Function(String s);
 
 /// Conversion methods from String to the Dart primitive types.
 class Convert {
@@ -42,7 +42,7 @@ class Convert {
 /// Returns a converter from String to the specified primitive type.
 ///
 /// Note: Use the [convert] annotation for all other types.
-Converter autoConverter(Type T) => (T == bool)
+Converter? autoConverter(Type T) => (T == bool)
     ? Convert.toBool
     : (T == int)
         ? Convert.toInt

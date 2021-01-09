@@ -21,27 +21,24 @@ import 'get_id.dart';
 void main() {
   // this needs an explicit type to enable the extension methods
   StreamQueue<XmlEvent> events;
-
-  setUp(() {
-    final xml =
-        '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
-    events = generateEventStream(Stream.value(xml));
-  });
-
+  final xml =
+      '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
   group('constraints', () {
     test('named', () async {
-      final XmlStartElementEvent tag = await events.find(named('p'));
+      events = generateEventStream(Stream.value(xml));
+      final tag = await events.find(named('p')) as XmlStartElementEvent;
       expect(tag.name, equals('p'));
       expect(getID(tag), equals('1'));
     });
 
     test('inside', () async {
-      final foo = await events.find(named('foo'));
-      final in1 = await events.find(inside(foo));
+      events = generateEventStream(Stream.value(xml));
+      final foo = await events.find(named('foo')) as XmlStartElementEvent;
+      final in1 = await events.find(inside(foo)) as XmlStartElementEvent;
       await events.next;
-      final in2 = await events.find(inside(foo));
+      final in2 = await events.find(inside(foo)) as XmlStartElementEvent;
       await events.next;
-      final end = await events.find(inside(foo));
+      final end = await events.find(inside(foo)) as XmlStartElementEvent;
       expect(in1, isNotNull);
       expect(in2, isNot(same(in1)));
       expect(end, isNull);

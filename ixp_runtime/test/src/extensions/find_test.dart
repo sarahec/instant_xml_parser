@@ -19,31 +19,30 @@ import 'package:xml/xml_events.dart';
 void main() {
   // this needs an explicit type to enable the extension methods
   StreamQueue<XmlEvent> events;
-
-  setUp(() {
-    final xml =
-        '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
-    events = generateEventStream(Stream.value(xml));
-  });
+  final xml =
+      '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
 
   group('find', () {
     test('matching value', () async {
-      final XmlStartElementEvent startTag =
-          await events.find((e) => e is XmlStartElementEvent);
+      events = generateEventStream(Stream.value(xml));
+      final startTag = await events.find((e) => e is XmlStartElementEvent)
+          as XmlStartElementEvent;
       expect(startTag.qualifiedName, equals('foo'));
     });
 
     test('drops found vaue by default', () async {
-      final XmlStartElementEvent startTag =
-          await events.find((e) => e is XmlStartElementEvent);
-      final XmlStartElementEvent duplicateTag =
-          await events.find((e) => e is XmlStartElementEvent);
+      events = generateEventStream(Stream.value(xml));
+      final startTag = await events.find((e) => e is XmlStartElementEvent)
+          as XmlStartElementEvent;
+      final duplicateTag = await events.find((e) => e is XmlStartElementEvent)
+          as XmlStartElementEvent;
       expect(duplicateTag, isNot(same(startTag)));
     });
 
     test('keepFound retains result', () async {
-      final XmlStartElementEvent startTag =
-          await events.find((e) => e is XmlStartElementEvent, keepFound: true);
+      events = generateEventStream(Stream.value(xml));
+      final startTag = await events.find((e) => e is XmlStartElementEvent,
+          keepFound: true) as XmlStartElementEvent;
       expect(await events.peek, same(startTag));
     });
 
@@ -55,6 +54,7 @@ void main() {
     });
 
     test('returns null if match throws', () async {
+      events = generateEventStream(Stream.value(xml));
       final tag = await events.find((e) => throw NoSuchMethodError);
       expect(tag, isNull);
     });

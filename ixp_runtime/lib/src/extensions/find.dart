@@ -45,7 +45,7 @@ extension Find on StreamQueue<XmlEvent> {
     var probe;
     for (;;) {
       if (!await queue.hasNext) {
-        return null;
+        return null as XmlEvent;
       }
       probe = await queue.peek;
       try {
@@ -54,7 +54,7 @@ extension Find on StreamQueue<XmlEvent> {
         }
       } catch (e) {
         _log.fine(e);
-        return null;
+        return null as XmlEvent;
       }
       probe = await queue.next;
     }

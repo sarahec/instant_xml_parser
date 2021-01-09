@@ -22,8 +22,8 @@ environment:
   sdk: '>=2.10.0 <3.0.0'
 
 dependencies:
-  logging: ^0.11.4
-  xml: ^4.4.0
+  logging: ^1.0.0-nullsafety.0
+  # xml: ^5.0.0-nullsafety.1
   ixp_runtime: ^0.9.0
 
 dev_dependencies:
@@ -37,3 +37,5 @@ dependency_overrides:
     path: ../instant_xml_parser  
   ixp_runtime:
     path: ../ixp_runtime
+  coverage:
+    path: ../../coverage
