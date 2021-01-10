@@ -18,7 +18,7 @@ extension Ancestors on XmlParented {
   /// Returns true if this element is nested within the specified element.
   ///
   /// [ancestor] should contain an ```XmlStartElementEvent```.
-  bool descendsFrom(XmlParented ancestor) =>
+  bool descendsFrom(XmlParented? ancestor) =>
       // can't use '.contains' since it depends on equality, so will return false
       // positives for two events of the same type without any attributes
       ancestor == null ? false : ancestors.any((e) => identical(e, ancestor));
@@ -26,9 +26,12 @@ extension Ancestors on XmlParented {
   /// Returns all the parents for this event.
   Iterable<XmlEvent> get ancestors sync* {
     var probe = parentEvent;
-    while (probe != null) {
-      yield probe;
-      probe = probe?.parentEvent;
+    for (;;) {
+      if (probe == null) break;
+      {
+        yield probe;
+        probe = probe.parentEvent;
+      }
     }
   }
 }
