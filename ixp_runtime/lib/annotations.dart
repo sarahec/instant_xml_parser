@@ -20,11 +20,11 @@ library runtime.annotations;
 ///[name] The fully qualified attribute name.
 ///
 /// Example:
-/// ```
+/// `
 /// class TextSegment {
 ///   @alias('xml:space')
 ///   final String space;
-/// ```
+/// `
 class alias {
   /// Name for the attribute to extract (if not inferred from the field name)
   final String name;
@@ -40,7 +40,7 @@ class alias {
 /// the desired type.
 ///
 /// Example:
-///```
+///`
 /// @tag('loc')
 /// class Location {
 ///   @convert('Uri.parse')
@@ -48,7 +48,7 @@ class alias {
 ///
 ///   NameTag(this.loc);
 /// }
-/// ```
+/// `
 class convert {
   final String source;
 
@@ -56,13 +56,13 @@ class convert {
 }
 
 /// Injects  code into the parser to set up the current attribute
-/// (e.g. when ```@convert``` isn't adequate)
+/// (e.g. when `@convert` isn't adequate)
 ///
 /// [template] the string to be injected to the target code. Use a raw
 /// string if you want to include string interpolation.
 ///
 /// Example:
-/// ```
+/// `
 /// class Script
 class custom {
   final String template;
@@ -70,33 +70,33 @@ class custom {
   const custom(this.template);
 }
 
-/// Defines a ```bool``` that is true when the field contains a certain string.
+/// Defines a `bool` that is true when the field contains a certain string.
 ///
 /// [value] The string to match (case-sensitive)
 ///
 /// Example:
-/// ```
+/// `
 /// class Circuit {
 ///   @ifEquals('on')
 ///   bool power;
-/// ```
+/// `
 class ifEquals {
   final String value;
 
   const ifEquals(this.value);
 }
 
-/// Defines a ```bool``` that is true when the field contains a certain regular
+/// Defines a `bool` that is true when the field contains a certain regular
 /// expression.
 ///
 /// [value] The regex to match. Using a raw string is recommended.
 ///
 /// Example:
-/// ```
+/// `
 /// class Circuit {
 ///   @ifMatches(r'(on|1)')
 ///   bool power;
-/// ```
+/// `
 class ifMatches {
   final String regex;
 
@@ -108,11 +108,11 @@ class ifMatches {
 /// [value] The fully qualified tag name.
 ///
 /// Example:
-/// ```
-/// ///```
+/// `
+/// ///`
 /// @tag('loc')
 /// class Location {
-/// ```
+/// `
 class tag {
   final String value;
 
@@ -122,7 +122,7 @@ class tag {
 /// Denotes a field as coming from the XML text inside the current tag.
 ///
 /// Example:
-/// ```dart
+/// `dart
 /// @tag('note')
 /// class Note {
 ///   @textElement
@@ -130,13 +130,13 @@ class tag {
 ///
 ///   Note(this.body);
 /// }
-/// ```
-/// ```xml
+/// `
+/// `xml
 /// <note>This is a test</node>
-/// ```
+/// `
 const textElement = TextElement();
 
-/// Use ```@textElement```
+/// Use `@textElement`
 class TextElement {
   const TextElement();
 }

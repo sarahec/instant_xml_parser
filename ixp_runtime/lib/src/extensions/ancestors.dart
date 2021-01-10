@@ -17,7 +17,7 @@ import 'package:xml/src/xml_events/utils/parented.dart';
 extension Ancestors on XmlParented {
   /// Returns true if this element is nested within the specified element.
   ///
-  /// [ancestor] should contain an ```XmlStartElementEvent```.
+  /// [ancestor] should contain an `XmlStartElementEvent`.
   bool descendsFrom(XmlParented? ancestor) =>
       // can't use '.contains' since it depends on equality, so will return false
       // positives for two events of the same type without any attributes

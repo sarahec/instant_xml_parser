@@ -19,44 +19,49 @@ import 'package:xml/xml_events.dart';
 
 import 'matcher.dart';
 
-final _log = Logger('find:');
+final _log = Logger('scanTo:');
 
 extension Find on StreamQueue<XmlEvent> {
-  /// Scans the current queue for a match. Returns the found element or null.
+  /// Generate a stream of matching events.
+  ///
+  /// Consuming an elemet from the stream also consumes it
+  /// from the parent events stream.
+  /// [match] Function that returns true when found.
+  Stream<XmlEvent> filter(Matcher match) async* {
+    while (await scanTo(match)) {
+      yield await next;
+    }
+  }
+
+  /// Finds and the first matching element.
   /// Leaves the queue untouched if not found.
   ///
   /// [match] Function that returns true when found.
   /// [keepFound] if true, keeps the found value at the start if the queue.
-  Future<XmlEvent> find(Matcher match, {keepFound = false}) async {
-    var probe;
-    await withTransaction((queue) async {
-      probe = await _find(match, queue);
-      return probe != null;
-    });
-    if (probe != null && !keepFound && await hasNext) {
-      await next; // drop from queue
-    }
-    return probe;
+  @Deprecated('use scanTo')
+  Future<XmlEvent?> find(Matcher match, {keepFound = false}) async {
+    final found = await scanTo(match);
+    return found ? (keepFound ? await peek : await next) : null;
   }
 
-  // Consume unmatched elements up until the found element. Returns the
-  // found element or null.
-  Future<XmlEvent> _find(Matcher match, StreamQueue<XmlEvent> queue) async {
-    var probe;
-    for (;;) {
-      if (!await queue.hasNext) {
-        return null as XmlEvent;
-      }
-      probe = await queue.peek;
-      try {
-        if (match(probe)) {
-          return probe;
+  /// Scan the current queue for a match, reverting the queue if not found.
+  ///
+  /// If found, the first element is the match.
+  /// Leaves the queue untouched if not found.
+  ///
+  /// [match] Function that returns true when found.
+  Future<bool> scanTo(Matcher match) async {
+    return withTransaction((queue) async {
+      while (await queue.hasNext) {
+        try {
+          if (match(await queue.peek)) return true;
+        } catch (e) {
+          _log.fine(e);
+          return false;
         }
-      } catch (e) {
-        _log.fine(e);
-        return null as XmlEvent;
+        await queue.next;
       }
-      probe = await queue.next;
-    }
+      return false;
+    });
   }
 }

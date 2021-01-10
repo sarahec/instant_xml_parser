@@ -13,16 +13,18 @@
 // limitations under the License.
 import 'package:ixp_runtime/runtime.dart';
 import 'package:test/test.dart';
+import 'package:xml/xml_events.dart';
 
 void main() {
   test('inside', () async {
-    final events = generateEventStream(Stream.value('<a><b/>hello</a>'));
-    final a = await events.peek;
+    final events = generateEventStream(Stream.value('<a><b/>hello</a><c/>'));
+    final a = await events.peek as XmlStartElementEvent;
     final inA = inside(a);
-    expect(inA(await events.next), isFalse); // <a>
+    expect(inA(await events.next), isTrue); // <a>
     expect(inA(await events.next), isTrue); // <b/>
     expect(inA(await events.next), isTrue); // hello
     expect(inA(await events.next), isTrue); // </a>
+    expect(inA(await events.next), isFalse); // <c/>
   });
 
   test('named', () async {

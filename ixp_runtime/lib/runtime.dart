@@ -2,7 +2,7 @@
 ///
 /// These add extension methods to XML Events and a StreamQueue of XML Events,
 /// enabling code such as:
-/// ```
+/// `
 /// const NoteName = 'Note';
 ///
 /// Future<Note> extractNote(StreamQueue<XmlEvent> events) async {
@@ -12,17 +12,17 @@
 ///   await events.consume(inside(_note)); // move to the end of the tag
 ///   return Note(text ? '');
 /// }
-/// ```
+/// `
 ///
 /// ## Preparing the stream:
 /// [generateEventsStream] prepares the StreamQueue for use:
 ///
-/// ```
+/// `
 /// StreamQueue(source.toXmlEvents().withParentEvents().normalizeEvents().flatten());
-/// ```
+/// `
 ///
 /// You will need to call these yourself if your input isn't a
-/// ```Stream<String>```.
+/// `Stream<String>`.
 
 // Copyright 2020 Google LLC
 //
