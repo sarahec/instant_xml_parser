@@ -11,37 +11,56 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import 'package:async/async.dart';
 import 'package:ixp_runtime/runtime.dart';
 import 'package:test/test.dart';
-import 'package:xml/xml_events.dart';
-
-import 'get_id.dart';
 
 void main() {
-  // this needs an explicit type to enable the extension methods
-  StreamQueue<XmlEvent> events;
-  final xml =
-      '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
-  group('constraints', () {
-    test('named', () async {
-      events = generateEventStream(Stream.value(xml));
-      final tag = await events.find(named('p')) as XmlStartElementEvent;
-      expect(tag.name, equals('p'));
-      expect(getID(tag), equals('1'));
-    });
+  test('inside', () async {
+    final events = generateEventStream(Stream.value('<a><b/>hello</a>'));
+    final a = await events.peek;
+    final inA = inside(a);
+    expect(inA(await events.next), isFalse); // <a>
+    expect(inA(await events.next), isTrue); // <b/>
+    expect(inA(await events.next), isTrue); // hello
+    expect(inA(await events.next), isTrue); // </a>
+  });
 
-    test('inside', () async {
-      events = generateEventStream(Stream.value(xml));
-      final foo = await events.find(named('foo')) as XmlStartElementEvent;
-      final in1 = await events.find(inside(foo)) as XmlStartElementEvent;
-      await events.next;
-      final in2 = await events.find(inside(foo)) as XmlStartElementEvent;
-      await events.next;
-      final end = await events.find(inside(foo)) as XmlStartElementEvent;
-      expect(in1, isNotNull);
-      expect(in2, isNot(same(in1)));
-      expect(end, isNull);
-    });
+  test('named', () async {
+    final events =
+        generateEventStream(Stream.value('<a /><b/><a:b></a:b><c>hello</c>'));
+    final isB = named('a:b');
+    expect(isB(await events.next), isFalse); // <a/>
+    expect(isB(await events.next), isFalse); // <b/>
+    expect(isB(await events.next), isTrue); // <a:b>
+    expect(isB(await events.next), isTrue); // </a:b>
+    expect(isB(await events.next), isFalse); // <c>
+    expect(isB(await events.next), isFalse); // Hello
+    expect(isB(await events.next), isFalse); // </c>
+  });
+
+  test('not', () async {
+    final events =
+        generateEventStream(Stream.value('<a /><b/><a:b /><c>hello</c>'));
+    final none = not(named('a'));
+    expect(none(await events.next), isFalse); // <a/>
+    expect(none(await events.next), isTrue); // <b/>
+  });
+
+  test('startTag', () async {
+    final events = generateEventStream(Stream.value('<a /><b /><c>hello</c>'));
+    final isStart = startTag();
+    expect(isStart(await events.next), isTrue); // <a/>
+    expect(isStart(await events.next), isTrue); // <b/>
+    expect(isStart(await events.next), isTrue); // <c>
+    expect(isStart(await events.next), isFalse); // Hello
+    expect(isStart(await events.next), isFalse); // </c>
+  });
+
+  test('textElement', () async {
+    final events = generateEventStream(Stream.value('<c>hello</c>'));
+    final isText = textElement();
+    expect(isText(await events.next), isFalse); // <c>
+    expect(isText(await events.next), isTrue); // Hello
+    expect(isText(await events.next), isFalse); // </c>
   });
 }
