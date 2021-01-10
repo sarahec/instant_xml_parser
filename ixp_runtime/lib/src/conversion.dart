@@ -51,6 +51,6 @@ Converter autoConverter(Type T) => (T == bool)
             ? Convert.toDouble
             : (T == Uri)
                 ? Convert.toUri
-                : (T == dynamic)
+                : (T == dynamic || T == String)
                     ? (s) => s // dynamic == default String
                     : throw UnsupportedError('No converter for $T');
