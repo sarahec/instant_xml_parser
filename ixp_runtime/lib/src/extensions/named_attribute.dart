@@ -36,29 +36,60 @@ extension AttributeExtension on XmlStartElementEvent {
   ///
   /// Typical call:
   /// ```final name = _pr.namedAttribute<String>(_startTag, 'name')```
-  Future<T> namedAttribute<T>(String attributeName,
+  @Deprecated('use attribute or optionalAttribute')
+  Future<T?> namedAttribute<T>(String attributeName,
       {Converter<T>? convert, isRequired = false, T? defaultValue}) async {
-    convert = convert ?? autoConverter(T);
-    assert(convert != null || T == String, 'converter required');
-
-    // if the name has a namespace, match exactly. If it doesn't,
-    // try a namespace-free match
-    final attribute = attributes.firstWhere(
-        (a) =>
-            (a.name == attributeName) ||
-            (_stripNamespace(a.name) == attributeName),
-        orElse: () => null as XmlEventAttribute);
-    final value = attribute?.value;
-
-    if (value == null) {
-      if (isRequired) {
-        return Future.error(MissingAttribute(name, attributeName));
-      }
-      // If we're returning the default value, we can bypass the converter
-      return (value ?? defaultValue) as T;
+    final probe = await optionalAttribute<T>(attributeName, convert: convert);
+    if (probe == null && isRequired) {
+      return Future.error(MissingAttribute(name, attributeName));
     }
+    return probe ?? defaultValue!;
+  }
 
-    return convert == null ? value : convert(value);
+  /// Extracts an attribute by name. Throws `MissingAttribute` if not found.
+  ///
+  /// [T] The type to return. Specify as e.g. `attribute<double>(...)`)
+  /// Defaults to `String`.
+  /// [attributeName] the name of the attribute to find. Accepts fully
+  /// qualified or unqualified names.
+  /// [converter] A function of the form `T Function(String)` that parses
+  /// the string to an object. Not needed for any of the primitive types or
+  /// `Uri`. (See [autoConverter])
+  Future<T> attribute<T>(String attributeName, {Converter<T>? convert}) async {
+    final probe = await optionalAttribute<T>(attributeName, convert: convert);
+    if (probe == null) {
+      throw MissingAttribute(name, attributeName);
+    }
+    return probe;
+  }
+
+  /// Checks for the presence of an attribute. Returns `true` if found.
+  ///
+  /// [attributeName] the fully qualified or unqualified name.
+  Future<bool> hasAttribute(String attributeName) async => attributes.any((a) =>
+      (a.name == attributeName) || (_stripNamespace(a.name) == attributeName));
+
+  /// Extracts an attribute by name. Returns `null` if not found.
+  ///
+  /// [T] The type to return. Specify as e.g. `attribute<double>(...)`)
+  /// Defaults to `String`.
+  /// [attributeName] the name of the attribute to find. Accepts fully
+  /// qualified or unqualified names.
+  /// [converter] A function of the form `T Function(String)` that parses
+  /// the string to an object. Not needed for any of the primitive types or
+  /// `Uri`. (See [autoConverter])
+  Future<T?> optionalAttribute<T>(String attributeName,
+      {Converter<T>? convert}) async {
+    convert = convert ?? autoConverter(T);
+    try {
+      return convert(attributes
+          .firstWhere((a) =>
+              (a.name == attributeName) ||
+              (_stripNamespace(a.name) == attributeName))
+          .value);
+    } catch (_) {
+      return null;
+    }
   }
 
   String _stripNamespace(String s) => s.split(':').last;

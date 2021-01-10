@@ -20,13 +20,11 @@ import 'matcher.dart';
 final _log = Logger('consume:');
 
 extension Consume on StreamQueue<XmlEvent> {
-  /// Skips all events while the matcher returns true.
-  ///
-  /// Slipped elements are logged at the ```finest``` level.
-  void consume(Matcher matching) async {
-    while (await hasNext && matching(await peek)) {
-      var p = await peek;
-      if (p == null) break;
+  /// Skip all events while the matcher returns true.
+  Future<void> consume(Matcher match) async {
+    while (await hasNext) {
+      final p = await peek;
+      if (!match(p)) break;
       _log.finest(p);
       await next;
     }

@@ -22,50 +22,51 @@ void main() {
   final xml =
       '<!-- test --><foo><in id="1"/><in id="2"/></foo><bar /><p id="1">Hello,</p><p id="2"> World</p>';
 
-  group('find', () {
-    test('matching value', () async {
+  group('scanTo', () {
+    test('finds next matching value', () async {
       events = generateEventStream(Stream.value(xml));
-      final startTag = await events.find((e) => e is XmlStartElementEvent)
-          as XmlStartElementEvent;
+      final found = await events.scanTo((e) => e is XmlStartElementEvent);
+      expect(found, isTrue);
+      final startTag = await events.next as XmlStartElementEvent;
       expect(startTag.qualifiedName, equals('foo'));
     });
 
-    test('drops found vaue by default', () async {
-      events = generateEventStream(Stream.value(xml));
-      final startTag = await events.find((e) => e is XmlStartElementEvent)
-          as XmlStartElementEvent;
-      final duplicateTag = await events.find((e) => e is XmlStartElementEvent)
-          as XmlStartElementEvent;
-      expect(duplicateTag, isNot(same(startTag)));
-    });
-
-    test('keepFound retains result', () async {
-      events = generateEventStream(Stream.value(xml));
-      final startTag = await events.find((e) => e is XmlStartElementEvent,
-          keepFound: true) as XmlStartElementEvent;
-      expect(await events.peek, same(startTag));
-    });
-
-    test('returns null if no match', () async {
+    test('returns false if no match', () async {
       final xml = '<!-- comment only -->';
       events = generateEventStream(Stream.value(xml));
-      final tag = await events.find((e) => e is XmlStartElementEvent);
-      expect(tag, isNull);
+      final found = await events.scanTo((e) => e is XmlStartElementEvent);
+      expect(found, isFalse);
     });
 
-    test('returns null if match throws', () async {
+    test('returns false if match throws', () async {
       events = generateEventStream(Stream.value(xml));
-      final tag = await events.find((e) => throw NoSuchMethodError);
-      expect(tag, isNull);
+      final found = await events.scanTo((e) => throw NoSuchMethodError);
+      expect(found, isFalse);
     });
 
     test('leaves queue unchanged on no match', () async {
       final xml = '<!-- comment only -->';
       events = generateEventStream(Stream.value(xml));
       final comment = await events.peek;
-      final tag = await events.find((e) => e is XmlStartElementEvent);
-      expect(tag, isNull);
+      final found = await events.scanTo((e) => e is XmlStartElementEvent);
+      expect(found, isFalse);
       expect(comment, same(await events.peek));
+    });
+  });
+
+  group('find (legacy)', () {
+    test('finds next matching value', () async {
+      events = generateEventStream(Stream.value(xml));
+      final startTag = await events.find((e) => e is XmlStartElementEvent)
+          as XmlStartElementEvent;
+      expect(startTag.qualifiedName, equals('foo'));
+    });
+
+    test('returns null if no match', () async {
+      final xml = '<!-- comment only -->';
+      events = generateEventStream(Stream.value(xml));
+      final found = await events.find((e) => e is XmlStartElementEvent);
+      expect(found, isNull);
     });
   });
 }
