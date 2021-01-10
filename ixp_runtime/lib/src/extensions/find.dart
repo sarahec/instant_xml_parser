@@ -22,17 +22,6 @@ import 'matcher.dart';
 final _log = Logger('scanTo:');
 
 extension Find on StreamQueue<XmlEvent> {
-  /// Generate a stream of matching events.
-  ///
-  /// Consuming an elemet from the stream also consumes it
-  /// from the parent events stream.
-  /// [match] Function that returns true when found.
-  Stream<XmlEvent> filter(Matcher match) async* {
-    while (await scanTo(match)) {
-      yield await next;
-    }
-  }
-
   /// Finds and the first matching element.
   /// Leaves the queue untouched if not found.
   ///
@@ -63,5 +52,16 @@ extension Find on StreamQueue<XmlEvent> {
       }
       return false;
     });
+  }
+
+  /// Generate a stream of matching events.
+  ///
+  /// Consuming an elemet from the stream also consumes it
+  /// from the parent events stream.
+  /// [match] Function that returns true when found.
+  Stream<XmlEvent> streamOf(Matcher match) async* {
+    while (await scanTo(match)) {
+      yield await next;
+    }
   }
 }
