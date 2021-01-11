@@ -13,6 +13,8 @@
 // limitations under the License.
 library runtime;
 
+import 'package:xml/xml_events.dart';
+
 /// Indicates that the parser ran out of XML Events while looking for the
 /// end of a tag.
 class EndOfQueue implements ParsingError {
@@ -54,6 +56,18 @@ class MissingEndTag implements ParsingError {
 
   @override
   String get message => 'Expected </$wanted>';
+}
+
+/// Indicates that an expected (and required) start tag wasn't found.
+class MissingText implements ParsingError {
+  final String fieldName;
+  final String parentName;
+  final XmlStartElementEvent? element;
+
+  MissingText(this.fieldName, this.parentName, {this.element});
+
+  @override
+  String get message => 'Missing required text field $fieldName in $parentName';
 }
 
 class UnexpectedChild implements ParsingError {
