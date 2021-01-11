@@ -13,6 +13,7 @@
 // limitations under the License.
 import 'package:async/async.dart';
 import 'package:example/example.dart';
+import 'package:ixp_runtime/runtime.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
@@ -48,15 +49,10 @@ void main() {
       expect(attributesTag.active, isTrue);
     });
 
-    test('default attribute value', () async {
-      final eventsFrom = _eventsFrom('<attributesTest  />');
-      final attributesTag = await extractAttributesTag(eventsFrom);
-      expect(attributesTag, isA<AttributesTag>());
-      // missing attributes return null if no default specified in constructor
-      expect(attributesTag.name, isNull);
-      expect(attributesTag.count, equals(0)); // default from original source
-      expect(attributesTag.temperature, isNull);
-      expect(attributesTag.active, isNull);
+    test('missing attribute', () async {
+      final eventsFrom = _eventsFrom('<attributesTest />');
+      expect(extractAttributesTag(eventsFrom),
+          throwsA(TypeMatcher<MissingAttribute>()));
     });
 
     test('NameTag', () async {
@@ -70,12 +66,16 @@ void main() {
       Logger.root.level = Level.ALL; // defaults to Level.INFO
       final events = _eventsFrom(
           '<registration age="36"><identification name="bar"/><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309"/></registration>');
-      final registration = await extractRegistration(events);
-      expect(registration, isA<Registration>());
-      expect(registration.age, equals(36));
-      expect(registration.person, isA<NameTag>());
-      expect(registration.contact, isA<ContactInfo>());
-      expect(registration.contact.email, equals('foo@bar.dev'));
+      try {
+        final registration = await extractRegistration(events);
+        expect(registration, isA<Registration>());
+        expect(registration.age, equals(36));
+        expect(registration.person, isA<NameTag>());
+        expect(registration.contact, isA<ContactInfo>());
+        expect(registration.contact.email, equals('foo@bar.dev'));
+      } catch (e) {
+        print(e.toString());
+      }
     });
 
     test('address book', () async {
@@ -95,11 +95,11 @@ void main() {
     setUp(() => Logger.root.level = Level.ALL);
 
     test('homogeneous events', () async {
-      final events = _eventsFrom(
-          '<notebook><note>a</note><note>b</note><note/></notebook>');
+      final events =
+          _eventsFrom('<notebook><note>a</note><note>b</note></notebook>');
       final notebook = await extractNotebook(events);
       expect(notebook, isNotNull);
-      expect(notebook.notes.length, equals(3));
+      expect(notebook.notes.length, equals(2));
     });
 
     test('mixed sequence', () async {
@@ -111,7 +111,7 @@ void main() {
       expect(registration.contact, isNotNull, reason: 'contact');
       expect(registration.person, isNotNull, reason: 'name tag');
 
-      final attributes = await extractAttributesTag(events, optional: false);
+      final attributes = await extractAttributesTag(events);
       expect(attributes, isNotNull, reason: 'attributes');
       expect(attributes.name, equals('foo'));
     });

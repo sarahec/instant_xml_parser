@@ -12,6 +12,8 @@ import 'dart:core';
 import 'package:logging/logging.dart';
 import 'package:ixp_runtime/runtime.dart';
 
+import 'package:ixp_runtime/src/extensions/find.dart';
+
 const AddressBookName = 'addressBook';
 const AttributesTagName = 'attributesTest';
 const ContactInfoName = 'ContactInfo';
@@ -21,20 +23,21 @@ const NoteName = 'note';
 const NotebookName = 'notebook';
 const RegistrationName = 'registration';
 final _log = Logger('parser');
-Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _addressBook = await events.find(startTag(named(AddressBookName)))
-      as XmlStartElementEvent;
-  if (_addressBook == null) {
-    return optional ? null : Future.error(MissingStartTag(AddressBookName));
-  }
-  _log.fine('in addressBook');
 
+// TODO Update function definitions to remove optional
+Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events) async {
+  // TODO Update preamble for extraction
+  final found = await events.scanTo(startTag(named(AddressBookName)));
+  if (!found) {
+    throw MissingStartTag(AddressBookName);
+  }
+  final _addressBook = await events.peek as XmlStartElementEvent;
+
+  _log.finest('in addressBook');
   var contacts = <ContactInfo>[];
-  for (;;) {
-    var probe = await events.find(startTag(inside(_addressBook)),
-        keepFound: true) as XmlStartElementEvent;
-    if (probe == null) break;
+  // TODO update child loop
+  while (await events.scanTo(startTag(inside(_addressBook)))) {
+    final probe = await events.peek as XmlStartElementEvent;
     switch (probe.qualifiedName) {
       case ContactInfoName:
         contacts.add(await extractContactInfo(events));
@@ -49,54 +52,49 @@ Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events,
   return AddressBook(contacts);
 }
 
-Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _attributesTag = await events.find(startTag(named(AttributesTagName)))
-      as XmlStartElementEvent;
-  if (_attributesTag == null) {
-    return optional ? null : Future.error(MissingStartTag(AttributesTagName));
+Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(AttributesTagName)));
+  if (!found) {
+    throw MissingStartTag(AttributesTagName);
   }
-  _log.fine('in attributesTest');
-
-  final name = await _attributesTag.namedAttribute<String>('name');
-  final count = await _attributesTag.namedAttribute<int>('count') ?? 0;
-  final temperature =
-      await _attributesTag.namedAttribute<double>('temperature');
-  final active = await _attributesTag.namedAttribute<bool>('active');
-
-  _log.finest('consume attributesTest');
+  final _attributesTag = await events.peek as XmlStartElementEvent;
+  final name = await _attributesTag.attribute<String>('name');
+  final count = await _attributesTag.optionalAttribute<int>('count') ?? 0;
+  final temperature = await _attributesTag.attribute<double>('temperature');
+  final active = await _attributesTag.attribute<bool>('active');
   await events.consume(inside(_attributesTag));
   return AttributesTag(name, temperature, active, count);
 }
 
-Future<ContactInfo> extractContactInfo(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _contactInfo = await events.find(startTag(named(ContactInfoName)))
-      as XmlStartElementEvent;
-  if (_contactInfo == null) {
-    return optional ? null : Future.error(MissingStartTag(ContactInfoName));
+Future<ContactInfo> extractContactInfo(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(ContactInfoName)));
+  if (!found) {
+    throw MissingStartTag(ContactInfoName);
   }
+  final _contactInfo = await events.peek as XmlStartElementEvent;
   _log.fine('in ContactInfo');
 
-  final email = await _contactInfo.namedAttribute<String>('email');
-  final phone = await _contactInfo.namedAttribute<String>('phone');
-  final notes =
-      (await events.find(textElement(inside(_contactInfo))) as XmlTextEvent)
-              ?.text ??
-          '';
+  final email = await _contactInfo.attribute<String>('email');
+  final phone = await _contactInfo.optionalAttribute<String>('phone');
+  // TODO Update code generation for text elements
+  late final notes;
+  if (await events.scanTo(textElement(inside(_contactInfo)))) {
+    notes = (await events.peek as XmlTextEvent).text;
+  } else {
+    notes = '';
+  }
 
   _log.finest('consume ContactInfo');
   await events.consume(inside(_contactInfo));
   return ContactInfo(email, phone: phone, notes: notes);
 }
 
-Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _emptyTag =
-      await events.find(startTag(named(EmptyTagName))) as XmlStartElementEvent;
-  if (_emptyTag == null) {
-    return optional ? null : Future.error(MissingStartTag(EmptyTagName));
+Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(EmptyTagName)));
+  if (!found) {
+    throw MissingStartTag(EmptyTagName);
   }
+  final _emptyTag = await events.peek as XmlStartElementEvent;
   _log.fine('in empty');
 
   _log.finest('consume empty');
@@ -104,56 +102,58 @@ Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events,
   return EmptyTag();
 }
 
-Future<NameTag> extractNameTag(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _nameTag =
-      await events.find(startTag(named(NameTagName))) as XmlStartElementEvent;
-  if (_nameTag == null) {
-    return optional ? null : Future.error(MissingStartTag(NameTagName));
+Future<NameTag> extractNameTag(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(NameTagName)));
+  if (!found) {
+    throw MissingStartTag(NameTagName);
   }
+  final _nameTag = await events.peek as XmlStartElementEvent;
   _log.fine('in identification');
 
-  final name = await _nameTag.namedAttribute<String>('name');
-  final nickname =
-      (await events.find(textElement(inside(_nameTag))) as XmlTextEvent)?.text;
+  final name = await _nameTag.attribute<String>('name');
+  late final nickname;
+  if (await events.scanTo(textElement(inside(_nameTag)))) {
+    nickname = (await events.next as XmlTextEvent).text;
+  } else {
+    nickname = null;
+  }
 
   _log.finest('consume identification');
   await events.consume(inside(_nameTag));
   return NameTag(name, nickname: nickname);
 }
 
-Future<Note> extractNote(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _note =
-      await events.find(startTag(named(NoteName))) as XmlStartElementEvent;
-  if (_note == null) {
-    return optional ? null : Future.error(MissingStartTag(NoteName));
+Future<Note> extractNote(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(NoteName)));
+  if (!found) {
+    throw MissingStartTag(NoteName);
   }
+  final _note = await events.peek as XmlStartElementEvent;
   _log.fine('in note');
 
-  final text =
-      (await events.find(textElement(inside(_note))) as XmlTextEvent)?.text ??
-          '?';
+  late final text;
+  if (await events.scanTo(textElement(inside(_note)))) {
+    text = (await events.peek as XmlTextEvent).text;
+  } else {
+    throw MissingText('note', NoteName);
+  }
 
   _log.finest('consume note');
   await events.consume(inside(_note));
   return Note(text);
 }
 
-Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _notebook =
-      await events.find(startTag(named(NotebookName))) as XmlStartElementEvent;
-  if (_notebook == null) {
-    return optional ? null : Future.error(MissingStartTag(NotebookName));
+Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(NotebookName)));
+  if (!found) {
+    throw MissingStartTag(NotebookName);
   }
+  final _notebook = await events.peek as XmlStartElementEvent;
   _log.fine('in notebook');
 
   var notes = <Note>[];
-  for (;;) {
-    var probe = await events.find(startTag(inside(_notebook)), keepFound: true)
-        as XmlStartElementEvent;
-    if (probe == null) break;
+  while (await events.scanTo(startTag(inside(_notebook)))) {
+    final probe = await events.peek as XmlStartElementEvent;
     switch (probe.qualifiedName) {
       case NoteName:
         notes.add(await extractNote(events));
@@ -168,23 +168,21 @@ Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events,
   return Notebook(notes);
 }
 
-Future<Registration> extractRegistration(StreamQueue<XmlEvent> events,
-    {optional = true}) async {
-  final _registration = await events.find(startTag(named(RegistrationName)))
-      as XmlStartElementEvent;
-  if (_registration == null) {
-    return optional ? null : Future.error(MissingStartTag(RegistrationName));
+Future<Registration> extractRegistration(StreamQueue<XmlEvent> events) async {
+  final found = await events.scanTo(startTag(named(RegistrationName)));
+  if (!found) {
+    throw MissingStartTag(RegistrationName);
   }
+  final _registration = await events.peek as XmlStartElementEvent;
   _log.fine('in registration');
 
-  final age = await _registration.namedAttribute<int>('age');
+  final age = await _registration.optionalAttribute<int>('age');
 
-  var person;
-  var contact;
-  for (;;) {
-    var probe = await events.find(startTag(inside(_registration)),
-        keepFound: true) as XmlStartElementEvent;
-    if (probe == null) break;
+  // use "late final" if a required field
+  late final person;
+  late final contact;
+  while (await events.scanTo(startTag(inside(_registration)))) {
+    final probe = await events.peek as XmlStartElementEvent;
     switch (probe.qualifiedName) {
       case NameTagName:
         person = await extractNameTag(events);
