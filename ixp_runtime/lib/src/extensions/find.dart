@@ -53,15 +53,4 @@ extension Find on StreamQueue<XmlEvent> {
       return false;
     });
   }
-
-  /// Generate a stream of matching events.
-  ///
-  /// Consuming an elemet from the stream also consumes it
-  /// from the parent events stream.
-  /// [match] Function that returns true when found.
-  Stream<XmlEvent> streamOf(Matcher match) async* {
-    while (await scanTo(match)) {
-      yield await next;
-    }
-  }
 }
