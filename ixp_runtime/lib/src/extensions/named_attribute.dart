@@ -36,11 +36,12 @@ extension AttributeExtension on XmlStartElementEvent {
   ///
   /// Typical call:
   /// `final name = _pr.namedAttribute<String>(_startTag, 'name')`
+  @Deprecated('use `attribute` or `optionalAttribute`')
   Future<T> namedAttribute<T>(String attributeName,
       {Converter<T>? convert, isRequired = false, T? defaultValue}) async {
     final probe = await optionalAttribute<T>(attributeName, convert: convert);
     if (probe == null && isRequired) {
-      return Future.error(MissingAttribute(name, attributeName));
+      throw MissingAttribute(name, attributeName);
     }
     return probe ?? defaultValue!;
   }
