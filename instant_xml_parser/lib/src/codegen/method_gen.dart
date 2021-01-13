@@ -65,10 +65,11 @@ class MethodGenerator {
       ];
 
   String get startBlock => '''
-      final ${method.startVar} = await events.find(startTag(named(${method.classInfo.constantName}))) as XmlStartElementEvent; 
-      if(${method.startVar} == null) {
-        return optional ? null : Future.error(MissingStartTag(${method.classInfo.constantName}));
+      final found = await events.scanTo(startTag(named(${method.classInfo.constantName}))) as XmlStartElementEvent; 
+      if (!found) {
+        throw MissingStartTag(${method.classInfo.constantName});
       }
+      final ${method.startVar} = await events.peek as XmlStartElementEvent;
       _log.fine('in ${method.classInfo.tagName}');
       ''';
 
@@ -99,9 +100,8 @@ class MethodGenerator {
         ? ''
         : '''
       $vars
-        for (;;) {
-        var probe = await events.find(startTag(inside(${method.startVar})), keepFound: true) as XmlStartElementEvent;
-        if (probe == null) break;
+        while (await events.scanTo(startTag(inside(${method.startVar})))) {
+        final probe = await events.peek as XmlStartElementEvent;
         switch (probe.qualifiedName) {
           $cases
         default:
@@ -135,19 +135,7 @@ class MethodGenerator {
             ..symbol = 'XmlEvent'
             ..url = uri.XMLEventsLibrary
             ..isNullable = false))))
-    ])
-    ..optionalParameters.add(Parameter((b) => b
-      ..name = 'optional'
-      ..named = true
-      ..defaultTo = Code('true')))
-    ..returns = TypeReference((b) => b // Future<SomeType>
-      ..symbol = 'Future'
-      ..isNullable = false
-      ..url = uri.AsyncCoreLibrary
-      ..types.add(TypeReference((b) => b
-            ..symbol = method.typeName
-            ..isNullable = false
-          /* ..url = SourceLibrary */))));
+    ]));
 
   @visibleForTesting
   String get toSource => DartEmitter().visitMethod(toMethod).toString();

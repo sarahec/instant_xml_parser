@@ -53,20 +53,4 @@ void main() {
       expect(comment, same(await events.peek));
     });
   });
-
-  group('find (legacy)', () {
-    test('finds next matching value', () async {
-      events = generateEventStream(Stream.value(xml));
-      final startTag = await events.find((e) => e is XmlStartElementEvent)
-          as XmlStartElementEvent;
-      expect(startTag.qualifiedName, equals('foo'));
-    });
-
-    test('returns null if no match', () async {
-      final xml = '<!-- comment only -->';
-      events = generateEventStream(Stream.value(xml));
-      final found = await events.find((e) => e is XmlStartElementEvent);
-      expect(found, isNull);
-    });
-  });
 }

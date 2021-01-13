@@ -24,7 +24,9 @@ const NotebookName = 'notebook';
 const RegistrationName = 'registration';
 final _log = Logger('parser');
 
+// TODO Update function definitions to remove optional
 Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events) async {
+  // TODO Update preamble for extraction
   final found = await events.scanTo(startTag(named(AddressBookName)));
   if (!found) {
     throw MissingStartTag(AddressBookName);

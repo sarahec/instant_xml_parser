@@ -32,7 +32,7 @@ class AttributesTag {
 class NameTag {
   final String name;
   @textElement
-  final String? nickname;
+  final String nickname;
 
   NameTag(this.name, {this.nickname});
 }
@@ -40,7 +40,7 @@ class NameTag {
 @tag('ContactInfo')
 class ContactInfo {
   final String email;
-  final String? phone;
+  final String phone;
   @textElement
   final String notes;
 
@@ -65,7 +65,7 @@ class ContactInfo {
 class Registration {
   final NameTag person;
   final ContactInfo contact;
-  final int? age;
+  final int age;
 
   Registration(this.person, this.contact, [this.age]);
 }

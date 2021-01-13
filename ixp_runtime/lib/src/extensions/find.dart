@@ -22,17 +22,6 @@ import 'matcher.dart';
 final _log = Logger('scanTo:');
 
 extension Find on StreamQueue<XmlEvent> {
-  /// Finds and the first matching element.
-  /// Leaves the queue untouched if not found.
-  ///
-  /// [match] Function that returns true when found.
-  /// [keepFound] if true, keeps the found value at the start if the queue.
-  @Deprecated('use scanTo')
-  Future<XmlEvent?> find(Matcher match, {keepFound = false}) async {
-    final found = await scanTo(match);
-    return found ? (keepFound ? await peek : await next) : null;
-  }
-
   /// Scan the current queue for a match, reverting the queue if not found.
   ///
   /// If found, the first element is the match.

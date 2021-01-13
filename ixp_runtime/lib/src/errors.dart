@@ -62,7 +62,7 @@ class MissingEndTag implements ParsingError {
 class MissingText implements ParsingError {
   final String fieldName;
   final String parentName;
-  final XmlStartElementEvent? element;
+  final XmlStartElementEvent element;
 
   MissingText(this.fieldName, this.parentName, {this.element});
 
