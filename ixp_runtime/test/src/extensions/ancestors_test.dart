@@ -37,7 +37,6 @@ void main() {
     final events = generateEventStream(Stream.value('<a><b><c/></b></a>'));
     final a = await events.next;
     final b = await events.next;
-    final c = await events.next;
     final end_b = await events.next;
     final end_a = await events.next;
 
