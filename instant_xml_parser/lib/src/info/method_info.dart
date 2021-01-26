@@ -12,17 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import 'package:built_value/built_value.dart';
-import 'package:instant_xml_parser/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/info/source_info.dart';
+import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:source_gen/source_gen.dart';
 
 import 'class_info.dart';
 import 'field_info.dart';
 
 part 'method_info.g.dart';
 
-/// A single method, parsed. Created using ```built_value```
+/// Data for a single parser method. Created using `built_value`
 abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
   factory MethodInfo([void Function(MethodInfoBuilder) updates]) = _$MethodInfo;
   factory MethodInfo.fromClassInfo(
@@ -37,24 +40,46 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
 
   ClassInfo get classInfo;
 
-  /// Lazily parse the fields
-  @memoized
-  Iterable<FieldInfo> fields(Symtable symtable) {
+  Iterable<FieldElement> fields(SourceInfo symtable) {
+    // Collect all fields
     final superclasses = [
       for (var st in classInfo.supertypes) symtable.classForType(st)
     ];
-    final _fields = [for (var c in superclasses) c?.element?.fields ?? []]
-        .expand((e) => e)
-        .toList();
-    _fields.addAll(classInfo.element.fields);
+    return ([for (var c in superclasses) c?.element?.fields ?? []]
+            .expand((e) => e)
+            .toList()
+              ..addAll(classInfo.element.fields))
+        .where((f) => f.getter.isGetter && !f.isSynthetic);
+  }
 
-    final ctorParams = classInfo.constructor?.parameters ?? [];
-    return _fields.where((f) => f.getter.isGetter && !f.isSynthetic).map((f) =>
-        FieldInfo.fromElement(
-            f,
-            ctorParams
-                .firstWhere((p) => p.name == f.name, orElse: () => null)
-                ?.defaultValueCode)); // should be .first
+  /// Parse all the fields that could be initialized from the constructor
+  Iterable<CommonElement> commonElements(SourceInfo symtable) {
+    if (!classInfo.hasConstructor) {
+      throw InvalidGenerationSourceError(
+          'Missing constructor in ${classInfo.typeName}',
+          todo:
+              'Add a constructor to ${classInfo.typeName} with the fields to be initialized');
+    }
+    final elements = fields(symtable);
+    final elementNames = Set.of(elements.map((e) => e.name));
+    var ctorParams = classInfo.constructor.parameters;
+    final common =
+        Set.of(ctorParams.map((p) => p.name)).intersection(elementNames);
+    // Error checking
+    if (common.isEmpty) {
+      throw InvalidGenerationSourceError(
+          '${classInfo.typeName} has no fields in common with the constructor parameters');
+    }
+
+    // Now merge
+    final merged = <CommonElement>[];
+    for (var name in common) {
+      final ctParam = ctorParams.firstWhere((p) => p.name == name);
+      final field = FieldInfo.fromElement(
+          elements.firstWhere((e) => e.name == name), ctParam.defaultValueCode);
+      merged.add(CommonElement(field: field, ctParam: ctParam));
+    }
+    return merged;
   }
 
   String get name => '$prefix$typeName';
@@ -69,4 +94,14 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
   DartType get type => classInfo.type;
 
   String get typeName => classInfo.typeName;
+
+  @memoized
+  Logger get log => Logger('MethodInfo');
+}
+
+class CommonElement {
+  final FieldInfo field;
+  final ParameterElement ctParam;
+
+  CommonElement({@required this.field, @required this.ctParam});
 }

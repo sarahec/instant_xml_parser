@@ -18,12 +18,11 @@ import 'package:built_value/serializer.dart';
 import 'package:ixp_runtime/annotations.dart';
 
 import '../utils/annotation_reader.dart';
-import 'constructor_info.dart';
 import 'method_info.dart';
 
 part 'class_info.g.dart';
 
-// A single class, parsed. Created using ```built_value```
+/// Represents one class in the source file
 abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
   static Serializer<ClassInfo> get serializer => _$classInfoSerializer;
 
@@ -34,31 +33,31 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
         ..type = element.thisType);
   ClassInfo._();
 
-  /// Parsed class
-  ClassElement get element;
-
   /// Constant name to use for this tag
   String get constantName => typeName + 'Name';
 
-  /// The method code for this class or null (if not marked wiuth @tag)
-  @memoized
-  MethodInfo get method =>
-      needsMethod ? MethodInfo.fromClassInfo(this, element.fields) : null;
-
   /// Constructor using this class' fields
-  @nullable
   @memoized
-  ConstructorInfo get constructor {
-    final ctor = element.constructors
-        .firstWhere((c) => !c.isFactory && !c.isPrivate, orElse: () => null);
-    return (ctor == null) ? null : ConstructorInfo.fromElement(ctor);
-  }
+  ConstructorElement get constructor =>
+      element.constructors.firstWhere((c) => !c.isFactory && !c.isPrivate);
+
+  /// Parsed class
+  ClassElement get element;
+
+  /// True if there's a suitable constuctor on this call
+  bool get hasConstructor =>
+      element.constructors.any((c) => !c.isFactory && !c.isPrivate);
 
   /// Is this an abstract class?
   ///
   /// No parser method if so; will be implemented as a method for each concrete
   /// subclass.
   bool get isAbstract => element.isAbstract;
+
+  /// The method code for this class or null (if not marked with @tag)
+  @memoized
+  MethodInfo get method =>
+      needsMethod ? MethodInfo.fromClassInfo(this, element.fields) : null;
 
   /// Has this class been annotated with @tag?
   bool get needsMethod => tagName != null;

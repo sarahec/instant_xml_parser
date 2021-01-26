@@ -19,7 +19,7 @@
 library parse_generator;
 
 import 'package:instant_xml_parser/src/info/field_info.dart';
-import 'package:instant_xml_parser/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 
 import '../info/method_info.dart';
@@ -37,9 +37,9 @@ class AttributeFieldGenerator {
   final MethodInfo method;
 
   /// Parsed information about the containing file
-  final Symtable symtable;
+  final SourceInfo sourceInfo;
 
-  AttributeFieldGenerator(this.field, this.method, this.symtable);
+  AttributeFieldGenerator(this.field, this.method, this.sourceInfo);
 
   /// Generate the code
   String get toAction => field.isCustom ? setupDeferred : readAttribute;
@@ -90,9 +90,9 @@ class AttributeFieldGenerator {
 class TextFieldGenerator {
   final FieldInfo field;
   final MethodInfo method;
-  final Symtable symtable;
+  final SourceInfo sourceInfo;
 
-  TextFieldGenerator(this.field, this.method, this.symtable);
+  TextFieldGenerator(this.field, this.method, this.sourceInfo);
 
   /// Generate the code
   String get toAction {
@@ -117,11 +117,11 @@ class TextFieldGenerator {
 class TagFieldGenerator {
   final FieldInfo field;
   final MethodInfo method;
-  final Symtable symtable;
+  final SourceInfo sourceInfo;
 
   final _log = Logger('TagFieldGenerator');
 
-  TagFieldGenerator(this.field, this.method, this.symtable);
+  TagFieldGenerator(this.field, this.method, this.sourceInfo);
 
   String get customCode => 'final ${field.name} = ${field.customTemplate};';
 
@@ -130,7 +130,7 @@ class TagFieldGenerator {
 
   /// Generate the case statement
   String get toAction {
-    final methods = symtable.methodsReturning(field.type);
+    final methods = sourceInfo.methodsReturning(field.type);
     if (methods == null) {
       final warning = 'No method found for ${field.typeName}';
       _log.warning(warning);

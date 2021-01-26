@@ -1,39 +1,23 @@
-// Copyright 2020 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'library_info.dart';
+part of 'source_info.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<LibraryInfo> _$libraryInfoSerializer = new _$LibraryInfoSerializer();
+Serializer<SourceInfo> _$sourceInfoSerializer = new _$SourceInfoSerializer();
 
-class _$LibraryInfoSerializer implements StructuredSerializer<LibraryInfo> {
+class _$SourceInfoSerializer implements StructuredSerializer<SourceInfo> {
   @override
-  final Iterable<Type> types = const [LibraryInfo, _$LibraryInfo];
+  final Iterable<Type> types = const [SourceInfo, _$SourceInfo];
   @override
-  final String wireName = 'LibraryInfo';
+  final String wireName = 'SourceInfo';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, LibraryInfo object,
+  Iterable<Object> serialize(Serializers serializers, SourceInfo object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[
-      'uri',
-      serializers.serialize(object.uri, specifiedType: const FullType(Uri)),
       'classes',
       serializers.serialize(object.classes,
           specifiedType:
@@ -41,15 +25,17 @@ class _$LibraryInfoSerializer implements StructuredSerializer<LibraryInfo> {
       'element',
       serializers.serialize(object.element,
           specifiedType: const FullType(LibraryElement)),
+      'uri',
+      serializers.serialize(object.uri, specifiedType: const FullType(Uri)),
     ];
 
     return result;
   }
 
   @override
-  LibraryInfo deserialize(Serializers serializers, Iterable<Object> serialized,
+  SourceInfo deserialize(Serializers serializers, Iterable<Object> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new LibraryInfoBuilder();
+    final result = new SourceInfoBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -57,10 +43,6 @@ class _$LibraryInfoSerializer implements StructuredSerializer<LibraryInfo> {
       iterator.moveNext();
       final dynamic value = iterator.current;
       switch (key) {
-        case 'uri':
-          result.uri = serializers.deserialize(value,
-              specifiedType: const FullType(Uri)) as Uri;
-          break;
         case 'classes':
           result.classes = serializers.deserialize(value,
                   specifiedType: const FullType(
@@ -71,6 +53,10 @@ class _$LibraryInfoSerializer implements StructuredSerializer<LibraryInfo> {
           result.element = serializers.deserialize(value,
               specifiedType: const FullType(LibraryElement)) as LibraryElement;
           break;
+        case 'uri':
+          result.uri = serializers.deserialize(value,
+              specifiedType: const FullType(Uri)) as Uri;
+          break;
       }
     }
 
@@ -78,27 +64,28 @@ class _$LibraryInfoSerializer implements StructuredSerializer<LibraryInfo> {
   }
 }
 
-class _$LibraryInfo extends LibraryInfo {
-  @override
-  final Uri uri;
+class _$SourceInfo extends SourceInfo {
   @override
   final Iterable<ClassInfo> classes;
   @override
   final LibraryElement element;
+  @override
+  final Uri uri;
   Iterable<String> __importUris;
+  Iterable<MethodInfo> __methods;
 
-  factory _$LibraryInfo([void Function(LibraryInfoBuilder) updates]) =>
-      (new LibraryInfoBuilder()..update(updates)).build();
+  factory _$SourceInfo([void Function(SourceInfoBuilder) updates]) =>
+      (new SourceInfoBuilder()..update(updates)).build();
 
-  _$LibraryInfo._({this.uri, this.classes, this.element}) : super._() {
-    if (uri == null) {
-      throw new BuiltValueNullFieldError('LibraryInfo', 'uri');
-    }
+  _$SourceInfo._({this.classes, this.element, this.uri}) : super._() {
     if (classes == null) {
-      throw new BuiltValueNullFieldError('LibraryInfo', 'classes');
+      throw new BuiltValueNullFieldError('SourceInfo', 'classes');
     }
     if (element == null) {
-      throw new BuiltValueNullFieldError('LibraryInfo', 'element');
+      throw new BuiltValueNullFieldError('SourceInfo', 'element');
+    }
+    if (uri == null) {
+      throw new BuiltValueNullFieldError('SourceInfo', 'uri');
     }
   }
 
@@ -106,43 +93,42 @@ class _$LibraryInfo extends LibraryInfo {
   Iterable<String> get importUris => __importUris ??= super.importUris;
 
   @override
-  LibraryInfo rebuild(void Function(LibraryInfoBuilder) updates) =>
+  Iterable<MethodInfo> get methods => __methods ??= super.methods;
+
+  @override
+  SourceInfo rebuild(void Function(SourceInfoBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  LibraryInfoBuilder toBuilder() => new LibraryInfoBuilder()..replace(this);
+  SourceInfoBuilder toBuilder() => new SourceInfoBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is LibraryInfo &&
-        uri == other.uri &&
+    return other is SourceInfo &&
         classes == other.classes &&
-        element == other.element;
+        element == other.element &&
+        uri == other.uri;
   }
 
   @override
   int get hashCode {
     return $jf(
-        $jc($jc($jc(0, uri.hashCode), classes.hashCode), element.hashCode));
+        $jc($jc($jc(0, classes.hashCode), element.hashCode), uri.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('LibraryInfo')
-          ..add('uri', uri)
+    return (newBuiltValueToStringHelper('SourceInfo')
           ..add('classes', classes)
-          ..add('element', element))
+          ..add('element', element)
+          ..add('uri', uri))
         .toString();
   }
 }
 
-class LibraryInfoBuilder implements Builder<LibraryInfo, LibraryInfoBuilder> {
-  _$LibraryInfo _$v;
-
-  Uri _uri;
-  Uri get uri => _$this._uri;
-  set uri(Uri uri) => _$this._uri = uri;
+class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
+  _$SourceInfo _$v;
 
   Iterable<ClassInfo> _classes;
   Iterable<ClassInfo> get classes => _$this._classes;
@@ -152,35 +138,39 @@ class LibraryInfoBuilder implements Builder<LibraryInfo, LibraryInfoBuilder> {
   LibraryElement get element => _$this._element;
   set element(LibraryElement element) => _$this._element = element;
 
-  LibraryInfoBuilder();
+  Uri _uri;
+  Uri get uri => _$this._uri;
+  set uri(Uri uri) => _$this._uri = uri;
 
-  LibraryInfoBuilder get _$this {
+  SourceInfoBuilder();
+
+  SourceInfoBuilder get _$this {
     if (_$v != null) {
-      _uri = _$v.uri;
       _classes = _$v.classes;
       _element = _$v.element;
+      _uri = _$v.uri;
       _$v = null;
     }
     return this;
   }
 
   @override
-  void replace(LibraryInfo other) {
+  void replace(SourceInfo other) {
     if (other == null) {
       throw new ArgumentError.notNull('other');
     }
-    _$v = other as _$LibraryInfo;
+    _$v = other as _$SourceInfo;
   }
 
   @override
-  void update(void Function(LibraryInfoBuilder) updates) {
+  void update(void Function(SourceInfoBuilder) updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  _$LibraryInfo build() {
-    final _$result = _$v ??
-        new _$LibraryInfo._(uri: uri, classes: classes, element: element);
+  _$SourceInfo build() {
+    final _$result =
+        _$v ?? new _$SourceInfo._(classes: classes, element: element, uri: uri);
     replace(_$result);
     return _$result;
   }
