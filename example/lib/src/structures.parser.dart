@@ -55,9 +55,10 @@ Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
   final _attributesTag = await events.peek as XmlStartElementEvent;
   _log.finest('in attributesTest');
 
-  final name = await _attributesTag.attribute<String>('name');
-  final temperature = await _attributesTag.attribute<double>('temperature');
-  final active = await _attributesTag.attribute<bool>('active');
+  final name = await _attributesTag.optionalAttribute<String>('name');
+  final temperature =
+      await _attributesTag.optionalAttribute<double>('temperature');
+  final active = await _attributesTag.optionalAttribute<bool>('active');
   final count = await _attributesTag.optionalAttribute<int>('count') ?? 0;
 
   _log.finest('consume attributesTest');
@@ -73,7 +74,7 @@ Future<ContactInfo> extractContactInfo(StreamQueue<XmlEvent> events) async {
   final _contactInfo = await events.peek as XmlStartElementEvent;
   _log.finest('in ContactInfo');
 
-  final email = await _contactInfo.attribute<String>('email');
+  final email = await _contactInfo.optionalAttribute<String>('email');
   final phone = await _contactInfo.optionalAttribute<String>('phone');
   var notes;
   if (await events.scanTo(textElement(inside(_contactInfo)))) {
@@ -108,7 +109,7 @@ Future<NameTag> extractNameTag(StreamQueue<XmlEvent> events) async {
   final _nameTag = await events.peek as XmlStartElementEvent;
   _log.finest('in identification');
 
-  final name = await _nameTag.attribute<String>('name');
+  final name = await _nameTag.optionalAttribute<String>('name');
   var nickname;
   if (await events.scanTo(textElement(inside(_nameTag)))) {
     nickname = (await events.peek as XmlTextEvent).text;
