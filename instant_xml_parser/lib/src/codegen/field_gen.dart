@@ -38,7 +38,11 @@ class AttributeFieldGenerator {
   /// Parsed information about the containing file
   final SourceInfo sourceInfo;
 
-  AttributeFieldGenerator(this.element, this.method, this.sourceInfo);
+  /// Are we generating null-safe code?
+  final bool nullSafe;
+
+  AttributeFieldGenerator(
+      this.element, this.method, this.sourceInfo, this.nullSafe);
 
   /// Generate the code
   String get toAction => element.field.isCustom ? setupDeferred : readAttribute;
@@ -70,8 +74,9 @@ class AttributeFieldGenerator {
             ", convert: Convert.ifMatches('${element.field.trueIfMatches}')";
       }
     }
-    final action =
-        (element.ctParam.isOptional) ? 'optionalAttribute' : 'attribute';
+    final action = (element.ctParam.isOptional || !nullSafe)
+        ? 'optionalAttribute'
+        : 'attribute';
     return "final ${element.field.name} = await ${method.startVar}.$action<${element.field.typeName}>('${element.field.attributeName}' $conversion)$defaultValue;";
   }
 

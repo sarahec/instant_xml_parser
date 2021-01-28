@@ -1,5 +1,12 @@
 # Changelog
 
+# 0.11.1
+
+Added `use_null_safety` generator option. Preserves legacy behavior (attributes are
+all optional) when `false`.
+
+Set by default in `build.yaml`. You shouldn't change it for now.
+
 # 0.11.0
 
 Backport from null safety work. Significantly better test coverage for the runtime,

@@ -77,10 +77,11 @@ void main() {
             generated, contains("const NameTagName = 'identification'")));
 
     test('reads attributes', () {
-      expect(generated, contains("_nameTag.attribute<String>('name')"));
+      expect(generated, contains("_nameTag.optionalAttribute<String>('name')"));
       expect(
           generated, contains("_nameTag.optionalAttribute<int>('id') ?? 0;"));
-      expect(generated, contains("_nameTag.attribute<bool>('registered')"));
+      expect(generated,
+          contains("_nameTag.optionalAttribute<bool>('registered')"));
     });
 
     test('warns about unused fields',
@@ -145,7 +146,7 @@ void main() {
     test(
         'attribute',
         () => expect(generated,
-            contains("attribute<Uri>('altLoc', convert: Uri.parse)")));
+            contains("optionalAttribute<Uri>('altLoc', convert: Uri.parse)")));
 
     test(
         '@text',
@@ -196,8 +197,10 @@ void main() {
 
     test(
         'collects superclass field',
-        () => expect(generated,
-            contains("final name = await _bar.attribute<String>('name');")));
+        () => expect(
+            generated,
+            contains(
+                "final name = await _bar.optionalAttribute<String>('name');")));
   });
 
   group('children', () {

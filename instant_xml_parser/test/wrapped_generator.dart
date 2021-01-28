@@ -19,10 +19,12 @@ import 'package:source_gen/source_gen.dart';
 
 // Test setup adapted from built_value (thank you, kevmoo@)
 
+const nullSafe = false;
+
 class WrappedGenerator {
   final String pkgName = 'pkg';
 
-  final Builder builder = LibraryBuilder(ParseMethodGenerator(),
+  final Builder builder = LibraryBuilder(ParseMethodGenerator(nullSafe),
       generatedExtension: '.parser.dart');
 
   String error;

@@ -17,5 +17,9 @@ import 'package:source_gen/source_gen.dart';
 import 'package:instant_xml_parser/src/generators/parse_method_generator.dart';
 
 /// Entry point to the generation process. Called from ```build.yaml```.
-Builder parserBuilder(BuilderOptions options) =>
-    LibraryBuilder(ParseMethodGenerator(), generatedExtension: '.parser.dart');
+Builder parserBuilder(BuilderOptions options) {
+  final optionsMap = Map<String, dynamic>.from(options?.config ?? {});
+  final useNullSafety = optionsMap.remove('use_null_safety') as bool;
+  return LibraryBuilder(ParseMethodGenerator(useNullSafety),
+      generatedExtension: '.parser.dart');
+}

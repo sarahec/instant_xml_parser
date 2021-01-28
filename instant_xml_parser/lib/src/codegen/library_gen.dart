@@ -29,15 +29,16 @@ class LibraryGenerator {
   /// Name, location, etc. of the source file (needed to import that into
   /// its parser)
   final AssetId sourceAsset;
+  final bool nullSafe;
 
   var _importUris;
 
-  LibraryGenerator(this.sourceInfo, this.sourceAsset);
+  LibraryGenerator(this.sourceInfo, this.sourceAsset, this.nullSafe);
 
   /// Get the source for all methods
   Iterable<Method> get methods => [
         for (var method in sourceInfo.methods)
-          MethodGenerator(method, sourceInfo).toMethod
+          MethodGenerator(method, sourceInfo, nullSafe).toMethod
       ];
 
   /// Get the source for all import statements

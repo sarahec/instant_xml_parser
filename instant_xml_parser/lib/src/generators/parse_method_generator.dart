@@ -33,6 +33,9 @@ import '../codegen/library_gen.dart';
 class ParseMethodGenerator extends Generator {
   final _log = Logger('ParseMethodGenerator');
   final _tagChecker = TypeChecker.fromRuntime(tag);
+  final bool nullSafe;
+
+  ParseMethodGenerator(this.nullSafe) : super();
 
   /// Reads a single Dart file and emits the matching parser. Called once per
   /// source file.
@@ -46,7 +49,7 @@ class ParseMethodGenerator extends Generator {
       return null;
     }
     final info = SourceInfo.fromLibrary(library, buildStep.inputId);
-    final libGen = LibraryGenerator(info, buildStep.inputId);
+    final libGen = LibraryGenerator(info, buildStep.inputId, nullSafe);
     final emitter = DartEmitter(Allocator());
     var source = '${libGen.toCode.accept(emitter)}';
     _log.finest(() => source);
