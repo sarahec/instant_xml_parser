@@ -6,7 +6,7 @@ Backport from null safety work. Significantly better test coverage for the runti
 and generated parser improvements.
 ## 0.10.0
 
-Bugfixes
+Bugfixes. Boring old bugfixes.
 
 ## 0.9.0
 

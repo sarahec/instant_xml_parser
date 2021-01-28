@@ -60,10 +60,6 @@ class convert {
 ///
 /// [template] the string to be injected to the target code. Use a raw
 /// string if you want to include string interpolation.
-///
-/// Example:
-/// `
-/// class Script
 class custom {
   final String template;
 
