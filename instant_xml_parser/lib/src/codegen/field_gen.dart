@@ -18,7 +18,6 @@
 // limitations under the License.
 library parse_generator;
 
-import 'package:instant_xml_parser/src/info/field_info.dart';
 import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 
@@ -31,7 +30,7 @@ import '../info/method_info.dart';
 /// and default values (if specified in the constructor).
 class AttributeFieldGenerator {
   /// Parsed information from the source field
-  final FieldInfo field;
+  final CommonElement element;
 
   /// Parsed information about the containing method
   final MethodInfo method;
@@ -39,47 +38,48 @@ class AttributeFieldGenerator {
   /// Parsed information about the containing file
   final SourceInfo sourceInfo;
 
-  AttributeFieldGenerator(this.field, this.method, this.sourceInfo);
+  AttributeFieldGenerator(this.element, this.method, this.sourceInfo);
 
   /// Generate the code
-  String get toAction => field.isCustom ? setupDeferred : readAttribute;
+  String get toAction => element.field.isCustom ? setupDeferred : readAttribute;
 
   /// If this is a ```@custom``` field, final initialization won't happen until
   /// just before the constructor. This generates a [Completer] for
   /// deferred initialization.
   String get setupDeferred =>
-      '''final ${field.name}Completer = Completer<${field.typeName}>(); 
-      var ${field.name} = ${field.name}Completer.future;
+      '''final ${element.field.name}Completer = Completer<${element.field.typeName}>(); 
+      final ${element.field.name} = ${element.field.name}Completer.future;
       ''';
 
   /// Generate the code for reading and converting the attribute now, with
   /// type conversion from String and default value (if specified)
   String get readAttribute {
-    final defaultValue =
-        (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
+    final defaultValue = (element.field.defaultValueCode == null)
+        ? ''
+        : ' ?? ${element.field.defaultValueCode}';
 
     var conversion = ''; // if none match, write nothing
-    if (field.hasConversion) {
-      conversion = ', convert: ${field.conversion}';
-    } else if (field.type.isDartCoreBool) {
-      if (field.trueIfEquals != null) {
-        conversion = ", convert: Convert.ifEquals('${field.trueIfEquals}')";
-      } else if (field.trueIfMatches != null) {
-        conversion = ", convert: Convert.ifMatches('${field.trueIfMatches}')";
+    if (element.field.hasConversion) {
+      conversion = ', convert: ${element.field.conversion}';
+    } else if (element.field.type.isDartCoreBool) {
+      if (element.field.trueIfEquals != null) {
+        conversion =
+            ", convert: Convert.ifEquals('${element.field.trueIfEquals}')";
+      } else if (element.field.trueIfMatches != null) {
+        conversion =
+            ", convert: Convert.ifMatches('${element.field.trueIfMatches}')";
       }
     }
-
-    return "final ${field.name} = await ${method.startVar}.namedAttribute<${field.typeName}>('${field.attributeName}' $conversion)$defaultValue;";
+    final action =
+        (element.ctParam.isOptional) ? 'optionalAttribute' : 'attribute';
+    return "final ${element.field.name} = await ${method.startVar}.$action<${element.field.typeName}>('${element.field.attributeName}' $conversion)$defaultValue;";
   }
 
   String get resolveDeferred {
-    final defaultValue =
-        (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
-    final textOf =
-        ' (await events.find(textElement(inside(${method.startVar}))) as XmlTextEvent)?.text $defaultValue';
-    final extraction =
-        field.hasConversion ? '${field.conversion}($textOf)' : textOf;
-    return 'final ${field.name} = $extraction;';
+    final defaultValue = (element.field.defaultValueCode == null)
+        ? ''
+        : ' ?? ${element.field.defaultValueCode}';
+    return '${element.field.name}Completer.complete(${element.field.customTemplate} $defaultValue);';
   }
 }
 
@@ -88,21 +88,30 @@ class AttributeFieldGenerator {
 /// This handles: type conversion (```@convert```)
 /// and default values (if specified in the constructor).
 class TextFieldGenerator {
-  final FieldInfo field;
+  final CommonElement element;
   final MethodInfo method;
   final SourceInfo sourceInfo;
 
-  TextFieldGenerator(this.field, this.method, this.sourceInfo);
+  TextFieldGenerator(this.element, this.method, this.sourceInfo);
 
   /// Generate the code
   String get toAction {
-    final defaultValue =
-        (field.defaultValueCode == null) ? '' : ' ?? ${field.defaultValueCode}';
-    final textOf =
-        ' (await events.find(textElement(inside(${method.startVar}))) as XmlTextEvent)?.text $defaultValue';
-    final extraction =
-        field.hasConversion ? '${field.conversion}($textOf)' : textOf;
-    return 'final ${field.name} = $extraction;';
+    final defaultValue = (element.field.defaultValueCode == null)
+        ? "''" // TODO this should throw an error instead
+        : ' ${element.field.defaultValueCode}';
+
+    final textOf = '(await events.peek as XmlTextEvent).text';
+
+    final optionalConversion = element.field.hasConversion
+        ? '${element.field.conversion}($textOf)'
+        : textOf;
+
+    return '''var ${element.field.name};
+      if (await events.scanTo(textElement(inside(${method.startVar})))) {
+        ${element.field.name} = $optionalConversion;
+      } else {
+        ${element.field.name} = $defaultValue;
+      }''';
   }
 }
 
@@ -115,24 +124,25 @@ class TextFieldGenerator {
 /// 2. The ```case``` statement that recognizes the tag and calls its parsing
 /// method.
 class TagFieldGenerator {
-  final FieldInfo field;
+  final CommonElement element;
   final MethodInfo method;
   final SourceInfo sourceInfo;
 
   final _log = Logger('TagFieldGenerator');
 
-  TagFieldGenerator(this.field, this.method, this.sourceInfo);
+  TagFieldGenerator(this.element, this.method, this.sourceInfo);
 
-  String get customCode => 'final ${field.name} = ${field.customTemplate};';
+  String get customCode =>
+      'final ${element.field.name} = ${element.field.customTemplate};';
 
   String _action(MethodInfo foreignMethod) =>
       'await ${foreignMethod.name}(events)';
 
   /// Generate the case statement
   String get toAction {
-    final methods = sourceInfo.methodsReturning(field.type);
+    final methods = sourceInfo.methodsReturning(element.field.type);
     if (methods == null) {
-      final warning = 'No method found for ${field.typeName}';
+      final warning = 'No method found for ${element.field.typeName}';
       _log.warning(warning);
       return '// $warning\n';
     }
@@ -141,18 +151,18 @@ class TagFieldGenerator {
       for (var m in methods)
         '''
         case ${m.classInfo.constantName}:
-          ${field.isList ? '${field.name}.add(${_action(m)})' : ' ${field.name}= ${_action(m)}'};
+          ${element.field.isList ? '${element.field.name}.add(${_action(m)})' : ' ${element.field.name}= ${_action(m)}'};
         break;'''
     ].join('\n\n');
   }
 
   /// Generate the variable declaration (which may be a list)
   String get vardecl {
-    final varInit = (field.defaultValueCode != null)
-        ? ' = ${field.defaultValueCode}'
-        : field.isList
-            ? ' = <${field.typeName}>[]'
+    final varInit = (element.field.defaultValueCode != null)
+        ? ' = ${element.field.defaultValueCode}'
+        : element.field.isList
+            ? ' = <${element.field.typeName}>[]'
             : '';
-    return 'var ${field.name}$varInit;';
+    return 'var ${element.field.name}$varInit;';
   }
 }

@@ -14,8 +14,7 @@
 library parse_generator;
 
 import 'package:code_builder/code_builder.dart';
-import 'package:instant_xml_parser/src/info/field_info.dart';
-import 'package:instant_xml_parser/src/info/symtable.dart';
+import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
@@ -25,21 +24,31 @@ import 'field_gen.dart';
 
 class MethodGenerator {
   final MethodInfo method;
-  final Symtable symtable;
-  final Iterable<FieldInfo> fields;
+  final SourceInfo symtable;
+  final Iterable<CommonElement> commonElements;
   final Logger _log = Logger('MethodGenerator');
 
   MethodGenerator(this.method, this.symtable)
-      : fields = method.fields(symtable);
+      : commonElements = method.commonElements(symtable);
+
+  String get attributesBlock => [
+        for (var f in commonElements.where((f) => f.field.isAttributeField))
+          AttributeFieldGenerator(f, method, symtable).toAction
+      ].join('\n');
+
+  Iterable<TagFieldGenerator> get childFieldGenerators => [
+        for (var e in commonElements
+            .where((f) => f.field.isChildField && !f.field.isCustom))
+          TagFieldGenerator(e, method, symtable)
+      ];
 
   String get constructor {
-    final foundCtor = method.classInfo.constructor;
-    if (foundCtor == null) {
+    if (!method.classInfo.hasConstructor) {
       _log.warning(
           'No constructor found for ${method.typeName}, generating empty constructor call');
       return '${method.typeName}()';
     }
-
+    final foundCtor = method.classInfo.constructor;
     final paramList = [
       for (var p in foundCtor.parameters)
         p.isNamed ? '${p.name}: ${p.name}' : p.name
@@ -48,41 +57,6 @@ class MethodGenerator {
 
     return '${method.typeName}($params)';
   }
-
-  String get attributesBlock => [
-        for (var f in fields.where((f) => f.isAttributeField))
-          AttributeFieldGenerator(f, method, symtable).toAction
-      ].join('\n');
-
-  String get textExtractionBlock => [
-        for (var f in fields.where((f) => f.isXmlTextField))
-          TextFieldGenerator(f, method, symtable).toAction
-      ].join('\n');
-
-  Iterable<TagFieldGenerator> get childFieldGenerators => [
-        for (var f in fields.where((f) => f.isChildField && !f.isCustom))
-          TagFieldGenerator(f, method, symtable)
-      ];
-
-  String get startBlock => '''
-      final found = await events.scanTo(startTag(named(${method.classInfo.constantName}))) as XmlStartElementEvent; 
-      if (!found) {
-        throw MissingStartTag(${method.classInfo.constantName});
-      }
-      final ${method.startVar} = await events.peek as XmlStartElementEvent;
-      _log.fine('in ${method.classInfo.tagName}');
-      ''';
-
-  String get resolveCustomClasses => [
-        for (var f
-            in fields.where((f) => f.isChildField && f.isCustom && !f.isList))
-          TagFieldGenerator(f, method, symtable).customCode
-      ].join('\n');
-
-  String get resolveDeferredAttributes => [
-        for (var f in fields.where((f) => f.isAttributeField && f.isDeferred))
-          AttributeFieldGenerator(f, method, symtable).resolveDeferred
-      ].join('\n');
 
   String get endBlock => '''
     $resolveCustomClasses
@@ -120,6 +94,32 @@ class MethodGenerator {
     ].map((s) => Code(s)));
   }
 
+  String get resolveCustomClasses => [
+        for (var f in commonElements.where(
+            (f) => f.field.isChildField && f.field.isCustom && !f.field.isList))
+          TagFieldGenerator(f, method, symtable).customCode
+      ].join('\n');
+
+  String get resolveDeferredAttributes => [
+        for (var f in commonElements
+            .where((f) => f.field.isAttributeField && f.field.isDeferred))
+          AttributeFieldGenerator(f, method, symtable).resolveDeferred
+      ].join('\n');
+
+  String get startBlock => '''
+      final found = await events.scanTo(startTag(named(${method.classInfo.constantName}))); 
+      if (!found) {
+        throw MissingStartTag(${method.classInfo.constantName});
+      }
+      final ${method.startVar} = await events.peek as XmlStartElementEvent;
+      _log.finest('in ${method.classInfo.tagName}');
+      ''';
+
+  String get textExtractionBlock => [
+        for (var f in commonElements.where((f) => f.field.isXmlTextField))
+          TextFieldGenerator(f, method, symtable).toAction
+      ].join('\n');
+
   Method get toMethod => Method((b) => b
     ..name = method.name
     ..body = methodBody
@@ -135,7 +135,14 @@ class MethodGenerator {
             ..symbol = 'XmlEvent'
             ..url = uri.XMLEventsLibrary
             ..isNullable = false))))
-    ]));
+    ])
+    ..returns = TypeReference((b) => b // Future<SomeType>
+      ..symbol = 'Future'
+      ..isNullable = false
+      ..url = uri.AsyncCoreLibrary
+      ..types.add(TypeReference((b) => b
+        ..symbol = method.typeName
+        ..isNullable = false))));
 
   @visibleForTesting
   String get toSource => DartEmitter().visitMethod(toMethod).toString();

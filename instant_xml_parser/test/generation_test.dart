@@ -77,15 +77,15 @@ void main() {
             generated, contains("const NameTagName = 'identification'")));
 
     test('reads attributes', () {
-      expect(generated, contains("_nameTag.namedAttribute<String>('name')"));
-      expect(generated, contains("_nameTag.namedAttribute<int>('id') ?? 0;"));
-      expect(generated, contains("_nameTag.namedAttribute<double>('score')"));
+      expect(generated, contains("_nameTag.attribute<String>('name')"));
       expect(
-          generated, contains("_nameTag.namedAttribute<bool>('registered')"));
+          generated, contains("_nameTag.optionalAttribute<int>('id') ?? 0;"));
+      expect(generated, contains("_nameTag.attribute<bool>('registered')"));
     });
 
-    // test('warns about unused fields',
-    //     () => expect(warnings, contains('Unused fields: id, score')));
+    test('warns about unused fields',
+        () => expect(/* warnings */ '', contains('Unused fields: id, score')),
+        skip: 'Implement unused warning');
 
     test(
         'creates object with known fields',
@@ -109,10 +109,8 @@ void main() {
 
     test(
         'extracts text',
-        () => expect(
-            generated,
-            contains(
-                '(await events.find(textElement(inside(_nameTag))) as XmlTextEvent)')));
+        () => expect(generated,
+            contains('(await events.scanTo(textElement(inside(_nameTag))))')));
 
     // TODO Strip newlines in generated code before testing
     test(
@@ -131,7 +129,7 @@ void main() {
 
         @tag('loc')
         class Location {
-          final String foo; 
+          final String foo; // not in constructor, won't be parsed
 
           @textElement
           @convert('Uri.parse')
@@ -140,16 +138,14 @@ void main() {
           @convert('Uri.parse')
           final Uri altLoc;
 
-          NameTag(this.loc, this.altLoc);
+          Location(this.loc, this.altLoc);
         }''');
     });
 
-    test('foo',
-        () => expect(generated, contains(".namedAttribute<String>('foo')")));
     test(
         'attribute',
         () => expect(generated,
-            contains("namedAttribute<Uri>('altLoc', convert: Uri.parse)")));
+            contains("attribute<Uri>('altLoc', convert: Uri.parse)")));
 
     test(
         '@text',
@@ -168,12 +164,9 @@ void main() {
           @custom("'Hello, world'")
           final String foo; 
 
-          @textElement
-          final Uri loc;
-
           final Uri altLoc;
 
-          NameTag(this.loc, this.altLoc);
+          Location(this.foo, this.altLoc);
         }''');
     });
 
@@ -203,10 +196,8 @@ void main() {
 
     test(
         'collects superclass field',
-        () => expect(
-            generated,
-            contains(
-                "final name = await _bar.namedAttribute<String>('name');")));
+        () => expect(generated,
+            contains("final name = await _bar.attribute<String>('name');")));
   });
 
   group('children', () {

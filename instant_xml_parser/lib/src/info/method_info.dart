@@ -54,18 +54,22 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
 
   /// Parse all the fields that could be initialized from the constructor
   Iterable<CommonElement> commonElements(SourceInfo symtable) {
+    final elements = fields(symtable);
+    if (elements.isEmpty) return [];
+
+    final elementNames = Set.of(elements.map((e) => e.name));
+    var ctorParams = classInfo.constructor.parameters;
+    final common =
+        Set.of(ctorParams.map((p) => p.name)).intersection(elementNames);
+
+    // Error checking
     if (!classInfo.hasConstructor) {
       throw InvalidGenerationSourceError(
           'Missing constructor in ${classInfo.typeName}',
           todo:
               'Add a constructor to ${classInfo.typeName} with the fields to be initialized');
     }
-    final elements = fields(symtable);
-    final elementNames = Set.of(elements.map((e) => e.name));
-    var ctorParams = classInfo.constructor.parameters;
-    final common =
-        Set.of(ctorParams.map((p) => p.name)).intersection(elementNames);
-    // Error checking
+
     if (common.isEmpty) {
       throw InvalidGenerationSourceError(
           '${classInfo.typeName} has no fields in common with the constructor parameters');
