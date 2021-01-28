@@ -29,3 +29,6 @@ builders:
     auto_apply: dependents
     build_to: source
     applies_builders: ["source_gen|library_builder"]
+    defaults:
+      options:
+        use_null_safety: false
