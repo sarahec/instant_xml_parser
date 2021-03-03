@@ -40,7 +40,7 @@ void main() {
 
     test('returns false if match throws', () async {
       events = generateEventStream(Stream.value(xml));
-      final found = await events.scanTo((e) => throw NoSuchMethodError);
+      final found = await events.scanTo(((e) => throw NoSuchMethodError));
       expect(found, isFalse);
     });
 

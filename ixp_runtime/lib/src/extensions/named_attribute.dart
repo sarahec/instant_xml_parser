@@ -37,8 +37,8 @@ extension AttributeExtension on XmlStartElementEvent {
   /// Typical call:
   /// `final name = _pr.namedAttribute<String>(_startTag, 'name')`
   @Deprecated('use `attribute` or `optionalAttribute`')
-  Future<T> namedAttribute<T>(String attributeName,
-      {Converter<T> convert, isRequired = false, T defaultValue}) async {
+  Future<T?> namedAttribute<T>(String attributeName,
+      {Converter<T>? convert, isRequired = false, T? defaultValue}) async {
     final probe = await optionalAttribute<T>(attributeName, convert: convert);
     if (probe == null && isRequired) {
       throw MissingAttribute(name, attributeName);
@@ -55,7 +55,7 @@ extension AttributeExtension on XmlStartElementEvent {
   /// [converter] A function of the form `T Function(String)` that parses
   /// the string to an object. Not needed for any of the primitive types or
   /// `Uri`. (See [autoConverter])
-  Future<T> attribute<T>(String attributeName, {Converter<T> convert}) async {
+  Future<T> attribute<T>(String attributeName, {Converter<T>? convert}) async {
     final probe = await optionalAttribute<T>(attributeName, convert: convert);
     if (probe == null) {
       throw MissingAttribute(name, attributeName);
@@ -78,8 +78,8 @@ extension AttributeExtension on XmlStartElementEvent {
   /// [converter] A function of the form `T Function(String)` that parses
   /// the string to an object. Not needed for any of the primitive types or
   /// `Uri`. (See [autoConverter])
-  Future<T> optionalAttribute<T>(String attributeName,
-      {Converter<T> convert}) async {
+  Future<T?> optionalAttribute<T>(String attributeName,
+      {Converter<T>? convert}) async {
     convert = convert ?? autoConverter(T);
     try {
       return convert(attributes
