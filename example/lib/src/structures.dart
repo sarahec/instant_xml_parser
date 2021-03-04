@@ -20,27 +20,27 @@ class EmptyTag {
 
 @tag('attributesTest')
 class AttributesTag {
-  final String name;
+  final String? name;
   final int count;
-  final double temperature;
-  final bool active;
+  final double? temperature;
+  final bool? active;
 
   AttributesTag(this.name, this.temperature, this.active, [this.count = 0]);
 }
 
 @tag('identification')
 class NameTag {
-  final String name;
+  final String? name;
   @textElement
-  final String nickname;
+  final String? nickname;
 
   NameTag(this.name, {this.nickname});
 }
 
 @tag('ContactInfo')
 class ContactInfo {
-  final String email;
-  final String phone;
+  final String? email;
+  final String? phone;
   @textElement
   final String notes;
 
@@ -63,9 +63,9 @@ class ContactInfo {
 
 @tag('registration')
 class Registration {
-  final NameTag person;
-  final ContactInfo contact;
-  final int age;
+  final NameTag? person;
+  final ContactInfo? contact;
+  final int? age;
 
   Registration(this.person, this.contact, [this.age]);
 }

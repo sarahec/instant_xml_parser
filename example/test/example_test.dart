@@ -73,7 +73,7 @@ void main() {
         expect(registration.age, equals(36));
         expect(registration.person, isA<NameTag>());
         expect(registration.contact, isA<ContactInfo>());
-        expect(registration.contact.email, equals('foo@bar.dev'));
+        expect(registration.contact!.email, equals('foo@bar.dev'));
       } catch (e) {
         print(e.toString());
       }
