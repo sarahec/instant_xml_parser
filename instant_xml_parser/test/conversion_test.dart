@@ -13,115 +13,13 @@
 // limitations under the License.
 import 'package:test/test.dart';
 
-import 'wrapped_generator.dart';
+import 'common/wrapped_generator.dart';
 
 void main() {
   final g = WrappedGenerator();
   var generated;
 
-  group('boilerplate', () {
-    setUp(() async {
-      generated = await g.generate('''
-        import 'package:ixp_runtime/annotations.dart';
-
-        @tag('empty')
-        class EmptyTag {
-          EmptyTag();
-        }
-        
-        class NoTag {
-          NoTag();
-        }''');
-    });
-
-    test('ignores untagged class',
-        () => expect(generated, isNot(contains('extractNoTag'))));
-
-    test('extracts Future',
-        () => expect(generated, contains('Future<EmptyTag> extract')));
-
-    test('incorporates tag name',
-        () => expect(generated, contains('Future<EmptyTag> extractEmptyTag')));
-
-    test('includes tag constant',
-        () => expect(generated, contains("const EmptyTagName = 'empty'")));
-
-    test(
-        'consumes to end',
-        () =>
-            expect(generated, contains('events.consume(inside(_emptyTag));')));
-
-    test('creates object',
-        () => expect(generated, contains('return EmptyTag()')));
-  });
-
-  group('attributes', () {
-    setUp(() async {
-      generated = await g.generate('''
-        import 'package:ixp_runtime/annotations.dart';
-
-        @tag('identification')
-        class NameTag {
-          final String name;
-          final int id;
-          final double score;
-          final bool registered;
-
-          NameTag(this.name, this.registered, {this.id=0});
-        }''');
-    });
-
-    test(
-        'picks up tag name',
-        () => expect(
-            generated, contains("const NameTagName = 'identification'")));
-
-    test('reads attributes', () {
-      expect(generated, contains("_nameTag.optionalAttribute<String>('name')"));
-      expect(
-          generated, contains("_nameTag.optionalAttribute<int>('id') ?? 0;"));
-      expect(generated,
-          contains("_nameTag.optionalAttribute<bool>('registered')"));
-    });
-
-    test('warns about unused fields',
-        () => expect(/* warnings */ '', contains('Unused fields: id, score')),
-        skip: 'Implement unused warning');
-
-    test(
-        'creates object with known fields',
-        () => expect(
-            generated, contains('return NameTag(name, registered, id: id)')));
-  });
-
-  group('text', () {
-    setUp(() async {
-      generated = await g.generate('''
-        import 'package:ixp_runtime/annotations.dart';
-
-        @tag('text')
-        class NameTag {
-          @textElement
-          final String name;
-
-          NameTag({this.name='sam'});
-        }''');
-    });
-
-    test(
-        'extracts text',
-        () => expect(generated,
-            contains('(await events.scanTo(textElement(inside(_nameTag))))')));
-
-    // TODO Strip newlines in generated code before testing
-    test(
-        'applies default',
-        () => expect(generated, contains("?.text ?? 'sam';"),
-            skip: 'failing due to inline newlines, but the code is correct'));
-
-    test('uses named parameter in constructor',
-        () => expect(generated, contains('return NameTag(name: name);')));
-  });
+  String _stripNewlines(String s) => s.replaceAll(RegExp(r'\s\s+'), ' ');
 
   group('conversion', () {
     setUp(() async {
@@ -150,9 +48,8 @@ void main() {
 
     test(
         '@text',
-        () => expect(generated,
-            contains('final loc = Uri.parse(await events.textValue())')),
-        skip: 'Need to rewrite after stripping newlines');
+        () => expect(_stripNewlines(generated),
+            contains('loc = Uri.parse((await events.peek as XmlTextEvent).text)')));
   });
 
   group('custom', () {
