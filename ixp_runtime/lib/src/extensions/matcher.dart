@@ -42,13 +42,13 @@ Matcher not(Matcher match) => ((e) => !match(e));
 /// Wraps another matcher so it only sees `XmlStartElementEvent`.
 ///
 /// [match] the matcher to wrap, such as [named]
-Matcher<XmlStartElementEvent> startTag([Matcher<XmlEvent> match]) =>
+Matcher<XmlStartElementEvent> startTag([Matcher<XmlEvent>? match]) =>
     ((e) => e is XmlStartElementEvent && (match == null || match(e)));
 
 /// Wraps another matcher so it only sees `XmlTextEvent`.
 ///
 /// [match] the matcher to wrap, such as [inside]
-Matcher<XmlTextEvent> textElement([Matcher match]) =>
+Matcher<XmlTextEvent> textElement([Matcher? match]) =>
     ((e) => e is XmlTextEvent && (match == null || match(e)));
 
 typedef Matcher<T extends XmlEvent> = bool Function(XmlEvent event);

@@ -15,17 +15,17 @@
 
 name: ixp_runtime
 description: Runtime utilities for generated XML parsers (as used in instant_xml_parser)
-version: 0.11.0
+version: 1.0.0-nullsafety.0
 homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:
-  sdk: '>=2.10.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  async: ^2.4.0
-  logging: ^0.11.4
-  xml: ^4.4.1
+  async: ^2.5.0
+  logging: ^1.0.0
+  xml: ^5.0.2
 
 dev_dependencies:
-  pedantic: ^1.9.0
-  test: ^1.14.4
+  pedantic: ^1.11.0
+  test: ^1.16.5
