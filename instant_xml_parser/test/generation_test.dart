@@ -190,8 +190,7 @@ void main() {
 
         @tag('bar')
         class Bar extends Foo {
-          
-          Bar(name) : Foo(name);
+          Bar(name) : super(name);
         }''');
     });
 
@@ -246,8 +245,6 @@ void main() {
           final String phone;
 
           ContactInfo([this.email, this.phone]);
-        }
-
         }''');
     });
 
