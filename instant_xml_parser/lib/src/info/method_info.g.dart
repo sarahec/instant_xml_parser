@@ -18,12 +18,8 @@ class _$MethodInfo extends MethodInfo {
       (new MethodInfoBuilder()..update(updates)).build();
 
   _$MethodInfo._({this.classInfo, this.prefix}) : super._() {
-    if (classInfo == null) {
-      throw new BuiltValueNullFieldError('MethodInfo', 'classInfo');
-    }
-    if (prefix == null) {
-      throw new BuiltValueNullFieldError('MethodInfo', 'prefix');
-    }
+    BuiltValueNullFieldError.checkNotNull(classInfo, 'MethodInfo', 'classInfo');
+    BuiltValueNullFieldError.checkNotNull(prefix, 'MethodInfo', 'prefix');
   }
 
   @override
@@ -76,9 +72,10 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
   MethodInfoBuilder();
 
   MethodInfoBuilder get _$this {
-    if (_$v != null) {
-      _classInfo = _$v.classInfo?.toBuilder();
-      _prefix = _$v.prefix;
+    final $v = _$v;
+    if ($v != null) {
+      _classInfo = $v.classInfo.toBuilder();
+      _prefix = $v.prefix;
       _$v = null;
     }
     return this;
@@ -86,9 +83,7 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
 
   @override
   void replace(MethodInfo other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MethodInfo;
   }
 
@@ -102,7 +97,10 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
     _$MethodInfo _$result;
     try {
       _$result = _$v ??
-          new _$MethodInfo._(classInfo: classInfo.build(), prefix: prefix);
+          new _$MethodInfo._(
+              classInfo: classInfo.build(),
+              prefix: BuiltValueNullFieldError.checkNotNull(
+                  prefix, 'MethodInfo', 'prefix'));
     } catch (_) {
       String _$failedField;
       try {

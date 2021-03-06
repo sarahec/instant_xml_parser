@@ -41,7 +41,7 @@ class _$SourceInfoSerializer implements StructuredSerializer<SourceInfo> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'classes':
           result.classes = serializers.deserialize(value,
@@ -78,15 +78,9 @@ class _$SourceInfo extends SourceInfo {
       (new SourceInfoBuilder()..update(updates)).build();
 
   _$SourceInfo._({this.classes, this.element, this.uri}) : super._() {
-    if (classes == null) {
-      throw new BuiltValueNullFieldError('SourceInfo', 'classes');
-    }
-    if (element == null) {
-      throw new BuiltValueNullFieldError('SourceInfo', 'element');
-    }
-    if (uri == null) {
-      throw new BuiltValueNullFieldError('SourceInfo', 'uri');
-    }
+    BuiltValueNullFieldError.checkNotNull(classes, 'SourceInfo', 'classes');
+    BuiltValueNullFieldError.checkNotNull(element, 'SourceInfo', 'element');
+    BuiltValueNullFieldError.checkNotNull(uri, 'SourceInfo', 'uri');
   }
 
   @override
@@ -145,10 +139,11 @@ class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
   SourceInfoBuilder();
 
   SourceInfoBuilder get _$this {
-    if (_$v != null) {
-      _classes = _$v.classes;
-      _element = _$v.element;
-      _uri = _$v.uri;
+    final $v = _$v;
+    if ($v != null) {
+      _classes = $v.classes;
+      _element = $v.element;
+      _uri = $v.uri;
       _$v = null;
     }
     return this;
@@ -156,9 +151,7 @@ class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
 
   @override
   void replace(SourceInfo other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$SourceInfo;
   }
 
@@ -169,8 +162,14 @@ class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
 
   @override
   _$SourceInfo build() {
-    final _$result =
-        _$v ?? new _$SourceInfo._(classes: classes, element: element, uri: uri);
+    final _$result = _$v ??
+        new _$SourceInfo._(
+            classes: BuiltValueNullFieldError.checkNotNull(
+                classes, 'SourceInfo', 'classes'),
+            element: BuiltValueNullFieldError.checkNotNull(
+                element, 'SourceInfo', 'element'),
+            uri: BuiltValueNullFieldError.checkNotNull(
+                uri, 'SourceInfo', 'uri'));
     replace(_$result);
     return _$result;
   }

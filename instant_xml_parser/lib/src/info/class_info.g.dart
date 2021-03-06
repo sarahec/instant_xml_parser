@@ -25,10 +25,12 @@ class _$ClassInfoSerializer implements StructuredSerializer<ClassInfo> {
       serializers.serialize(object.type,
           specifiedType: const FullType(InterfaceType)),
     ];
-    if (object.subclasses != null) {
+    Object value;
+    value = object.subclasses;
+    if (value != null) {
       result
         ..add('subclasses')
-        ..add(serializers.serialize(object.subclasses,
+        ..add(serializers.serialize(value,
             specifiedType:
                 const FullType(Iterable, const [const FullType(DartType)])));
     }
@@ -44,7 +46,7 @@ class _$ClassInfoSerializer implements StructuredSerializer<ClassInfo> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'element':
           result.element = serializers.deserialize(value,
@@ -83,12 +85,8 @@ class _$ClassInfo extends ClassInfo {
       (new ClassInfoBuilder()..update(updates)).build();
 
   _$ClassInfo._({this.element, this.subclasses, this.type}) : super._() {
-    if (element == null) {
-      throw new BuiltValueNullFieldError('ClassInfo', 'element');
-    }
-    if (type == null) {
-      throw new BuiltValueNullFieldError('ClassInfo', 'type');
-    }
+    BuiltValueNullFieldError.checkNotNull(element, 'ClassInfo', 'element');
+    BuiltValueNullFieldError.checkNotNull(type, 'ClassInfo', 'type');
   }
 
   @override
@@ -154,10 +152,11 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   ClassInfoBuilder();
 
   ClassInfoBuilder get _$this {
-    if (_$v != null) {
-      _element = _$v.element;
-      _subclasses = _$v.subclasses;
-      _type = _$v.type;
+    final $v = _$v;
+    if ($v != null) {
+      _element = $v.element;
+      _subclasses = $v.subclasses;
+      _type = $v.type;
       _$v = null;
     }
     return this;
@@ -165,9 +164,7 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
 
   @override
   void replace(ClassInfo other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ClassInfo;
   }
 
@@ -179,7 +176,12 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   @override
   _$ClassInfo build() {
     final _$result = _$v ??
-        new _$ClassInfo._(element: element, subclasses: subclasses, type: type);
+        new _$ClassInfo._(
+            element: BuiltValueNullFieldError.checkNotNull(
+                element, 'ClassInfo', 'element'),
+            subclasses: subclasses,
+            type: BuiltValueNullFieldError.checkNotNull(
+                type, 'ClassInfo', 'type'));
     replace(_$result);
     return _$result;
   }

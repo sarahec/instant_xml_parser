@@ -26,9 +26,7 @@ class _$FieldInfo extends FieldInfo {
       (new FieldInfoBuilder()..update(updates)).build();
 
   _$FieldInfo._({this.element, this.defaultValueCode}) : super._() {
-    if (element == null) {
-      throw new BuiltValueNullFieldError('FieldInfo', 'element');
-    }
+    BuiltValueNullFieldError.checkNotNull(element, 'FieldInfo', 'element');
   }
 
   @override
@@ -105,9 +103,10 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
   FieldInfoBuilder();
 
   FieldInfoBuilder get _$this {
-    if (_$v != null) {
-      _element = _$v.element;
-      _defaultValueCode = _$v.defaultValueCode;
+    final $v = _$v;
+    if ($v != null) {
+      _element = $v.element;
+      _defaultValueCode = $v.defaultValueCode;
       _$v = null;
     }
     return this;
@@ -115,9 +114,7 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
 
   @override
   void replace(FieldInfo other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$FieldInfo;
   }
 
@@ -129,7 +126,10 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
   @override
   _$FieldInfo build() {
     final _$result = _$v ??
-        new _$FieldInfo._(element: element, defaultValueCode: defaultValueCode);
+        new _$FieldInfo._(
+            element: BuiltValueNullFieldError.checkNotNull(
+                element, 'FieldInfo', 'element'),
+            defaultValueCode: defaultValueCode);
     replace(_$result);
     return _$result;
   }
