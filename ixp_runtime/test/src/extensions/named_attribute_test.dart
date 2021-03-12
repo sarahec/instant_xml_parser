@@ -1,4 +1,4 @@
-import 'package:ixp_runtime/runtime.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 

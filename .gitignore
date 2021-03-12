@@ -15,3 +15,6 @@ doc/api/
 # Mac OS finder metadata
 .DS_Store
 .idea/
+
+# Working directory while debugging tests
+_test_output*/
