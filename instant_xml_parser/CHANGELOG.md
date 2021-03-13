@@ -1,5 +1,10 @@
 # Changelog
 
+# 0.12.0
+
+Backport to match renamed runtime import in 1.0. Also adds `// @dart=2.11` to
+generated code to flag as not null-safe.
+
 # 0.11.0
 
 Backport from null safety work. Significantly better test coverage for the runtime,
