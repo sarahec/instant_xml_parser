@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 
 import 'common/wrapped_generator.dart';
 
-  String _stripNewlines(String s) => s.replaceAll(RegExp(r'\s\s+'), ' ');
+String _stripNewlines(String s) => s.replaceAll(RegExp(r'\s\s+'), ' ');
 
 void main() {
   final g = WrappedGenerator();
@@ -40,12 +40,13 @@ void main() {
         () => expect(generated,
             contains('(await events.scanTo(textElement(inside(_nameTag))))')));
 
-   test(
+    test(
         'applies default',
-        () => expect(_stripNewlines(generated), 
-        contains("if (await events.scanTo(textElement(inside(_nameTag)))) "
-        "{ name = (await events.peek as XmlTextEvent).text; } "
-        "else { name = 'sam'; }")));
+        () => expect(
+            _stripNewlines(generated),
+            contains('if (await events.scanTo(textElement(inside(_nameTag)))) '
+                '{ name = (await events.peek as XmlTextEvent).text; } '
+                "else { name = 'sam'; }")));
 
     test('uses named parameter in constructor',
         () => expect(generated, contains('return NameTag(name: name);')));
