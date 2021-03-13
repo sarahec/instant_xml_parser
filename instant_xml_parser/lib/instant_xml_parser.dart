@@ -16,6 +16,11 @@ import 'package:source_gen/source_gen.dart';
 
 import 'package:instant_xml_parser/src/generators/parse_method_generator.dart';
 
+const HEADER = '''// GENERATED CODE -- DO NOT MODIFY BY HAND
+// From instant_xml_parser
+// @dart = 2.11''';
+
 /// Entry point to the generation process. Called from ```build.yaml```.
 Builder parserBuilder(BuilderOptions options) =>
-    LibraryBuilder(ParseMethodGenerator(), generatedExtension: '.parser.dart');
+    LibraryBuilder(ParseMethodGenerator(),
+        generatedExtension: '.parser.dart', header: HEADER);
