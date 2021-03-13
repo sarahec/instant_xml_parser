@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// @dart=2.11
+// @dart=2.10
 import 'package:xml/xml_events.dart';
 import 'package:xml/src/xml_events/utils/parented.dart';
 

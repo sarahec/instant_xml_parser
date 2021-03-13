@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// @dart=2.11
+// @dart=2.10
 import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:test/test.dart';
 
