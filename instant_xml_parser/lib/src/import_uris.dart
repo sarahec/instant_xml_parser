@@ -18,5 +18,5 @@ library parse_generator;
 const AsyncCoreLibrary = 'dart:async';
 const AsyncLibrary = 'package:async/async.dart';
 const Logging = 'package:logging/logging.dart';
-const Runtime = 'package:ixp_runtime/runtime.dart';
+const Runtime = 'package:ixp_runtime/ixp_runtime.dart';
 const XMLEventsLibrary = 'package:xml/xml_events.dart';
