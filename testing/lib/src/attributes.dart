@@ -1,4 +1,3 @@
-// @dart=2.11
 import 'package:ixp_runtime/annotations.dart';
 
 // Copyright 2021 Google LLC
@@ -18,7 +17,7 @@ import 'package:ixp_runtime/annotations.dart';
 @tag('identification')
 class NameTag {
   final String name;
-  final int id;
+  final int? id;
   final bool registered;
 
   NameTag(this.name, this.registered, {this.id = 0});

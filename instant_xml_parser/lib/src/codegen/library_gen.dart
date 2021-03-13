@@ -38,7 +38,7 @@ class LibraryGenerator {
   /// Get the source for all methods
   Iterable<Method> get methods => [
         for (var method in sourceInfo.methods)
-          MethodGenerator(method, sourceInfo, nullSafe).toMethod
+          MethodGenerator(method, sourceInfo).toMethod
       ];
 
   /// Get the source for all import statements

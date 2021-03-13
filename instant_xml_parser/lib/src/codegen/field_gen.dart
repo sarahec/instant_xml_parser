@@ -38,11 +38,7 @@ class AttributeFieldGenerator {
   /// Parsed information about the containing file
   final SourceInfo sourceInfo;
 
-  /// Are we generating null-safe code?
-  final bool nullSafe;
-
-  AttributeFieldGenerator(
-      this.element, this.method, this.sourceInfo, this.nullSafe);
+  AttributeFieldGenerator(this.element, this.method, this.sourceInfo);
 
   /// Generate the code
   String get toAction => element.field.isCustom ? setupDeferred : readAttribute;
@@ -58,9 +54,9 @@ class AttributeFieldGenerator {
   /// Generate the code for reading and converting the attribute now, with
   /// type conversion from String and default value (if specified)
   String get readAttribute {
-    final defaultValue = (element.field.defaultValueCode == null)
-        ? ''
-        : ' ?? ${element.field.defaultValueCode}';
+    final defaultValue = (element.field.defaultValueCode != null)
+        ? ' ?? ${element.field.defaultValueCode}'
+        : '';
 
     var conversion = ''; // if none match, write nothing
     if (element.field.hasConversion) {
@@ -74,9 +70,7 @@ class AttributeFieldGenerator {
             ", convert: Convert.ifMatches('${element.field.trueIfMatches}')";
       }
     }
-    final action = (element.ctParam.isOptional || !nullSafe)
-        ? 'optionalAttribute'
-        : 'attribute';
+    final action = element.isNullable ? 'optionalAttribute' : 'attribute';
     return "final ${element.field.name} = await ${method.startVar}.$action<${element.field.typeName}>('${element.field.attributeName}' $conversion)$defaultValue;";
   }
 

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:built_value/built_value.dart';
 import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
@@ -106,6 +107,9 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
 class CommonElement {
   final FieldInfo field;
   final ParameterElement ctParam;
+
+  bool get isNullable =>
+      field.type.nullabilitySuffix == NullabilitySuffix.question;
 
   CommonElement({@required this.field, @required this.ctParam});
 }

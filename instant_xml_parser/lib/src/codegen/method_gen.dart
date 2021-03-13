@@ -26,15 +26,14 @@ class MethodGenerator {
   final MethodInfo method;
   final SourceInfo symtable;
   final Iterable<CommonElement> commonElements;
-  final bool nullSafe;
   final Logger _log = Logger('MethodGenerator');
 
-  MethodGenerator(this.method, this.symtable, this.nullSafe)
+  MethodGenerator(this.method, this.symtable)
       : commonElements = method.commonElements(symtable);
 
   String get attributesBlock => [
         for (var f in commonElements.where((f) => f.field.isAttributeField))
-          AttributeFieldGenerator(f, method, symtable, nullSafe).toAction
+          AttributeFieldGenerator(f, method, symtable).toAction
       ].join('\n');
 
   Iterable<TagFieldGenerator> get childFieldGenerators => [
@@ -104,7 +103,7 @@ class MethodGenerator {
   String get resolveDeferredAttributes => [
         for (var f in commonElements
             .where((f) => f.field.isAttributeField && f.field.isDeferred))
-          AttributeFieldGenerator(f, method, symtable, nullSafe).resolveDeferred
+          AttributeFieldGenerator(f, method, symtable).resolveDeferred
       ].join('\n');
 
   String get startBlock => '''

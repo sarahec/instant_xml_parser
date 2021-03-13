@@ -16,5 +16,6 @@ doc/api/
 .DS_Store
 .idea/
 
-# Working directory while debugging tests
+# build_test
+testing/lib/parsers/*.parser.dart
 _test_output*/

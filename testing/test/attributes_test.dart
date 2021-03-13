@@ -1,7 +1,6 @@
-// ignore_for_file: avoid_relative_lib_imports
 import 'package:test/test.dart';
-import '../lib/attributes.parser.dart';
-import 'package:ixp_runtime/runtime.dart';
+import '../lib/parsers.dart'; // ignore: avoid_relative_lib_imports
+import 'package:ixp_runtime/ixp_runtime.dart';
 
 void main() {
   test('all present', () async {
@@ -22,6 +21,6 @@ void main() {
     expect(
         extractNameTag(generateEventStream(
             Stream.value('<identification name="Frank" />'))),
-        throwsA(MissingAttribute));
+        throwsA(TypeMatcher<MissingAttribute>()));
   });
 }
