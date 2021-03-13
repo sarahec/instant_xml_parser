@@ -20,8 +20,8 @@ class EmptyTag {
 
 @tag('attributesTest')
 class AttributesTag {
-  final String? name;
-  final int count;
+  final String name;
+  final int? count;
   final double? temperature;
   final bool? active;
 

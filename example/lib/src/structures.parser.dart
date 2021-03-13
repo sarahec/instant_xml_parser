@@ -10,7 +10,7 @@ import 'package:xml/xml_events.dart';
 import 'structures.dart';
 import 'dart:core';
 import 'package:logging/logging.dart';
-import 'package:ixp_runtime/runtime.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
 
 const AddressBookName = 'addressBook';
 const AttributesTagName = 'attributesTest';
@@ -55,7 +55,7 @@ Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
   final _attributesTag = await events.peek as XmlStartElementEvent;
   _log.finest('in attributesTest');
 
-  final name = await _attributesTag.optionalAttribute<String>('name');
+  final name = await _attributesTag.attribute<String>('name');
   final temperature =
       await _attributesTag.optionalAttribute<double>('temperature');
   final active = await _attributesTag.optionalAttribute<bool>('active');

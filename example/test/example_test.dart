@@ -13,7 +13,7 @@
 // limitations under the License.
 import 'package:async/async.dart';
 import 'package:example/example.dart';
-import 'package:ixp_runtime/runtime.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
@@ -52,8 +52,7 @@ void main() {
     test('missing attribute', () async {
       final eventsFrom = _eventsFrom('<attributesTest />');
       expect(extractAttributesTag(eventsFrom),
-          throwsA(TypeMatcher<MissingAttribute>()),
-          skip: 'requires non-nullable semantics');
+          throwsA(TypeMatcher<MissingAttribute>()));
     });
 
     test('NameTag', () async {
