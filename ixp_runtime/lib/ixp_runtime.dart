@@ -39,7 +39,7 @@
 // limitations under the License.
 
 // @dart=2.11
-library runtime;
+library ixp_runtime;
 
 export 'src/conversion.dart';
 export 'src/extensions/ancestors.dart';

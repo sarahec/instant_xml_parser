@@ -11,9 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// @dart=2.11
 import 'package:async/async.dart';
 import 'package:example/example.dart';
-import 'package:ixp_runtime/runtime.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';

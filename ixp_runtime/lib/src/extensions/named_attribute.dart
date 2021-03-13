@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // @dart=2.11
-import 'package:ixp_runtime/runtime.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:xml/xml_events.dart';
 
 extension AttributeExtension on XmlStartElementEvent {
