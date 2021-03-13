@@ -11,7 +11,7 @@ import 'imports.dart';
 import 'other.dart';
 import 'dart:core';
 import 'package:logging/logging.dart';
-import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:ixp_runtime/runtime.dart';
 
 const ContactInfoName = 'contact';
 final _log = Logger('parser');

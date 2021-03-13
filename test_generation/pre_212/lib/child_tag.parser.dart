@@ -10,7 +10,7 @@ import 'package:xml/xml_events.dart';
 import 'child_tag.dart';
 import 'dart:core';
 import 'package:logging/logging.dart';
-import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:ixp_runtime/runtime.dart';
 
 const ContactInfoName = 'contact';
 const RegistrationName = 'registration';

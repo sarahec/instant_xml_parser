@@ -34,7 +34,7 @@ dev_dependencies:
 
 # Added to make developing new features easier. Don't use in your own code.
 dependency_overrides:
-  instant_xml_parser:
-    path: ../instant_xml_parser
+  # instant_xml_parser:
+  #   path: ../instant_xml_parser
   logging: ^1.0.0
   xml: ^5.0.2

@@ -10,7 +10,7 @@ import 'package:xml/xml_events.dart';
 import 'boilerplate.dart';
 import 'dart:core';
 import 'package:logging/logging.dart';
-import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:ixp_runtime/runtime.dart';
 
 const EmptyTagName = 'empty';
 final _log = Logger('parser');
