@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// @dart=2.11
 library runtime.annotations;
 
 /// Defines the XML attribute name for a field when the attribute name doesn't

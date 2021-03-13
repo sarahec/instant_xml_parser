@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// @dart=2.11
 library runtime;
 
 typedef Converter<T> = dynamic Function(String s);
