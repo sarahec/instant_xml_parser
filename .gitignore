@@ -17,5 +17,5 @@ doc/api/
 .idea/
 
 # build_test
-testing/lib/parsers/*.parser.dart
+testing/lib/*.parser.dart
 _test_output*/

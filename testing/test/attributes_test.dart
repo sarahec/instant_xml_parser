@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import '../lib/parsers.dart'; // ignore: avoid_relative_lib_imports
 import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:testing/attributes.parser.dart';
 
 void main() {
   test('all present', () async {
