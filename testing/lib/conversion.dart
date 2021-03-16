@@ -20,5 +20,8 @@ class Location {
   @convert('Uri.parse')
   final Uri loc;
 
-  Location(this.loc);
+  @convert('Uri.parse')
+  final Uri? testUri;
+
+  Location(this.loc, {this.testUri});
 }

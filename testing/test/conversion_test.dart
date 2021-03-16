@@ -19,10 +19,17 @@ import 'package:testing/conversion.parser.dart';
 const EXAMPLE = 'https://example.com';
 
 void main() {
-  test('value present', () async {
+  test('text body', () async {
     final location = await extractLocation(
         generateEventStream(Stream.value('<loc>$EXAMPLE</loc>')));
     expect(location.loc, equals(Uri.parse(EXAMPLE)));
+  });
+
+  test('body and attribute', () async {
+    final location = await extractLocation(generateEventStream(
+        Stream.value('<loc testUri="$EXAMPLE">$EXAMPLE</loc>')));
+    expect(location.loc, equals(Uri.parse(EXAMPLE)));
+    expect(location.testUri, equals(Uri.parse(EXAMPLE)));
   });
 
   test(
