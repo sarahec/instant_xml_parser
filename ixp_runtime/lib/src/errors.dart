@@ -58,16 +58,17 @@ class MissingEndTag implements ParsingError {
   String get message => 'Expected </$wanted>';
 }
 
-/// Indicates that an expected (and required) start tag wasn't found.
+/// Indicates that expected text wasn't found.
 class MissingText implements ParsingError {
-  final String fieldName;
-  final String parentName;
+  final String? fieldName;
+  final String tag;
   final XmlStartElementEvent? element;
 
-  MissingText(this.fieldName, this.parentName, {this.element});
+  MissingText(this.tag, {this.fieldName, this.element});
 
   @override
-  String get message => 'Missing required text field $fieldName in $parentName';
+  String get message =>
+      'Missing required text ${fieldName == null ? "body" : "field $fieldName"} in <$tag>';
 }
 
 class UnexpectedChild implements ParsingError {
