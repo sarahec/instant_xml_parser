@@ -1,5 +1,6 @@
-// @dart=2.11
-import 'package:ixp_runtime/annotations.dart';
+import 'package:test/test.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:testing/imports.parser.dart';
 
 // Copyright 2021 Google LLC
 //
@@ -15,12 +16,12 @@ import 'package:ixp_runtime/annotations.dart';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@tag('loc')
-class Location {
-  @custom("'Hello, world'")
-  final String foo;
+const EXAMPLE = 'https://example.com';
 
-  final Uri altLoc;
-
-  Location(this.foo, this.altLoc);
+void main() {
+  test('uses imported values', () async {
+    final contact = await extractContactInfo(generateEventStream(
+        Stream.value('<contact email="test@example.com" />')));
+    expect(contact.complete, isTrue);
+  });
 }

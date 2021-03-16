@@ -54,9 +54,8 @@ class AttributeFieldGenerator {
   /// Generate the code for reading and converting the attribute now, with
   /// type conversion from String and default value (if specified)
   String get readAttribute {
-    final defaultValue = (element.field.defaultValueCode != null)
-        ? ' ?? ${element.field.defaultValueCode}'
-        : '';
+    final defaultValue =
+        (element.hasDefaultValue) ? ' ?? ${element.defaultValue}' : '';
 
     var conversion = ''; // if none match, write nothing
     if (element.field.hasConversion) {
@@ -70,14 +69,15 @@ class AttributeFieldGenerator {
             ", convert: Convert.ifMatches('${element.field.trueIfMatches}')";
       }
     }
-    final action = element.isNullable ? 'optionalAttribute' : 'attribute';
+    final action = (element.isNullable || element.hasDefaultValue)
+        ? 'optionalAttribute'
+        : 'attribute';
     return "final ${element.field.name} = await ${method.startVar}.$action<${element.field.typeName}>('${element.field.attributeName}' $conversion)$defaultValue;";
   }
 
   String get resolveDeferred {
-    final defaultValue = (element.field.defaultValueCode == null)
-        ? ''
-        : ' ?? ${element.field.defaultValueCode}';
+    final defaultValue =
+        element.hasDefaultValue ? '' : ' ?? ${element.defaultValue}';
     return '${element.field.name}Completer.complete(${element.field.customTemplate} $defaultValue);';
   }
 }
@@ -95,9 +95,9 @@ class TextFieldGenerator {
 
   /// Generate the code
   String get toAction {
-    final defaultValue = (element.field.defaultValueCode == null)
-        ? "''" // TODO this should throw an error instead
-        : ' ${element.field.defaultValueCode}';
+    final defaultValue = element.hasDefaultValue
+        ? ' ${element.defaultValue}'
+        : "''"; // TODO this should throw an error instead
 
     final textOf = '(await events.peek as XmlTextEvent).text';
 

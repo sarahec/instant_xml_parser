@@ -1,4 +1,3 @@
-// @dart=2.11
 import 'package:ixp_runtime/annotations.dart';
 
 // Copyright 2021 Google LLC
@@ -18,8 +17,4 @@ import 'package:ixp_runtime/annotations.dart';
 @tag('empty')
 class EmptyTag {
   EmptyTag();
-}
-
-class NoTag {
-  NoTag();
 }

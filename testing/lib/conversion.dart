@@ -1,4 +1,3 @@
-// @dart=2.11
 import 'package:ixp_runtime/annotations.dart';
 
 // Copyright 2021 Google LLC
@@ -21,8 +20,5 @@ class Location {
   @convert('Uri.parse')
   final Uri loc;
 
-  @convert('Uri.parse')
-  final Uri altLoc;
-
-  Location(this.loc, this.altLoc);
+  Location(this.loc);
 }

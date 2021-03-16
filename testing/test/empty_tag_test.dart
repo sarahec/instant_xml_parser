@@ -1,4 +1,7 @@
-import 'package:ixp_runtime/annotations.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:test/test.dart';
+import 'package:testing/empty_tag.dart';
+import 'package:testing/empty_tag.parser.dart';
 
 // Copyright 2021 Google LLC
 //
@@ -14,13 +17,10 @@ import 'package:ixp_runtime/annotations.dart';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'other.dart';
-
-@tag('contact')
-class ContactInfo {
-  final String email;
-  final String? phone;
-  final bool complete;
-
-  ContactInfo(this.email, [this.phone, this.complete = YES]);
+void main() {
+  test(
+      'empty tag',
+      () async => expect(
+          await extractEmptyTag(generateEventStream(Stream.value('<empty />'))),
+          isA<EmptyTag>()));
 }

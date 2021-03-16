@@ -1,4 +1,6 @@
-import 'package:ixp_runtime/annotations.dart';
+import 'package:test/test.dart';
+import 'package:ixp_runtime/ixp_runtime.dart';
+import 'package:testing/subclassing.parser.dart';
 
 // Copyright 2021 Google LLC
 //
@@ -14,13 +16,10 @@ import 'package:ixp_runtime/annotations.dart';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'other.dart';
-
-@tag('contact')
-class ContactInfo {
-  final String email;
-  final String? phone;
-  final bool complete;
-
-  ContactInfo(this.email, [this.phone, this.complete = YES]);
+void main() {
+  test('generate subclass', () async {
+    final instance = await extractBar(
+        generateEventStream(Stream.value('<bar name="Alicia" />')));
+    expect(instance.name, equals('Alicia'));
+  });
 }

@@ -108,6 +108,8 @@ class CommonElement {
   final FieldInfo field;
   final ParameterElement ctParam;
 
+  String get defaultValue => field.defaultValueCode;
+  bool get hasDefaultValue => field.defaultValueCode != null;
   bool get isNullable =>
       field.type.nullabilitySuffix == NullabilitySuffix.question;
 
