@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:ixp_runtime/ixp_runtime.dart';
-import 'package:testing/attributes.parser.dart';
+import 'package:integration_testing/attributes.parser.dart';
 
 // Copyright 2021 Google LLC
 //

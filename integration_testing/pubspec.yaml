@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: testing
-description: Validating generated parsers.
-version: 1.0.0
+name: integration_testing
+description: Validating generated parsers. (not published as its own package)
+# version: 1.0.0
 homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:

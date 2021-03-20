@@ -1,7 +1,7 @@
 import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:test/test.dart';
-import 'package:testing/empty_tag.dart';
-import 'package:testing/empty_tag.parser.dart';
+import 'package:integration_testing/empty_tag.dart';
+import 'package:integration_testing/empty_tag.parser.dart';
 
 // Copyright 2021 Google LLC
 //
