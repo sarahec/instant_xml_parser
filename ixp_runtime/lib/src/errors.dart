@@ -48,7 +48,7 @@ class MissingStartTag implements ParsingError {
   String get message => 'Expected <$wanted> at start';
 }
 
-/// Indicates that an end tag wasn't found for the current star tag.
+/// Indicates that an end tag wasn't found for the current start tag.
 class MissingEndTag implements ParsingError {
   final String wanted;
 
