@@ -95,9 +95,9 @@ class TextFieldGenerator {
 
   /// Generate the code
   String get toAction {
-    final defaultValue = element.hasDefaultValue
-        ? ' ${element.defaultValue}'
-        : "''"; // TODO this should throw an error instead
+    final missingValueAction = element.hasDefaultValue
+        ? '${element.field.name} = ${element.defaultValue}'
+        : 'throw MissingText(${method.classInfo.constantName}, element: ${method.startVar})';
 
     final textOf = '(await events.peek as XmlTextEvent).text';
 
@@ -109,7 +109,7 @@ class TextFieldGenerator {
       if (await events.scanTo(textElement(inside(${method.startVar})))) {
         ${element.field.name} = $optionalConversion;
       } else {
-        ${element.field.name} = $defaultValue;
+        $missingValueAction;
       }''';
   }
 }

@@ -65,4 +65,20 @@ void main() {
     expect(isText(await events.next), isTrue); // Hello
     expect(isText(await events.next), isFalse); // </c>
   });
+
+  test('valid textElement inside(x)', () async {
+    final events = generateEventStream(Stream.value('<c>hello</c>'));
+    await events.scanTo(startTag(named('c')));
+    final tag = await events.peek as XmlStartElementEvent;
+    final foundText = await events.scanTo(textElement(inside(tag)));
+    expect(foundText, isTrue);
+  });
+
+  test('missing textElement inside(x)', () async {
+    final events = generateEventStream(Stream.value('<c></c>'));
+    await events.scanTo(startTag(named('c')));
+    final tag = await events.peek as XmlStartElementEvent;
+    final foundText = await events.scanTo(textElement(inside(tag)));
+    expect(foundText, isFalse);
+  });
 }

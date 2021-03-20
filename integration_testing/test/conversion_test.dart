@@ -36,6 +36,5 @@ void main() {
       'value missing',
       () async => expect(
           extractLocation(generateEventStream(Stream.value('<loc></loc>'))),
-          throwsException),
-      skip: 'Needs specific exception for missing text');
+          throwsA(const TypeMatcher<MissingText>())));
 }
