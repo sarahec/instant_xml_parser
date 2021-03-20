@@ -32,3 +32,8 @@ Bugfixes. Boring old bugfixes.
 ## 0.10.0
 
 - Added ```@custom``` annotation for attribute fields
+
+## 1.0.0
+
+Now reads null-safe sources ane emits null-safe parsers. Note that the generator
+itself isn't null-safe yet due to unmigrated dependencies.
