@@ -99,6 +99,11 @@ class TextFieldGenerator {
         ? '${element.field.name} = ${element.defaultValue}'
         : 'throw MissingText(${method.classInfo.constantName}, element: ${method.startVar})';
 
+    final missingValueClause = element.isNullable
+        ? ''
+        : '''} else { 
+      $missingValueAction;''';
+
     final textOf = '(await events.peek as XmlTextEvent).text';
 
     final optionalConversion = element.field.hasConversion
@@ -108,8 +113,7 @@ class TextFieldGenerator {
     return '''var ${element.field.name};
       if (await events.scanTo(textElement(inside(${method.startVar})))) {
         ${element.field.name} = $optionalConversion;
-      } else {
-        $missingValueAction;
+      $missingValueClause
       }''';
   }
 }

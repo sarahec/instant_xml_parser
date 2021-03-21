@@ -1,4 +1,3 @@
-// @dart=2.11
 import 'package:ixp_runtime/annotations.dart';
 
 // Copyright 2021 Google LLC
@@ -15,10 +14,20 @@ import 'package:ixp_runtime/annotations.dart';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@tag('text')
+@tag('identification')
 class NameTag {
+  final String? name;
   @textElement
-  final String name;
+  final String? nickname;
 
-  NameTag({this.name = 'sam'});
+  NameTag(this.name, {this.nickname});
+}
+
+@tag('extended')
+class ExtendedNameTag {
+  final String name;
+  @textElement
+  final String nickname;
+
+  ExtendedNameTag(this.name, this.nickname);
 }
