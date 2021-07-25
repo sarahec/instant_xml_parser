@@ -20,5 +20,5 @@ class NameTag {
   final int? id;
   final bool registered;
 
-  NameTag(this.name, this.registered, {this.id = 0});
+  NameTag(this.name, this.registered, this.id);
 }

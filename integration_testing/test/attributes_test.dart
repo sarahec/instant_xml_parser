@@ -28,7 +28,7 @@ void main() {
   test('default values', () async {
     final nameTag = await extractNameTag(generateEventStream(
         Stream.value('<identification name="Frank" registered="1" />')));
-    expect(nameTag.id, equals(0));
+    expect(nameTag.id, isNull);
   });
 
   test('missing required', () async {
