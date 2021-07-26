@@ -1,8 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+Needed tpo upgrade Analyzer as well to fix a corner case in attributes initialized in an optional positional constructor param.
 ## 1.1.0
 
-Upgrade dependencies to null-safety. Minor code changes to implement null safety in the generator. 
+Upgrade dependencies to null-safety. Minor code changes to implement null safety in the generator.
 Minor change to generated code to prevent spurious "skipping x, expected x" logs.
 
 ## 1.0.0+2

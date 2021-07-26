@@ -30,7 +30,7 @@ void main() {
   });
 
   group('parsing', () {
-    setUp(() => Logger.root.level = Level.WARNING);
+    setUp(() => Logger.root.level = Level.INFO);
 
     test('EmptyTag', () async {
       final events = _eventsFrom('<empty/>');
@@ -63,7 +63,6 @@ void main() {
     });
 
     test('Registration (nested)', () async {
-      Logger.root.level = Level.ALL; // defaults to Level.INFO
       final events = _eventsFrom(
           '<registration age="36"><identification name="bar"/><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309"/></registration>');
       try {
@@ -92,8 +91,6 @@ void main() {
     });
   });
   group('integration', () {
-    setUp(() => Logger.root.level = Level.ALL);
-
     test('homogeneous events', () async {
       final events =
           _eventsFrom('<notebook><note>a</note><note>b</note></notebook>');
@@ -103,6 +100,7 @@ void main() {
     });
 
     test('mixed sequence', () async {
+      // Logger.root.level = Level.ALL;
       final events = _eventsFrom(
           '<test><registration age="36"><identification name="bar" /><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309" /></registration><attributesTest name="foo" count="999" temperature="22.1" active="1" /></test>');
       final registration = await extractRegistration(events);
