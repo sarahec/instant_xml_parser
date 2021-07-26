@@ -32,10 +32,10 @@ Matcher inside(XmlStartElementEvent tag) => ((e) => (identical(e, tag) ||
 
 /// Matches tags with the provided qualified name.
 ///
-/// [qualifiedName] the fully qualified name, including namespace prefix if
+/// [desiredName] the fully qualified name, including namespace prefix if
 /// needed (e.g. `foo:bar`)
-Matcher named(String qualifiedName) =>
-    ((e) => e is XmlNamed && (e as XmlNamed).qualifiedName == qualifiedName);
+Matcher named(String desiredName) =>
+    ((e) => e is XmlNamed && (e as XmlNamed).qualifiedName == desiredName);
 
 Matcher not(Matcher match) => ((e) => !match(e));
 

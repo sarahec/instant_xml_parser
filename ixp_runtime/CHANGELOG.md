@@ -22,6 +22,11 @@ Follow up with `await eventrs.peek` or `await events.next` to get the found elem
 ## 0.12.0
 
 Backported from null-safety.
+
 ## 1.0.0
 
 **Null safety release** adapts the library for use with null-safe code. Same semantics as 0.11.0 and 0.12.0.
+
+## 1.1.0
+
+Major version upgrade to null-safe dependencies.

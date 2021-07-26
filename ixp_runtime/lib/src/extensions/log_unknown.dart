@@ -15,11 +15,11 @@ import 'package:logging/logging.dart';
 import 'package:xml/xml_events.dart';
 
 extension Logging on XmlStartElementEvent {
-  static final _log = Logger('unknown: ');
+  static final _log = Logger('logUnknown:');
 
-  /// Utility to log an "unknown tag" message. Logs at the `fine` level.
+  /// Utility to log an "unknown tag" message. Logs at the `warning` level.
   ///
-  /// [expected] the expected tag's name
-  void logUnknown({expected = '(any)'}) =>
-      _log.fine('skipping $qualifiedName in $parentEvent, expected $expected');
+  /// [expected] the expected tag's name or a list of names
+  void logUnknown({dynamic expected = '(any)'}) => _log.warning(
+      "skipping '$qualifiedName'${parentEvent != null ? ' in $parentEvent' : ''}, expected '$qualifiedName'");
 }
