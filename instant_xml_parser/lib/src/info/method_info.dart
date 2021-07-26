@@ -11,46 +11,48 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
-import 'package:built_value/built_value.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 import 'package:recase/recase.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'class_info.dart';
 import 'field_info.dart';
 
-part 'method_info.g.dart';
+class CommonElement {
+  final FieldInfo field;
+  final ParameterElement ctParam;
+
+  CommonElement({required this.field, required this.ctParam});
+  String? get defaultValue => field.defaultValueCode;
+  bool get hasDefaultValue => field.defaultValueCode != null;
+
+  bool get isNullable =>
+      field.type.nullabilitySuffix == NullabilitySuffix.question;
+}
 
 /// Data for a single parser method. Created using `built_value`
-abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
-  factory MethodInfo([void Function(MethodInfoBuilder) updates]) = _$MethodInfo;
-  factory MethodInfo.fromClassInfo(
-      ClassInfo info, Iterable<FieldElement> fields,
-      [prefix = 'extract']) {
-    return MethodInfo((b) => b
-      ..classInfo = info.toBuilder()
-      ..prefix = prefix);
-  }
+class MethodInfo {
+  final ClassInfo classInfo;
 
-  MethodInfo._();
+  /// Parser method names are ${prefix}ClassName. Default prefix is 'extract'
+  final String prefix;
 
-  ClassInfo get classInfo;
+  MethodInfo.fromClassInfo(this.classInfo, [this.prefix = 'extract']);
 
-  Iterable<FieldElement> fields(SourceInfo symtable) {
-    // Collect all fields
-    final superclasses = [
-      for (var st in classInfo.supertypes) symtable.classForType(st)
-    ].where((c) => c != null);
-    return ([for (var c in superclasses) c?.element.fields ?? []]
-            .expand((e) => e)
-            .toList()
-              ..addAll(classInfo.element.fields))
-        .where((f) => f.getter!.isGetter && !f.isSynthetic);
-  }
+  Logger get log => Logger('MethodInfo');
+
+  String get name => '$prefix$typeName';
+
+  /// The variable name representing this tag
+  String get startVar => '_' + ReCase(typeName).camelCase;
+
+  DartType get type => classInfo.type;
+
+  String get typeName => classInfo.typeName;
 
   /// Parse all the fields that could be initialized from the constructor
   Iterable<CommonElement> commonElements(SourceInfo symtable) {
@@ -86,31 +88,15 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
     return merged;
   }
 
-  String get name => '$prefix$typeName';
-
-  /// Parser method names are ${prefix}ClassName. Default prefix is 'extract'
-  String get prefix;
-
-  /// The variable name representing this tag
-  @memoized
-  String get startVar => '_' + ReCase(typeName).camelCase;
-
-  DartType get type => classInfo.type;
-
-  String get typeName => classInfo.typeName;
-
-  @memoized
-  Logger get log => Logger('MethodInfo');
-}
-
-class CommonElement {
-  final FieldInfo field;
-  final ParameterElement ctParam;
-
-  String? get defaultValue => field.defaultValueCode;
-  bool get hasDefaultValue => field.defaultValueCode != null;
-  bool get isNullable =>
-      field.type.nullabilitySuffix == NullabilitySuffix.question;
-
-  CommonElement({required this.field, required this.ctParam});
+  Iterable<FieldElement> fields(SourceInfo symtable) {
+    // Collect all fields
+    final superclasses = [
+      for (var st in classInfo.supertypes) symtable.classForType(st)
+    ].where((c) => c != null);
+    return ([for (var c in superclasses) c?.element.fields ?? []]
+            .expand((e) => e)
+            .toList()
+              ..addAll(classInfo.element.fields))
+        .where((f) => f.getter!.isGetter && !f.isSynthetic);
+  }
 }

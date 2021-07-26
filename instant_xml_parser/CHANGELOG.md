@@ -2,7 +2,9 @@
 
 ## 1.1.1
 
-Needed tpo upgrade Analyzer as well to fix a corner case in attributes initialized in an optional positional constructor param.
+Upgrades Analyzer to fix a corner case (attributes initialized in an optional positional constructor param); removes `built_value`
+due to Analyzer versioning confict.
+
 ## 1.1.0
 
 Upgrade dependencies to null-safety. Minor code changes to implement null safety in the generator.

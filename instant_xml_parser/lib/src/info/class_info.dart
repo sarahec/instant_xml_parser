@@ -13,36 +13,30 @@
 // limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_value/serializer.dart';
 import 'package:ixp_runtime/annotations.dart';
 
 import '../utils/annotation_reader.dart';
 import 'method_info.dart';
 
-part 'class_info.g.dart';
-
 /// Represents one class in the source file
-abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
-  static Serializer<ClassInfo> get serializer => _$classInfoSerializer;
+class ClassInfo {
+  final String prefix;
 
-  factory ClassInfo([void Function(ClassInfoBuilder) updates]) = _$ClassInfo;
-  factory ClassInfo.fromElement(ClassElement element, [prefix = 'extract']) =>
-      ClassInfo((b) => b
-        ..element = element
-        ..type = element.thisType);
-  ClassInfo._();
+  /// Parsed class
+  final ClassElement element;
+
+  /// Stored class type
+  final InterfaceType type;
+
+  ClassInfo.fromElement(this.element, [this.prefix = 'extract'])
+      : type = element.thisType;
 
   /// Constant name to use for this tag
   String get constantName => typeName + 'Name';
 
   /// Constructor using this class' fields
-  @memoized
   ConstructorElement get constructor =>
       element.constructors.firstWhere((c) => !c.isFactory && !c.isPrivate);
-
-  /// Parsed class
-  ClassElement get element;
 
   /// True if there's a suitable constuctor on this call
   bool get hasConstructor =>
@@ -55,9 +49,7 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
   bool get isAbstract => element.isAbstract;
 
   /// The method code for this class or null (if not marked with @tag)
-  @memoized
-  MethodInfo? get method =>
-      needsMethod ? MethodInfo.fromClassInfo(this, element.fields) : null;
+  MethodInfo? get method => needsMethod ? MethodInfo.fromClassInfo(this) : null;
 
   /// Has this class been annotated with @tag?
   bool get needsMethod => tagName != null;
@@ -68,10 +60,6 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
   /// What's the XML tag?
   String? get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');
 
-  /// Stored class type
-  InterfaceType get type;
-
   /// String name of this class (generated only once, then memoized)
-  @memoized
   String get typeName => type.getDisplayString(withNullability: false);
 }

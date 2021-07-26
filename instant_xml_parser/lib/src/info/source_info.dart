@@ -14,8 +14,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart' show AssetId;
-import 'package:built_value/built_value.dart';
-import 'package:built_value/serializer.dart';
 import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
@@ -23,43 +21,28 @@ import 'package:source_gen/source_gen.dart';
 import 'class_info.dart';
 import 'method_info.dart';
 
-part 'source_info.g.dart';
-
 final _log = Logger('SourceInfo');
 
 /// Per-file information used by the parser. Serialiazable so that the
 /// first-pass builder can output this as JSON then reconstitute
 /// in pass two to build the master symbol table as well as drive
 /// generation.
-abstract class SourceInfo implements Built<SourceInfo, SourceInfoBuilder> {
-  static Serializer<SourceInfo> get serializer => _$sourceInfoSerializer;
+class SourceInfo {
+  final Iterable<ClassInfo> classes;
 
-  factory SourceInfo([void Function(SourceInfoBuilder) updates]) = _$SourceInfo;
+  final LibraryElement element;
 
-  factory SourceInfo.fromLibrary(LibraryReader reader, AssetId asset) {
-    final classes = [for (var c in reader.classes) ClassInfo.fromElement(c)];
-    _log.finer(
-        'SourceInfo(element: ${reader.element}, classes: $classes, uri: ${asset.uri})');
-    return SourceInfo((b) {
-      b
-        ..element = reader.element
-        ..classes = classes
-        ..uri = asset.uri;
-    });
-  }
+  final Uri uri;
 
-  SourceInfo._();
+  SourceInfo.fromLibrary(LibraryReader reader, AssetId asset)
+      : element = reader.element,
+        uri = asset.uri,
+        classes = [for (var c in reader.classes) ClassInfo.fromElement(c)];
 
-  Iterable<ClassInfo> get classes;
-
-  LibraryElement get element;
-
-  @memoized
   Iterable<String> get importUris => [
         for (var i in element.imports.where((e) => e.uri != null)) i.uri!
       ]..sort();
 
-  @memoized
   Iterable<MethodInfo> get methods {
     final result = [
       for (var c in classes.where((p) => p.method != null)) c.method!
@@ -67,8 +50,6 @@ abstract class SourceInfo implements Built<SourceInfo, SourceInfoBuilder> {
     _log.finer('methods -> $result');
     return result;
   }
-
-  Uri get uri;
 
   /// Look up the class info object, ignoring the nullability of `t`
   ClassInfo? classForType(DartType t) {
