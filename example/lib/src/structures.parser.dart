@@ -26,7 +26,7 @@ Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(AddressBookName);
   }
-  final _addressBook = await events.peek as XmlStartElementEvent;
+  final _addressBook = await events.next as XmlStartElementEvent;
   _log.finest('in addressBook');
 
   var contacts = <ContactInfo>[];
@@ -42,7 +42,6 @@ Future<AddressBook> extractAddressBook(StreamQueue<XmlEvent> events) async {
     }
   }
 
-  _log.finest('consume addressBook');
   await events.consume(inside(_addressBook));
   return AddressBook(contacts);
 }
@@ -52,7 +51,7 @@ Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(AttributesTagName);
   }
-  final _attributesTag = await events.peek as XmlStartElementEvent;
+  final _attributesTag = await events.next as XmlStartElementEvent;
   _log.finest('in attributesTest');
 
   final name = await _attributesTag.attribute<String>('name');
@@ -61,7 +60,6 @@ Future<AttributesTag> extractAttributesTag(StreamQueue<XmlEvent> events) async {
   final active = await _attributesTag.optionalAttribute<bool>('active');
   final count = await _attributesTag.optionalAttribute<int>('count') ?? 0;
 
-  _log.finest('consume attributesTest');
   await events.consume(inside(_attributesTag));
   return AttributesTag(name, temperature, active, count);
 }
@@ -71,7 +69,7 @@ Future<ContactInfo> extractContactInfo(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(ContactInfoName);
   }
-  final _contactInfo = await events.peek as XmlStartElementEvent;
+  final _contactInfo = await events.next as XmlStartElementEvent;
   _log.finest('in ContactInfo');
 
   final email = await _contactInfo.optionalAttribute<String>('email');
@@ -83,7 +81,6 @@ Future<ContactInfo> extractContactInfo(StreamQueue<XmlEvent> events) async {
     notes = '';
   }
 
-  _log.finest('consume ContactInfo');
   await events.consume(inside(_contactInfo));
   return ContactInfo(email, phone: phone, notes: notes);
 }
@@ -93,10 +90,9 @@ Future<EmptyTag> extractEmptyTag(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(EmptyTagName);
   }
-  final _emptyTag = await events.peek as XmlStartElementEvent;
+  final _emptyTag = await events.next as XmlStartElementEvent;
   _log.finest('in empty');
 
-  _log.finest('consume empty');
   await events.consume(inside(_emptyTag));
   return EmptyTag();
 }
@@ -106,18 +102,15 @@ Future<NameTag> extractNameTag(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(NameTagName);
   }
-  final _nameTag = await events.peek as XmlStartElementEvent;
+  final _nameTag = await events.next as XmlStartElementEvent;
   _log.finest('in identification');
 
   final name = await _nameTag.optionalAttribute<String>('name');
   var nickname;
   if (await events.scanTo(textElement(inside(_nameTag)))) {
     nickname = (await events.peek as XmlTextEvent).text;
-  } else {
-    nickname = '';
   }
 
-  _log.finest('consume identification');
   await events.consume(inside(_nameTag));
   return NameTag(name, nickname: nickname);
 }
@@ -127,17 +120,16 @@ Future<Note> extractNote(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(NoteName);
   }
-  final _note = await events.peek as XmlStartElementEvent;
+  final _note = await events.next as XmlStartElementEvent;
   _log.finest('in note');
 
   var text;
   if (await events.scanTo(textElement(inside(_note)))) {
     text = (await events.peek as XmlTextEvent).text;
   } else {
-    text = '';
+    throw MissingText(NoteName, element: _note);
   }
 
-  _log.finest('consume note');
   await events.consume(inside(_note));
   return Note(text);
 }
@@ -147,7 +139,7 @@ Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(NotebookName);
   }
-  final _notebook = await events.peek as XmlStartElementEvent;
+  final _notebook = await events.next as XmlStartElementEvent;
   _log.finest('in notebook');
 
   var notes = <Note>[];
@@ -163,7 +155,6 @@ Future<Notebook> extractNotebook(StreamQueue<XmlEvent> events) async {
     }
   }
 
-  _log.finest('consume notebook');
   await events.consume(inside(_notebook));
   return Notebook(notes);
 }
@@ -173,7 +164,7 @@ Future<Registration> extractRegistration(StreamQueue<XmlEvent> events) async {
   if (!found) {
     throw MissingStartTag(RegistrationName);
   }
-  final _registration = await events.peek as XmlStartElementEvent;
+  final _registration = await events.next as XmlStartElementEvent;
   _log.finest('in registration');
 
   final age = await _registration.optionalAttribute<int>('age');
@@ -195,7 +186,6 @@ Future<Registration> extractRegistration(StreamQueue<XmlEvent> events) async {
     }
   }
 
-  _log.finest('consume registration');
   await events.consume(inside(_registration));
   return Registration(person, contact, age);
 }
