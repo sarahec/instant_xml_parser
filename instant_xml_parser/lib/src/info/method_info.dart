@@ -15,7 +15,6 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:built_value/built_value.dart';
 import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -45,12 +44,12 @@ abstract class MethodInfo implements Built<MethodInfo, MethodInfoBuilder> {
     // Collect all fields
     final superclasses = [
       for (var st in classInfo.supertypes) symtable.classForType(st)
-    ];
-    return ([for (var c in superclasses) c?.element?.fields ?? []]
+    ].where((c) => c != null);
+    return ([for (var c in superclasses) c?.element.fields ?? []]
             .expand((e) => e)
             .toList()
               ..addAll(classInfo.element.fields))
-        .where((f) => f.getter.isGetter && !f.isSynthetic);
+        .where((f) => f.getter!.isGetter && !f.isSynthetic);
   }
 
   /// Parse all the fields that could be initialized from the constructor
@@ -108,10 +107,10 @@ class CommonElement {
   final FieldInfo field;
   final ParameterElement ctParam;
 
-  String get defaultValue => field.defaultValueCode;
+  String? get defaultValue => field.defaultValueCode;
   bool get hasDefaultValue => field.defaultValueCode != null;
   bool get isNullable =>
       field.type.nullabilitySuffix == NullabilitySuffix.question;
 
-  CommonElement({@required this.field, @required this.ctParam});
+  CommonElement({required this.field, required this.ctParam});
 }

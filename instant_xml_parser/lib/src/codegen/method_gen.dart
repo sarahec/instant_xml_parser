@@ -53,7 +53,7 @@ class MethodGenerator {
       for (var p in foundCtor.parameters)
         p.isNamed ? '${p.name}: ${p.name}' : p.name
     ];
-    final params = paramList.join(',') ?? '';
+    final params = paramList.join(',');
 
     return '${method.typeName}($params)';
   }
@@ -61,7 +61,7 @@ class MethodGenerator {
   String get endBlock => '''
     $resolveCustomClasses
     $resolveDeferredAttributes
-    _log.finest('consume ${method.classInfo.tagName}'); 
+
     await events.consume(inside(${method.startVar}));''';
 
   @visibleForTesting
@@ -111,7 +111,7 @@ class MethodGenerator {
       if (!found) {
         throw MissingStartTag(${method.classInfo.constantName});
       }
-      final ${method.startVar} = await events.peek as XmlStartElementEvent;
+      final ${method.startVar} = await events.next as XmlStartElementEvent;
       _log.finest('in ${method.classInfo.tagName}');
       ''';
 

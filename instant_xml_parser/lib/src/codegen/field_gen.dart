@@ -144,8 +144,9 @@ class TagFieldGenerator {
   /// Generate the case statement
   String get toAction {
     final methods = sourceInfo.methodsReturning(element.field.type);
-    if (methods == null) {
-      final warning = 'No method found for ${element.field.typeName}';
+    if (methods.isEmpty) {
+      final warning = 'No methods found for ${element.field.typeName}';
+      assert(methods.isNotEmpty, warning);
       _log.warning(warning);
       return '// $warning\n';
     }

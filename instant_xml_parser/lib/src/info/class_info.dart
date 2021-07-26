@@ -56,22 +56,17 @@ abstract class ClassInfo implements Built<ClassInfo, ClassInfoBuilder> {
 
   /// The method code for this class or null (if not marked with @tag)
   @memoized
-  MethodInfo get method =>
+  MethodInfo? get method =>
       needsMethod ? MethodInfo.fromClassInfo(this, element.fields) : null;
 
   /// Has this class been annotated with @tag?
   bool get needsMethod => tagName != null;
 
-  /// All of the immediate sublclasses of this class (in this source file only)
-  @nullable
-  Iterable<DartType> get subclasses;
-
   /// What are this class' superclasses?
   Iterable<DartType> get supertypes => element.allSupertypes;
 
   /// What's the XML tag?
-  @memoized
-  String get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');
+  String? get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');
 
   /// Stored class type
   InterfaceType get type;

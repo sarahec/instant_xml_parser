@@ -41,7 +41,7 @@ class AnnotationReader {
       default:
         result = found.getField(field)?.toStringValue();
     }
-    _log.finer('@$A.$field = $result');
+    _log.finer('@$A.$field -> $result');
     return result;
   }
 

@@ -23,7 +23,7 @@ part 'field_info.g.dart';
 abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   factory FieldInfo([void Function(FieldInfoBuilder) updates]) = _$FieldInfo;
   factory FieldInfo.fromElement(
-          FieldElement element, String defaultValueCode) =>
+          FieldElement element, String? defaultValueCode) =>
       FieldInfo((b) => b
         ..element = element
         ..defaultValueCode = defaultValueCode);
@@ -33,8 +33,7 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   FieldElement get element;
 
   /// If this has a default value, contains its source code, else null
-  @nullable
-  String get defaultValueCode;
+  String? get defaultValueCode;
 
   /// Either the name specified in @alias, or the element's name
   @memoized
@@ -93,11 +92,11 @@ abstract class FieldInfo implements Built<FieldInfo, FieldInfoBuilder> {
   String get name => element.name;
 
   /// Contents of @trueIfEquals annotation, if present
-  String get trueIfEquals =>
+  String? get trueIfEquals =>
       AnnotationReader.getAnnotation<ifEquals>(element, 'value');
 
   /// Contents of @trueIfMatches annotation, if present
-  String get trueIfMatches =>
+  String? get trueIfMatches =>
       AnnotationReader.getAnnotation<ifMatches>(element, 'regex');
 
   /// Field type

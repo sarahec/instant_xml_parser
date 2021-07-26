@@ -1,8 +1,15 @@
 # Changelog
 
+## 1.1.0
+
+Upgrade dependencies to null-safety. Minor code changes to implement null safety in the generator. 
+Minor change to generated code to prevent spurious "skipping x, expected x" logs.
+
 ## 1.0.0+2
+
 Text processing was (rightfully) throwing an exception when a text element was missing.
 Now the generator suppresses the exception if the corresponding field is nullable.
+
 ## 1.0.0+1
 
 Allows use with both 0.1x runtime and 1.x runtime
@@ -12,9 +19,9 @@ Allows use with both 0.1x runtime and 1.x runtime
 Now reads null-safe sources and emits null-safe parsers. Note that the generator
 itself isn't null-safe yet due to unmigrated dependencies.
 
-# 0.11.1+2
+## 0.11.1+2
 
-BAckport from null-safe version.
+Backport from null-safe version.
 
 # 0.11.1+2
 

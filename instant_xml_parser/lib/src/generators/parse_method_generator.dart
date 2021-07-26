@@ -46,11 +46,11 @@ class ParseMethodGenerator extends Generator {
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     // skip files that lack the required annotation
     if (library.annotatedWithExact(_tagChecker).isEmpty) {
-      return null;
+      return '';
     }
     final info = SourceInfo.fromLibrary(library, buildStep.inputId);
     final libGen = LibraryGenerator(info, buildStep.inputId, nullSafe);
-    final emitter = DartEmitter(Allocator());
+    final emitter = DartEmitter(allocator: Allocator());
     var source = '${libGen.toCode.accept(emitter)}';
     _log.finest(() => source);
     return DartFormatter().format(source);

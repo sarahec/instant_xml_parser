@@ -15,9 +15,9 @@ class _$SourceInfoSerializer implements StructuredSerializer<SourceInfo> {
   final String wireName = 'SourceInfo';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, SourceInfo object,
+  Iterable<Object?> serialize(Serializers serializers, SourceInfo object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'classes',
       serializers.serialize(object.classes,
           specifiedType:
@@ -33,7 +33,7 @@ class _$SourceInfoSerializer implements StructuredSerializer<SourceInfo> {
   }
 
   @override
-  SourceInfo deserialize(Serializers serializers, Iterable<Object> serialized,
+  SourceInfo deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new SourceInfoBuilder();
 
@@ -41,7 +41,7 @@ class _$SourceInfoSerializer implements StructuredSerializer<SourceInfo> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'classes':
           result.classes = serializers.deserialize(value,
@@ -71,13 +71,15 @@ class _$SourceInfo extends SourceInfo {
   final LibraryElement element;
   @override
   final Uri uri;
-  Iterable<String> __importUris;
-  Iterable<MethodInfo> __methods;
+  Iterable<String>? __importUris;
+  Iterable<MethodInfo>? __methods;
 
-  factory _$SourceInfo([void Function(SourceInfoBuilder) updates]) =>
+  factory _$SourceInfo([void Function(SourceInfoBuilder)? updates]) =>
       (new SourceInfoBuilder()..update(updates)).build();
 
-  _$SourceInfo._({this.classes, this.element, this.uri}) : super._() {
+  _$SourceInfo._(
+      {required this.classes, required this.element, required this.uri})
+      : super._() {
     BuiltValueNullFieldError.checkNotNull(classes, 'SourceInfo', 'classes');
     BuiltValueNullFieldError.checkNotNull(element, 'SourceInfo', 'element');
     BuiltValueNullFieldError.checkNotNull(uri, 'SourceInfo', 'uri');
@@ -122,19 +124,19 @@ class _$SourceInfo extends SourceInfo {
 }
 
 class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
-  _$SourceInfo _$v;
+  _$SourceInfo? _$v;
 
-  Iterable<ClassInfo> _classes;
-  Iterable<ClassInfo> get classes => _$this._classes;
-  set classes(Iterable<ClassInfo> classes) => _$this._classes = classes;
+  Iterable<ClassInfo>? _classes;
+  Iterable<ClassInfo>? get classes => _$this._classes;
+  set classes(Iterable<ClassInfo>? classes) => _$this._classes = classes;
 
-  LibraryElement _element;
-  LibraryElement get element => _$this._element;
-  set element(LibraryElement element) => _$this._element = element;
+  LibraryElement? _element;
+  LibraryElement? get element => _$this._element;
+  set element(LibraryElement? element) => _$this._element = element;
 
-  Uri _uri;
-  Uri get uri => _$this._uri;
-  set uri(Uri uri) => _$this._uri = uri;
+  Uri? _uri;
+  Uri? get uri => _$this._uri;
+  set uri(Uri? uri) => _$this._uri = uri;
 
   SourceInfoBuilder();
 
@@ -156,7 +158,7 @@ class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
   }
 
   @override
-  void update(void Function(SourceInfoBuilder) updates) {
+  void update(void Function(SourceInfoBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -175,4 +177,4 @@ class SourceInfoBuilder implements Builder<SourceInfo, SourceInfoBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

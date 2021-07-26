@@ -17,12 +17,15 @@ import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:instant_xml_parser/src/import_uris.dart';
 import 'package:instant_xml_parser/src/info/source_info.dart';
+import 'package:logging/logging.dart';
 
 import 'method_gen.dart';
 
 /// Emits one parser file.
 
 class LibraryGenerator {
+  static final _log = Logger('LibraryGenerator');
+
   /// The result of parsing the source file.
   final SourceInfo sourceInfo;
 
@@ -35,11 +38,11 @@ class LibraryGenerator {
 
   LibraryGenerator(this.sourceInfo, this.sourceAsset, this.nullSafe);
 
-  /// Get the source for all methods
-  Iterable<Method> get methods => [
-        for (var method in sourceInfo.methods)
-          MethodGenerator(method, sourceInfo).toMethod
-      ];
+  /// Get the source for the tag name constands
+  Iterable<Field> get constants => sourceInfo.methods.map((c) => Field((b) => b
+    ..name = c.classInfo.constantName
+    ..assignment = Code("'${c.classInfo.tagName}'")
+    ..modifier = FieldModifier.constant));
 
   /// Get the source for all import statements
   Iterable<String> get importUris {
@@ -53,16 +56,24 @@ class LibraryGenerator {
     return _importUris;
   }
 
-  /// Get the source for the tag name constands
-  Iterable<Field> get constants => sourceInfo.methods.map((c) => Field((b) => b
-    ..name = c.classInfo.constantName
-    ..assignment = Code("'${c.classInfo.tagName}'")
-    ..modifier = FieldModifier.constant));
+  /// Get the source for all methods
+  Iterable<Method> get methods => [
+        for (var method in sourceInfo.methods)
+          MethodGenerator(method, sourceInfo).toMethod
+      ];
 
   /// Assemble everything into a finished file
-  Library get toCode => Library((b) => b
-    ..directives.addAll(importUris.map((i) => Directive.import(i)))
-    ..body.addAll(constants)
-    ..body.add(Code("final _log = Logger('parser');"))
-    ..body.addAll(methods));
+  Library get toCode {
+    _log.fine('''
+    
+    ---------------------------------------------------------------------------
+    Generating for source: ${sourceInfo.uri}
+    ''');
+    final result = Library((b) => b
+      ..directives.addAll(importUris.map((i) => Directive.import(i)))
+      ..body.addAll(constants)
+      ..body.add(Code("final _log = Logger('parser');"))
+      ..body.addAll(methods));
+    return result;
+  }
 }

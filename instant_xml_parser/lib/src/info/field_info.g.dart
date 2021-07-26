@@ -10,22 +10,22 @@ class _$FieldInfo extends FieldInfo {
   @override
   final FieldElement element;
   @override
-  final String defaultValueCode;
-  String __attributeName;
-  String __conversion;
-  String __customTemplate;
-  bool __hasConversion;
-  bool __isCustom;
-  bool __isUri;
-  bool __isXmlTextField;
-  String __name;
-  DartType __type;
-  String __typeName;
+  final String? defaultValueCode;
+  String? __attributeName;
+  String? __conversion;
+  String? __customTemplate;
+  bool? __hasConversion;
+  bool? __isCustom;
+  bool? __isUri;
+  bool? __isXmlTextField;
+  String? __name;
+  DartType? __type;
+  String? __typeName;
 
-  factory _$FieldInfo([void Function(FieldInfoBuilder) updates]) =>
+  factory _$FieldInfo([void Function(FieldInfoBuilder)? updates]) =>
       (new FieldInfoBuilder()..update(updates)).build();
 
-  _$FieldInfo._({this.element, this.defaultValueCode}) : super._() {
+  _$FieldInfo._({required this.element, this.defaultValueCode}) : super._() {
     BuiltValueNullFieldError.checkNotNull(element, 'FieldInfo', 'element');
   }
 
@@ -89,15 +89,15 @@ class _$FieldInfo extends FieldInfo {
 }
 
 class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
-  _$FieldInfo _$v;
+  _$FieldInfo? _$v;
 
-  FieldElement _element;
-  FieldElement get element => _$this._element;
-  set element(FieldElement element) => _$this._element = element;
+  FieldElement? _element;
+  FieldElement? get element => _$this._element;
+  set element(FieldElement? element) => _$this._element = element;
 
-  String _defaultValueCode;
-  String get defaultValueCode => _$this._defaultValueCode;
-  set defaultValueCode(String defaultValueCode) =>
+  String? _defaultValueCode;
+  String? get defaultValueCode => _$this._defaultValueCode;
+  set defaultValueCode(String? defaultValueCode) =>
       _$this._defaultValueCode = defaultValueCode;
 
   FieldInfoBuilder();
@@ -119,7 +119,7 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
   }
 
   @override
-  void update(void Function(FieldInfoBuilder) updates) {
+  void update(void Function(FieldInfoBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -135,4 +135,4 @@ class FieldInfoBuilder implements Builder<FieldInfo, FieldInfoBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

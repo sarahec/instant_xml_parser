@@ -15,9 +15,9 @@ class _$ClassInfoSerializer implements StructuredSerializer<ClassInfo> {
   final String wireName = 'ClassInfo';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, ClassInfo object,
+  Iterable<Object?> serialize(Serializers serializers, ClassInfo object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'element',
       serializers.serialize(object.element,
           specifiedType: const FullType(ClassElement)),
@@ -25,20 +25,12 @@ class _$ClassInfoSerializer implements StructuredSerializer<ClassInfo> {
       serializers.serialize(object.type,
           specifiedType: const FullType(InterfaceType)),
     ];
-    Object value;
-    value = object.subclasses;
-    if (value != null) {
-      result
-        ..add('subclasses')
-        ..add(serializers.serialize(value,
-            specifiedType:
-                const FullType(Iterable, const [const FullType(DartType)])));
-    }
+
     return result;
   }
 
   @override
-  ClassInfo deserialize(Serializers serializers, Iterable<Object> serialized,
+  ClassInfo deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new ClassInfoBuilder();
 
@@ -46,17 +38,11 @@ class _$ClassInfoSerializer implements StructuredSerializer<ClassInfo> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'element':
           result.element = serializers.deserialize(value,
               specifiedType: const FullType(ClassElement)) as ClassElement;
-          break;
-        case 'subclasses':
-          result.subclasses = serializers.deserialize(value,
-                  specifiedType: const FullType(
-                      Iterable, const [const FullType(DartType)]))
-              as Iterable<DartType>;
           break;
         case 'type':
           result.type = serializers.deserialize(value,
@@ -73,18 +59,16 @@ class _$ClassInfo extends ClassInfo {
   @override
   final ClassElement element;
   @override
-  final Iterable<DartType> subclasses;
-  @override
   final InterfaceType type;
-  ConstructorElement __constructor;
-  MethodInfo __method;
-  String __tagName;
-  String __typeName;
+  ConstructorElement? __constructor;
+  MethodInfo? __method;
+  bool ___method = false;
+  String? __typeName;
 
-  factory _$ClassInfo([void Function(ClassInfoBuilder) updates]) =>
+  factory _$ClassInfo([void Function(ClassInfoBuilder)? updates]) =>
       (new ClassInfoBuilder()..update(updates)).build();
 
-  _$ClassInfo._({this.element, this.subclasses, this.type}) : super._() {
+  _$ClassInfo._({required this.element, required this.type}) : super._() {
     BuiltValueNullFieldError.checkNotNull(element, 'ClassInfo', 'element');
     BuiltValueNullFieldError.checkNotNull(type, 'ClassInfo', 'type');
   }
@@ -93,10 +77,13 @@ class _$ClassInfo extends ClassInfo {
   ConstructorElement get constructor => __constructor ??= super.constructor;
 
   @override
-  MethodInfo get method => __method ??= super.method;
-
-  @override
-  String get tagName => __tagName ??= super.tagName;
+  MethodInfo? get method {
+    if (!___method) {
+      __method = super.method;
+      ___method = true;
+    }
+    return __method;
+  }
 
   @override
   String get typeName => __typeName ??= super.typeName;
@@ -111,43 +98,33 @@ class _$ClassInfo extends ClassInfo {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is ClassInfo &&
-        element == other.element &&
-        subclasses == other.subclasses &&
-        type == other.type;
+    return other is ClassInfo && element == other.element && type == other.type;
   }
 
   @override
   int get hashCode {
-    return $jf(
-        $jc($jc($jc(0, element.hashCode), subclasses.hashCode), type.hashCode));
+    return $jf($jc($jc(0, element.hashCode), type.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('ClassInfo')
           ..add('element', element)
-          ..add('subclasses', subclasses)
           ..add('type', type))
         .toString();
   }
 }
 
 class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
-  _$ClassInfo _$v;
+  _$ClassInfo? _$v;
 
-  ClassElement _element;
-  ClassElement get element => _$this._element;
-  set element(ClassElement element) => _$this._element = element;
+  ClassElement? _element;
+  ClassElement? get element => _$this._element;
+  set element(ClassElement? element) => _$this._element = element;
 
-  Iterable<DartType> _subclasses;
-  Iterable<DartType> get subclasses => _$this._subclasses;
-  set subclasses(Iterable<DartType> subclasses) =>
-      _$this._subclasses = subclasses;
-
-  InterfaceType _type;
-  InterfaceType get type => _$this._type;
-  set type(InterfaceType type) => _$this._type = type;
+  InterfaceType? _type;
+  InterfaceType? get type => _$this._type;
+  set type(InterfaceType? type) => _$this._type = type;
 
   ClassInfoBuilder();
 
@@ -155,7 +132,6 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
     final $v = _$v;
     if ($v != null) {
       _element = $v.element;
-      _subclasses = $v.subclasses;
       _type = $v.type;
       _$v = null;
     }
@@ -169,7 +145,7 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   }
 
   @override
-  void update(void Function(ClassInfoBuilder) updates) {
+  void update(void Function(ClassInfoBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -179,7 +155,6 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
         new _$ClassInfo._(
             element: BuiltValueNullFieldError.checkNotNull(
                 element, 'ClassInfo', 'element'),
-            subclasses: subclasses,
             type: BuiltValueNullFieldError.checkNotNull(
                 type, 'ClassInfo', 'type'));
     replace(_$result);
@@ -187,4 +162,4 @@ class ClassInfoBuilder implements Builder<ClassInfo, ClassInfoBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

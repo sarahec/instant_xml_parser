@@ -11,13 +11,13 @@ class _$MethodInfo extends MethodInfo {
   final ClassInfo classInfo;
   @override
   final String prefix;
-  String __startVar;
-  Logger __log;
+  String? __startVar;
+  Logger? __log;
 
-  factory _$MethodInfo([void Function(MethodInfoBuilder) updates]) =>
+  factory _$MethodInfo([void Function(MethodInfoBuilder)? updates]) =>
       (new MethodInfoBuilder()..update(updates)).build();
 
-  _$MethodInfo._({this.classInfo, this.prefix}) : super._() {
+  _$MethodInfo._({required this.classInfo, required this.prefix}) : super._() {
     BuiltValueNullFieldError.checkNotNull(classInfo, 'MethodInfo', 'classInfo');
     BuiltValueNullFieldError.checkNotNull(prefix, 'MethodInfo', 'prefix');
   }
@@ -58,16 +58,16 @@ class _$MethodInfo extends MethodInfo {
 }
 
 class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
-  _$MethodInfo _$v;
+  _$MethodInfo? _$v;
 
-  ClassInfoBuilder _classInfo;
+  ClassInfoBuilder? _classInfo;
   ClassInfoBuilder get classInfo =>
       _$this._classInfo ??= new ClassInfoBuilder();
-  set classInfo(ClassInfoBuilder classInfo) => _$this._classInfo = classInfo;
+  set classInfo(ClassInfoBuilder? classInfo) => _$this._classInfo = classInfo;
 
-  String _prefix;
-  String get prefix => _$this._prefix;
-  set prefix(String prefix) => _$this._prefix = prefix;
+  String? _prefix;
+  String? get prefix => _$this._prefix;
+  set prefix(String? prefix) => _$this._prefix = prefix;
 
   MethodInfoBuilder();
 
@@ -88,7 +88,7 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
   }
 
   @override
-  void update(void Function(MethodInfoBuilder) updates) {
+  void update(void Function(MethodInfoBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -102,7 +102,7 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
               prefix: BuiltValueNullFieldError.checkNotNull(
                   prefix, 'MethodInfo', 'prefix'));
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'classInfo';
         classInfo.build();
@@ -117,4 +117,4 @@ class MethodInfoBuilder implements Builder<MethodInfo, MethodInfoBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
