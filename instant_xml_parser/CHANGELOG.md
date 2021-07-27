@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.1+1
+## 1.1.1+2
 
 Fixes error where subclasses might not be found when using a nullable reference.
 
