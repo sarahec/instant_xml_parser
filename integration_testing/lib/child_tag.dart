@@ -1,4 +1,3 @@
-// @dart=2.11
 import 'package:ixp_runtime/annotations.dart';
 
 // Copyright 2021 Google LLC
@@ -17,8 +16,8 @@ import 'package:ixp_runtime/annotations.dart';
 
 @tag('contact')
 class ContactInfo {
-  final String email;
-  final String phone;
+  final String? email;
+  final String? phone;
 
   const ContactInfo([this.email, this.phone]);
 }
