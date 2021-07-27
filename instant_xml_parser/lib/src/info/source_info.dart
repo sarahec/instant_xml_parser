@@ -61,10 +61,6 @@ class SourceInfo {
     return result;
   }
 
-  ClassInfo classNamed(name) => classes.firstWhere((c) => c.typeName == name);
-
-  bool hasClass(name) => classes.any((c) => c.typeName == name);
-
   Iterable<MethodInfo> methodsReturning(DartType desiredType,
       [allowSubtypes = true]) {
     // We have a problem: returned types are non-nullable, but a field's type
@@ -76,7 +72,7 @@ class SourceInfo {
     var result = methods.where((m) =>
         m.type.getDisplayString(withNullability: false) == desiredTypeName);
     if (result.isEmpty && allowSubtypes) {
-      _log.finest('No methods found on $desiredType, looking for subclasses');
+      _log.finest('No methods return $desiredType, looking for subclasses');
       result = [
         for (var c
             in subclassesOf(desiredType).where((sc) => sc.method != null))
@@ -88,6 +84,9 @@ class SourceInfo {
     return result;
   }
 
-  Iterable<ClassInfo> subclassesOf(DartType type) =>
-      classes.where((ClassInfo c) => c.type.superclass == type);
+  Iterable<ClassInfo> subclassesOf(DartType type) {
+    final t_name = type.getDisplayString(withNullability: false);
+    return classes.where((v) =>
+        v.type.superclass?.getDisplayString(withNullability: false) == t_name);
+  }
 }

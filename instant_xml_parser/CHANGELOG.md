@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1+1
+
+Fixes error where subclasses might not be found when using a nullable reference.
+
 ## 1.1.1
 
 Upgrades Analyzer to fix a corner case (attributes initialized in an optional positional constructor param); removes `built_value`
@@ -28,15 +32,15 @@ itself isn't null-safe yet due to unmigrated dependencies.
 
 Backport from null-safe version.
 
-# 0.11.1+2
+## 0.11.1+2
 
 Set `use_null_safety` by default in `build.yaml`. You shouldn't change it for now.
 
-# 0.11.1+1
+## 0.11.1+1
 
 Pubspec fix (generator should depend on latest runtime)
 
-# 0.11.1
+## 0.11.1
 
 Added `use_null_safety` generator option. Preserves legacy behavior (attributes are
 all optional) when `false`.
