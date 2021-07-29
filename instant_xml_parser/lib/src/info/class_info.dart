@@ -60,6 +60,6 @@ class ClassInfo {
   /// What's the XML tag?
   String? get tagName => AnnotationReader.getAnnotation<tag>(element, 'value');
 
-  /// String name of this class (generated only once, then memoized)
+  /// String name of this class
   String get typeName => type.getDisplayString(withNullability: false);
 }
