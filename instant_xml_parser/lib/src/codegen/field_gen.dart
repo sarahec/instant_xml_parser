@@ -146,7 +146,7 @@ class TagFieldGenerator {
     final methods = sourceInfo.methodsReturning(element.field.type);
     if (methods.isEmpty) {
       final warning =
-          'No constructor found for ${element.field.typeName} (build with -v option for detailed errors)';
+          'No class found for ${element.field.typeName}; did you forget @tag(...)?';
       assert(methods.isNotEmpty, warning);
       _log.warning(warning);
       return '// $warning\n';
