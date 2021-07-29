@@ -73,8 +73,8 @@ class MethodInfo {
     }
 
     if (common.isEmpty) {
-      throw InvalidGenerationSourceError(
-          '${classInfo.typeName} has no fields in common with the constructor parameters');
+      log.fine(
+          '${classInfo.typeName} has no fields in common with the constructor parameters, calling empty constructor.');
     }
 
     // Now merge
