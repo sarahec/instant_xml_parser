@@ -13,7 +13,7 @@
 // limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:instant_xml_parser/src/utils/annotation_reader.dart';
+import 'package:instant_xml_parser/ixp_core.dart';
 import 'package:ixp_runtime/annotations.dart';
 
 /// A single field, parsed.

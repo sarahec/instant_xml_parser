@@ -13,14 +13,11 @@
 // limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 import 'package:recase/recase.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'class_info.dart';
-import 'field_info.dart';
+import 'package:instant_xml_parser/ixp_core.dart';
 
 class CommonElement {
   final FieldInfo field;
@@ -35,46 +32,37 @@ class CommonElement {
 }
 
 /// Data for a single parser method. Created using `built_value`
-class MethodInfo {
-  final ClassInfo classInfo;
-
+extension MethodInfo on ClassElement {
   /// Parser method names are ${prefix}ClassName. Default prefix is 'extract'
-  final String prefix;
-
-  MethodInfo.fromClassInfo(this.classInfo, [this.prefix = 'extract']);
+  static final prefix = 'extract';
 
   Logger get log => Logger('MethodInfo');
 
-  String get name => '$prefix$typeName';
+  String get methodName => '$prefix$typeName';
 
   /// The variable name representing this tag
   String get startVar => '_' + ReCase(typeName).camelCase;
 
-  DartType get type => classInfo.type;
-
-  String get typeName => classInfo.typeName;
-
   /// Parse all the fields that could be initialized from the constructor
-  Iterable<CommonElement> commonElements(SourceInfo symtable) {
-    final elements = fields(symtable);
+  Iterable<CommonElement> get commonElements {
+    final elements = fieldsForMethod;
     if (elements.isEmpty) return [];
 
     final elementNames = Set.of(elements.map((e) => e.name));
-    var ctorParams = classInfo.constructor.parameters;
+    var ctorParams = constructor.parameters;
     final common =
         Set.of(ctorParams.map((p) => p.name)).intersection(elementNames);
 
     // Error checking
-    if (!classInfo.hasConstructor) {
-      throw InvalidGenerationSourceError(
-          'Missing constructor in ${classInfo.typeName}',
+    if (!hasConstructor) {
+      throw InvalidGenerationSourceError('Missing constructor in $typeName',
           todo:
-              'Add a constructor to ${classInfo.typeName} with the fields to be initialized');
+              'Add a constructor to $typeName with the fields to be initialized');
     }
 
     if (common.isEmpty) {
       log.fine(
-          '${classInfo.typeName} has no fields in common with the constructor parameters, calling empty constructor.');
+          '$typeName has no fields in common with the constructor parameters, calling empty constructor.');
     }
 
     // Now merge
@@ -88,15 +76,14 @@ class MethodInfo {
     return merged;
   }
 
-  Iterable<FieldElement> fields(SourceInfo symtable) {
+  Iterable<FieldElement> get fieldsForMethod {
+    final result = <FieldElement>[];
+
     // Collect all fields
-    final superclasses = [
-      for (var st in classInfo.supertypes) symtable.classForType(st)
-    ].where((c) => c != null);
-    return ([for (var c in superclasses) c?.element.fields ?? []]
-            .expand((e) => e)
-            .toList()
-              ..addAll(classInfo.element.fields))
-        .where((f) => f.getter!.isGetter && !f.isSynthetic);
+    for (var c in allSupertypes) {
+      result.addAll(c.element.fields);
+    }
+    result.addAll(fields);
+    return result.where((f) => f.getter!.isGetter && !f.isSynthetic);
   }
 }

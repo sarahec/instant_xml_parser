@@ -15,9 +15,10 @@ library parse_generator;
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:instant_xml_parser/ixp_core.dart';
 import 'package:instant_xml_parser/src/import_uris.dart';
-import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
+import 'package:source_gen/source_gen.dart';
 
 import 'method_gen.dart';
 
@@ -27,7 +28,7 @@ class LibraryGenerator {
   static final _log = Logger('LibraryGenerator');
 
   /// The result of parsing the source file.
-  final SourceInfo sourceInfo;
+  final LibraryReader sourceInfo;
 
   /// Name, location, etc. of the source file (needed to import that into
   /// its parser)
@@ -40,8 +41,8 @@ class LibraryGenerator {
 
   /// Get the source for the tag name constands
   Iterable<Field> get constants => sourceInfo.methods.map((c) => Field((b) => b
-    ..name = c.classInfo.constantName
-    ..assignment = Code("'${c.classInfo.tagName}'")
+    ..name = c.constantName
+    ..assignment = Code("'${c.tagName}'")
     ..modifier = FieldModifier.constant));
 
   /// Get the source for all import statements
@@ -67,7 +68,7 @@ class LibraryGenerator {
     _log.fine('''
     
     ---------------------------------------------------------------------------
-    Generating for source: ${sourceInfo.uri}
+    Generating for source: ${sourceAsset.uri}
     ''');
     final result = Library((b) => b
       ..directives.addAll(importUris.map((i) => Directive.import(i)))

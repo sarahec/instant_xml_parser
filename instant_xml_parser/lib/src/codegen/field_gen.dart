@@ -18,10 +18,10 @@
 // limitations under the License.
 library parse_generator;
 
-import 'package:instant_xml_parser/src/info/source_info.dart';
+import 'package:analyzer/dart/element/element.dart';
+import 'package:instant_xml_parser/ixp_core.dart';
 import 'package:logging/logging.dart';
-
-import '../info/method_info.dart';
+import 'package:source_gen/source_gen.dart';
 
 /// Emits the code for reading a single attribute (with optional type
 /// conversion.)
@@ -33,10 +33,10 @@ class AttributeFieldGenerator {
   final CommonElement element;
 
   /// Parsed information about the containing method
-  final MethodInfo method;
+  final ClassElement method;
 
   /// Parsed information about the containing file
-  final SourceInfo sourceInfo;
+  final LibraryReader sourceInfo;
 
   AttributeFieldGenerator(this.element, this.method, this.sourceInfo);
 
@@ -88,8 +88,8 @@ class AttributeFieldGenerator {
 /// and default values (if specified in the constructor).
 class TextFieldGenerator {
   final CommonElement element;
-  final MethodInfo method;
-  final SourceInfo sourceInfo;
+  final ClassElement method;
+  final LibraryReader sourceInfo;
 
   TextFieldGenerator(this.element, this.method, this.sourceInfo);
 
@@ -97,7 +97,7 @@ class TextFieldGenerator {
   String get toAction {
     final missingValueAction = element.hasDefaultValue
         ? '${element.field.name} = ${element.defaultValue}'
-        : 'throw MissingText(${method.classInfo.constantName}, element: ${method.startVar})';
+        : 'throw MissingText(${method.constantName}, element: ${method.startVar})';
 
     final missingValueClause = element.isNullable
         ? ''
@@ -128,8 +128,8 @@ class TextFieldGenerator {
 /// method.
 class TagFieldGenerator {
   final CommonElement element;
-  final MethodInfo method;
-  final SourceInfo sourceInfo;
+  final ClassElement method;
+  final LibraryReader sourceInfo;
 
   final _log = Logger('TagFieldGenerator');
 
@@ -138,8 +138,8 @@ class TagFieldGenerator {
   String get customCode =>
       'final ${element.field.name} = ${element.field.customTemplate};';
 
-  String _action(MethodInfo foreignMethod) =>
-      'await ${foreignMethod.name}(events)';
+  String _action(ClassElement foreignMethod) =>
+      'await ${foreignMethod.methodName}(events)';
 
   /// Generate the case statement
   String get toAction {
@@ -155,7 +155,7 @@ class TagFieldGenerator {
     return [
       for (var m in methods)
         '''
-        case ${m.classInfo.constantName}:
+        case ${m.constantName}:
           ${element.field.isList ? '${element.field.name}.add(${_action(m)})' : ' ${element.field.name}= ${_action(m)}'};
         break;'''
     ].join('\n\n');
