@@ -67,7 +67,7 @@ class LibraryGenerator {
     _log.fine('''
     
     ---------------------------------------------------------------------------
-    Generating for source: ${sourceInfo.uri}
+    Generating for source: ${sourceAsset.uri}
     ''');
     final result = Library((b) => b
       ..directives.addAll(importUris.map((i) => Directive.import(i)))

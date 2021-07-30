@@ -48,7 +48,7 @@ class ParseMethodGenerator extends Generator {
     if (library.annotatedWithExact(_tagChecker).isEmpty) {
       return '';
     }
-    final info = SourceInfo.fromLibrary(library, buildStep.inputId);
+    final info = SourceInfo.fromLibrary(library);
     final libGen = LibraryGenerator(info, buildStep.inputId, nullSafe);
     final emitter = DartEmitter(allocator: Allocator());
     var source = '${libGen.toCode.accept(emitter)}';

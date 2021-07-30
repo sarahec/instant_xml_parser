@@ -13,7 +13,6 @@
 // limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:build/build.dart' show AssetId;
 import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
@@ -23,20 +22,14 @@ import 'method_info.dart';
 
 final _log = Logger('SourceInfo');
 
-/// Per-file information used by the parser. Serialiazable so that the
-/// first-pass builder can output this as JSON then reconstitute
-/// in pass two to build the master symbol table as well as drive
-/// generation.
+/// Per-file information used by the parser.
 class SourceInfo {
   final Iterable<ClassInfo> classes;
 
   final LibraryElement element;
 
-  final Uri uri;
-
-  SourceInfo.fromLibrary(LibraryReader reader, AssetId asset)
+  SourceInfo.fromLibrary(LibraryReader reader)
       : element = reader.element,
-        uri = asset.uri,
         classes = [for (var c in reader.classes) ClassInfo.fromElement(c)];
 
   Iterable<String> get importUris => [
