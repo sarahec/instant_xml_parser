@@ -17,35 +17,25 @@ import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'class_info.dart';
-import 'method_info.dart';
+import 'package:instant_xml_parser/ixp_core.dart';
 
 final _log = Logger('SourceInfo');
 
 /// Per-file information used by the parser.
-class SourceInfo {
-  final Iterable<ClassInfo> classes;
-
-  final LibraryElement element;
-
-  SourceInfo.fromLibrary(LibraryReader reader)
-      : element = reader.element,
-        classes = [for (var c in reader.classes) ClassInfo.fromElement(c)];
-
+extension SourceInfo on LibraryReader {
   Iterable<String> get importUris => [
         for (var i in element.imports.where((e) => e.uri != null)) i.uri!
       ]..sort();
 
-  Iterable<MethodInfo> get methods {
-    final result = [
-      for (var c in classes.where((p) => p.method != null)) c.method!
-    ]..sort((a, b) => a.name.compareTo(b.name));
+  Iterable<ClassElement> get methods {
+    final result = [for (var c in classes.where((p) => p.needsMethod)) c]
+      ..sort((a, b) => a.name.compareTo(b.name));
     _log.finer('methods -> $result');
     return result;
   }
 
   /// Look up the class info object, ignoring the nullability of `t`
-  ClassInfo? classForType(DartType t) {
+  ClassElement? classForType(DartType t) {
     final t_name = t.getDisplayString(withNullability: false);
     final result = classes.firstWhereOrNull(
         (v) => v.type.getDisplayString(withNullability: false) == t_name);
@@ -54,7 +44,7 @@ class SourceInfo {
     return result;
   }
 
-  Iterable<MethodInfo> methodsReturning(DartType desiredType,
+  Iterable<ClassElement> methodsReturning(DartType desiredType,
       [allowSubtypes = true]) {
     // We have a problem: returned types are non-nullable, but a field's type
     // may be. So, convert both to type names without nullability and match.
@@ -66,18 +56,14 @@ class SourceInfo {
         m.type.getDisplayString(withNullability: false) == desiredTypeName);
     if (result.isEmpty && allowSubtypes) {
       _log.finest('No methods return $desiredType, looking for subclasses');
-      result = [
-        for (var c
-            in subclassesOf(desiredType).where((sc) => sc.method != null))
-          c.method!
-      ];
+      result = subclassesOf(desiredType).where((sc) => sc.needsMethod);
     }
     _log.finer(
         'methodsReturning($desiredType, allowSubtypes: $allowSubtypes) -> $result');
     return result;
   }
 
-  Iterable<ClassInfo> subclassesOf(DartType type) {
+  Iterable<ClassElement> subclassesOf(DartType type) {
     final t_name = type.getDisplayString(withNullability: false);
     return classes.where((v) =>
         v.type.superclass?.getDisplayString(withNullability: false) == t_name);

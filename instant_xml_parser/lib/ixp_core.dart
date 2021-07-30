@@ -1,5 +1,3 @@
-/// URIs for importing the packages used in the generated parsers.
-
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const AsyncCoreLibrary = 'dart:async';
-const AsyncLibrary = 'package:async/async.dart';
-const Logging = 'package:logging/logging.dart';
-const Runtime = 'package:ixp_runtime/ixp_runtime.dart';
-const XMLEventsLibrary = 'package:xml/xml_events.dart';
+library ixp_core;
+
+export 'src/codegen/field_gen.dart';
+export 'src/codegen/library_gen.dart';
+export 'src/codegen/method_gen.dart';
+export 'src/generators/parse_method_generator.dart';
+export 'src/info/class_info.dart';
+export 'src/info/field_info.dart';
+export 'src/info/method_info.dart';
+export 'src/info/source_info.dart';
+export 'src/utils/annotation_reader.dart';

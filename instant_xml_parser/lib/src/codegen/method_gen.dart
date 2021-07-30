@@ -13,23 +13,25 @@
 // limitations under the License.
 library parse_generator;
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
+import 'package:source_gen/source_gen.dart';
 
 import '../import_uris.dart' as uri;
+import '../info/class_info.dart';
 import '../info/method_info.dart';
 import 'field_gen.dart';
 
 class MethodGenerator {
-  final MethodInfo method;
-  final SourceInfo symtable;
+  final ClassElement method;
+  final LibraryReader symtable;
   final Iterable<CommonElement> commonElements;
   final Logger _log = Logger('MethodGenerator');
 
   MethodGenerator(this.method, this.symtable)
-      : commonElements = method.commonElements(symtable);
+      : commonElements = method.commonElements;
 
   String get attributesBlock => [
         for (var f in commonElements.where((f) => f.field.isAttributeField))
@@ -43,12 +45,12 @@ class MethodGenerator {
       ];
 
   String get constructor {
-    if (!method.classInfo.hasConstructor) {
+    if (!method.hasConstructor) {
       _log.warning(
           'No constructor found for ${method.typeName}, generating empty constructor call');
       return '${method.typeName}()';
     }
-    final foundCtor = method.classInfo.constructor;
+    final foundCtor = method.constructor;
     final paramList = [
       for (var p in foundCtor.parameters)
         p.isNamed ? '${p.name}: ${p.name}' : p.name
@@ -79,7 +81,7 @@ class MethodGenerator {
         switch (probe.qualifiedName) {
           $cases
         default:
-          probe.logUnknown(expected: ${method.classInfo.constantName});
+          probe.logUnknown(expected: ${method.constantName});
           await events.next;
       }
     }''';
@@ -107,12 +109,12 @@ class MethodGenerator {
       ].join('\n');
 
   String get startBlock => '''
-      final found = await events.scanTo(startTag(named(${method.classInfo.constantName}))); 
+      final found = await events.scanTo(startTag(named(${method.constantName}))); 
       if (!found) {
-        throw MissingStartTag(${method.classInfo.constantName});
+        throw MissingStartTag(${method.constantName});
       }
       final ${method.startVar} = await events.next as XmlStartElementEvent;
-      _log.finest('in ${method.classInfo.tagName}');
+      _log.finest('in ${method.tagName}');
       ''';
 
   String get textExtractionBlock => [
@@ -121,7 +123,7 @@ class MethodGenerator {
       ].join('\n');
 
   Method get toMethod => Method((b) => b
-    ..name = method.name
+    ..name = method.methodName
     ..body = methodBody
     ..modifier = MethodModifier.async
     ..requiredParameters.addAll([

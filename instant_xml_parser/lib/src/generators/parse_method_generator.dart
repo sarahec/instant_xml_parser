@@ -16,7 +16,6 @@ import 'dart:async';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:instant_xml_parser/src/info/source_info.dart';
 import 'package:logging/logging.dart';
 import 'package:ixp_runtime/annotations.dart';
 import 'package:source_gen/source_gen.dart';
@@ -25,7 +24,7 @@ import '../codegen/library_gen.dart';
 
 /// Creates the parser by reading annotated Dart code.
 ///
-/// Note: If buile_runner isn't returing an output, turn on extra-verbose
+/// Note: If buile_runner isn't returing an output, turn on extra-verbosesssssss
 /// logging to see the generated code before it goes through the formatter:
 /// ```sh
 /// dart pub run build_runner build -vv
@@ -48,8 +47,7 @@ class ParseMethodGenerator extends Generator {
     if (library.annotatedWithExact(_tagChecker).isEmpty) {
       return '';
     }
-    final info = SourceInfo.fromLibrary(library);
-    final libGen = LibraryGenerator(info, buildStep.inputId, nullSafe);
+    final libGen = LibraryGenerator(library, buildStep.inputId, nullSafe);
     final emitter = DartEmitter(allocator: Allocator());
     var source = '${libGen.toCode.accept(emitter)}';
     _log.finest(() => source);
