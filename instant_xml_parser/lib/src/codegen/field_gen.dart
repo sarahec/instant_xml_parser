@@ -143,7 +143,7 @@ class TagFieldGenerator {
 
   /// Generate the case statement
   String get toAction {
-    final methods = sourceInfo.methodsReturning(element.field.type);
+    final methods = sourceInfo.allClassesForType(element.field.type);
     if (methods.isEmpty) {
       final warning =
           'No class found for ${element.field.typeName}; did you forget @tag(...)?';

@@ -27,10 +27,10 @@ extension SourceInfo on LibraryReader {
         for (var i in element.imports.where((e) => e.uri != null)) i.uri!
       ]..sort();
 
-  Iterable<ClassElement> get methods {
+  Iterable<ClassElement> get classesForParser {
     final result = [for (var c in classes.where((p) => p.needsMethod)) c]
       ..sort((a, b) => a.name.compareTo(b.name));
-    _log.finer('methods -> $result');
+    _log.finer('classesForParser -> $result');
     return result;
   }
 
@@ -44,7 +44,7 @@ extension SourceInfo on LibraryReader {
     return result;
   }
 
-  Iterable<ClassElement> methodsReturning(DartType desiredType,
+  Iterable<ClassElement> allClassesForType(DartType desiredType,
       [allowSubtypes = true]) {
     // We have a problem: returned types are non-nullable, but a field's type
     // may be. So, convert both to type names without nullability and match.
@@ -52,7 +52,7 @@ extension SourceInfo on LibraryReader {
     // the type system, and is therefore safest.)
     final desiredTypeName =
         desiredType.getDisplayString(withNullability: false);
-    var result = methods.where((m) =>
+    var result = classesForParser.where((m) =>
         m.type.getDisplayString(withNullability: false) == desiredTypeName);
     if (result.isEmpty && allowSubtypes) {
       _log.finest('No methods return $desiredType, looking for subclasses');
