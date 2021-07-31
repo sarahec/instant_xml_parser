@@ -30,3 +30,7 @@ Backported from null-safety.
 ## 1.1.0
 
 Major version upgrade to null-safe dependencies.
+
+## 1.1.2
+
+Adds `@constructor` annotation to select from multiple constructors.
