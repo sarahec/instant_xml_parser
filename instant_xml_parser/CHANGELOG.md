@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+Adds `@constructor` annotation for designating which constructor to use when multiple exist.
+
+Adds support for source files split into multiple parts using `part` and `part_of`.
+
 ## 1.1.1+2
 
 Fixes error where subclasses might not be found when using a nullable reference.
