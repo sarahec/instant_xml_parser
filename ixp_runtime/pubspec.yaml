@@ -15,7 +15,7 @@
 
 name: ixp_runtime
 description: Runtime utilities for generated XML parsers (as used in instant_xml_parser)
-version: 1.1.0
+version: 1.1.2
 homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:

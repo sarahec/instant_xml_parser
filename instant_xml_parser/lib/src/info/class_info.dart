@@ -13,8 +13,10 @@
 // limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:collection/collection.dart';
 import 'package:instant_xml_parser/ixp_core.dart';
 import 'package:ixp_runtime/annotations.dart';
+import 'package:source_gen/source_gen.dart';
 
 /// Represents one class in the source file
 extension ClassInfo on ClassElement {
@@ -26,7 +28,13 @@ extension ClassInfo on ClassElement {
 
   /// Constructor using this class' fields
   ConstructorElement get constructor =>
-      constructors.firstWhere((c) => !c.isFactory && !c.isPrivate);
+      constructors.singleWhereOrNull(
+          (c) => AnnotationReader.hasAnnotation<Constructor>(c)) ??
+      constructors.singleWhere((c) => !c.isFactory && !c.isPrivate,
+          orElse: () => throw InvalidGenerationSourceError(
+              'No constructor found in $typeName',
+              todo:
+                  'Annotate desired constructor in $typeName w/ @constructor'));
 
   /// True if there's a suitable constuctor on this call
   bool get hasConstructor =>

@@ -1,5 +1,3 @@
-import 'package:ixp_runtime/annotations.dart';
-
 // Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +12,7 @@ import 'package:ixp_runtime/annotations.dart';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@tag('produce_stand')
-class ProduceStand {
-  final List<Produce>? produce;
-
-  ProduceStand(this.produce);
-}
-
-abstract class Produce {
-  final String name;
-
-  Produce(this.name);
-}
-
-class Vegetable extends Produce {
-  Vegetable(String name) : super(name);
-}
-
-@tag('carrot')
-class Carrot extends Vegetable {
-  Carrot() : super('carrot');
-}
+part of 'multi_part.dart';
 
 class Fruit extends Produce {
   Fruit(String name) : super(name);

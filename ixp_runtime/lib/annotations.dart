@@ -32,6 +32,14 @@ class alias {
   const alias(this.name);
 }
 
+/// Labels the constructor to use when there's more than one available.
+const constructor = Constructor();
+
+/// Use `@constructor`
+class Constructor {
+  const Constructor();
+}
+
 /// Defines the String-to-value conversion for this field.
 ///
 /// The runtime converts String to any of the Dart primitives, but needs

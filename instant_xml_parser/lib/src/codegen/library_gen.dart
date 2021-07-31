@@ -40,10 +40,11 @@ class LibraryGenerator {
   LibraryGenerator(this.sourceInfo, this.sourceAsset, this.nullSafe);
 
   /// Get the source for the tag name constands
-  Iterable<Field> get constants => sourceInfo.methods.map((c) => Field((b) => b
-    ..name = c.constantName
-    ..assignment = Code("'${c.tagName}'")
-    ..modifier = FieldModifier.constant));
+  Iterable<Field> get constants =>
+      sourceInfo.classesForParser.map((c) => Field((b) => b
+        ..name = c.constantName
+        ..assignment = Code("'${c.tagName}'")
+        ..modifier = FieldModifier.constant));
 
   /// Get the source for all import statements
   Iterable<String> get importUris {
@@ -59,7 +60,7 @@ class LibraryGenerator {
 
   /// Get the source for all methods
   Iterable<Method> get methods => [
-        for (var method in sourceInfo.methods)
+        for (var method in sourceInfo.classesForParser)
           MethodGenerator(method, sourceInfo).toMethod
       ];
 
