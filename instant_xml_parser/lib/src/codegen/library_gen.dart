@@ -20,7 +20,6 @@ import 'package:instant_xml_parser/src/import_uris.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'method_gen.dart';
 
 /// Emits one parser file.
 
