@@ -1,4 +1,4 @@
-# 
+#
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,17 @@
 
 name: integration_testing
 description: Validating generated parsers. (not published as its own package)
-version: 1.0.0+1
+version: 1.1.0
 homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:
-  sdk: '>=2.12.0 < 3.0.0'
+  sdk: ">=2.12.0 < 4.0.0"
 
 dependencies:
   logging: ^1.0.0
-  xml: ^5.1.2
-  instant_xml_parser: ^1.1.1
-  ixp_runtime: ^1.1.0
+  xml: ^6.5.0
+  instant_xml_parser: ^1.2.0
+  ixp_runtime: ^1.2.0
 
 dev_dependencies:
   build_runner: ^2.0.6

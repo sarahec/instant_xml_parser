@@ -1,4 +1,4 @@
-# 
+#
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,17 @@
 
 name: ixp_runtime
 description: Runtime utilities for generated XML parsers (as used in instant_xml_parser)
-version: 1.1.2
+version: 1.2.0
 homepage: https://github.com/sarahec/instant_xml_parser
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ">=2.12.0 <4.0.0"
 
 dependencies:
   async: ^2.5.0
   logging: ^1.0.0
-  xml: ^5.1.2
+  xml: ^6.5.0
 
 dev_dependencies:
-  pedantic: ^1.11.0
+  lints: ^4.0.0
   test: ^1.16.5
