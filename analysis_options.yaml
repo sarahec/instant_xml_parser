@@ -12,21 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Defines a default set of lint rules enforced for
-# projects at Google. For details and rationale,
-# see https://github.com/dart-lang/pedantic#enabled-lints.
-include: package:pedantic/analysis_options.yaml
-
-# For lint rules and documentation, see http://dart-lang.github.io/linter/lints.
-# Uncomment to specify additional rules.
-
-# linter:
-#   rules:
-#     # Don't let block copyight trigger the linter
-#     slash_for_doc_comments: false
-
-# analyzer:
-#  enable-experiment:
-#    - non-nullable
-#   exclude:
-#     - path/to/excluded/files/**
+include: package:lints/recommended.yaml
