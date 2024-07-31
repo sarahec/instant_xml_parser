@@ -13,6 +13,7 @@
 // limitations under the License.
 library parse_generator;
 
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:instant_xml_parser/ixp_core.dart';
@@ -33,7 +34,14 @@ class LibraryGenerator {
   final AssetId sourceAsset;
   final bool nullSafe;
 
-  var _importUris;
+  /// The source for all import statements
+  late final Iterable<String> importUris = <String>[
+    sourceAsset.pathSegments.last,
+    ...sourceInfo.importUris.where((s) =>
+        !(s.contains('runtime/annotations.dart') || s.contains('/src/'))),
+    Logging,
+    Runtime
+  ];
 
   LibraryGenerator(this.sourceInfo, this.sourceAsset, this.nullSafe);
 
@@ -43,18 +51,6 @@ class LibraryGenerator {
         ..name = c.constantName
         ..assignment = Code("'${c.tagName}'")
         ..modifier = FieldModifier.constant));
-
-  /// Get the source for all import statements
-  Iterable<String> get importUris {
-    if (_importUris == null) {
-      _importUris = <String>[];
-      _importUris.add(sourceAsset.pathSegments.last);
-      _importUris.addAll(sourceInfo.importUris.where((s) =>
-          !(s.contains('runtime/annotations.dart') || s.contains('/src/'))));
-      _importUris.addAll([Logging, Runtime]);
-    }
-    return _importUris;
-  }
 
   /// Get the source for all methods
   Iterable<Method> get methods => [
