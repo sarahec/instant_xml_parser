@@ -20,8 +20,8 @@ class AnnotationReader {
 
   static dynamic getAnnotation<A>(Element element, String field,
       [Type type = String]) {
-    final _attributeChecker = TypeChecker.fromRuntime(A);
-    final found = _attributeChecker.firstAnnotationOfExact(element,
+    final attributeChecker = TypeChecker.fromRuntime(A);
+    final found = attributeChecker.firstAnnotationOfExact(element,
         throwOnUnresolved: false);
     if (found == null) return null;
     dynamic result;
