@@ -109,6 +109,24 @@ class ifMatches {
   const ifMatches(this.regex);
 }
 
+/// Defines a value for when an attribute is missing.
+/// This is a way of to have optional non-null attributes.
+///
+/// [value] The value to use if the attribute doesn't exist in the XML stream.
+///
+/// Example:
+/// `
+/// class Circuit {
+///   @ifMatches(r'(on|1)')
+///   @otherwise(false)
+///   bool power;
+/// `
+class otherwise<T> {
+  final T value;
+
+  const otherwise(this.value);
+}
+
 /// Specifies the XML tag for a class.
 ///
 /// [value] The fully qualified tag name.

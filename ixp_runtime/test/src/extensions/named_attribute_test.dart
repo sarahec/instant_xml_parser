@@ -27,4 +27,16 @@ void main() {
     final a = await events.next as XmlStartElementEvent;
     expect(await a.attribute('id', convert: (s) => 'FOO'), equals('FOO'));
   });
+
+  test('optional value', () async {
+    final events = generateEventStream(Stream.value('<a id="1" bar="hi"/>'));
+    final a = await events.next as XmlStartElementEvent;
+    expect(await a.optionalAttribute('bar'), equals('hi'));
+  });
+
+  test('fallback value', () async {
+    final events = generateEventStream(Stream.value('<a id="1" />'));
+    final a = await events.next as XmlStartElementEvent;
+    expect(await a.optionalAttribute('bar', fallback: 'hi'), equals('hi'));
+  });
 }
