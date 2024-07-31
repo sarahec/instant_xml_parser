@@ -16,6 +16,7 @@ import 'package:integration_testing/conversion.parser.dart';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore: constant_identifier_names
 const EXAMPLE = 'https://example.com';
 
 void main() {
