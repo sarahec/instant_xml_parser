@@ -24,7 +24,9 @@ final _log = Logger('SourceInfo');
 /// Per-file information used by the parser.
 extension SourceInfo on LibraryReader {
   Iterable<String> get importUris => [
-        for (var i in element.imports.where((e) => e.uri != null)) i.uri!
+        for (var i in element.libraryImports
+            .where((LibraryImportElement e) => e.importedLibrary == null))
+          i.uri.toString()
       ]..sort();
 
   Iterable<ClassElement> get classesForParser => [
