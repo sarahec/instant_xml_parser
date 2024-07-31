@@ -50,5 +50,5 @@ extension ClassInfo on ClassElement {
   String? get tagName => AnnotationReader.getAnnotation<tag>(this, 'value');
 
   /// String name of this class
-  String get typeName => type.getDisplayString(withNullability: false);
+  String get typeName => type.element.name;
 }
