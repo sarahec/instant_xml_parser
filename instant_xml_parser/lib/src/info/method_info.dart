@@ -41,7 +41,7 @@ extension MethodInfo on ClassElement {
   String get methodName => '$prefix$typeName';
 
   /// The variable name representing this tag
-  String get startVar => '_' + ReCase(typeName).camelCase;
+  String get startVar => '_${ReCase(typeName).camelCase}';
 
   /// Parse all the fields that could be initialized from the constructor
   Iterable<CommonElement> get commonElements {
