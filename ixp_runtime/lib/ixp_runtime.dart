@@ -41,7 +41,6 @@
 library runtime;
 
 export 'src/conversion.dart';
-export 'src/extensions/ancestors.dart';
 export 'src/extensions/consume.dart';
 export 'src/extensions/find.dart';
 export 'src/extensions/log_unknown.dart';

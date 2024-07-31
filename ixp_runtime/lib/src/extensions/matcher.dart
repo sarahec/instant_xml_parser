@@ -13,22 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /// Matchers for the [find] operation.
 ///
 /// These support expressions such as `find(startTag(named('Foo')))` and
 /// `textElement(inside(tag))`.
-import 'package:xml/src/xml_events/utils/named.dart';
 import 'package:xml/xml_events.dart';
+// ignore: implementation_imports
+import 'package:xml/src/xml_events/utils/named.dart';
 
-import 'ancestors.dart';
+bool _descendsFrom(XmlEvent tag, XmlStartElementEvent startTag) {
+  var probe = tag.parent;
+  while (probe != null) {
+    if (identical(probe, startTag)) {
+      return true;
+    }
+    probe = probe.parent;
+  }
+  return false;
+}
 
 /// True if the current event is the between the specified start tag and its
 /// end tag, inclusive.
 ///
 /// [tag] The start of the parent tag.
 Matcher inside(XmlStartElementEvent tag) => ((e) => (identical(e, tag) ||
-    (e is XmlEndElementEvent && identical(tag, e.parentEvent)) ||
-    e.descendsFrom(tag)));
+    (e is XmlEndElementEvent && identical(tag, e.parent)) ||
+    _descendsFrom(e, tag)));
 
 /// Matches tags with the provided qualified name.
 ///
