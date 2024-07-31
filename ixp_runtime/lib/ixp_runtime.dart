@@ -8,7 +8,7 @@
 /// Future<Note> extractNote(StreamQueue<XmlEvent> events) async {
 ///   final _note = await events.find(startTag(named(NoteName))) as XmlStartElementEvent;
 ///   if (_note == null) return Future.error(MissingStartTag(NoteName));
-///   final text = await events.find(textElement(inside(_note))) as XmlTextEvent)?.text;
+///   final text = await events.find(textElement(inside(_note))) as XmlTextEvent)?.value;
 ///   await events.consume(inside(_note)); // move to the end of the tag
 ///   return Note(text ? '');
 /// }
