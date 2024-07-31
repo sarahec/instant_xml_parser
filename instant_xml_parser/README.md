@@ -59,9 +59,13 @@ dev_dependencies:
 ### Generate your parser from the command line:
 
 ```sh
-dart pub run build_runner watch  --delete-conflicting-outputs
+dart run build_runner build  --delete-conflicting-outputs
 ```
+you can also watch the source files:
 
+```sh
+dart run build_runner watch  --delete-conflicting-outputs
+```
 
 ### The XML
 
@@ -100,9 +104,9 @@ import 'package:xml/xml_events.dart';
 
 ## Limitations
 
-This is not an officially supported Google product.
+This work started at Google, and is not an officially supported Google product.
 
-* Assumes well-formed XML, and will ignore unknown tags/attributes/text in the input 
+* Assumes well-formed XML, and will ignore unknown tags/attributes/text in the input
   stream (but will log such).
 * Declaration all has to be in one file (no cross-file references)
 * Does nothing with XML comments, processing instructions, etc.
