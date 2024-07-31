@@ -8,7 +8,6 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:xml/xml_events.dart';
 import 'structures.dart';
-import 'dart:core';
 import 'package:logging/logging.dart';
 import 'package:ixp_runtime/ixp_runtime.dart';
 
