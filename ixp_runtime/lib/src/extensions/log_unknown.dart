@@ -21,5 +21,5 @@ extension Logging on XmlStartElementEvent {
   ///
   /// [expected] the expected tag's name or a list of names
   void logUnknown({dynamic expected = '(any)'}) => _log.warning(
-      "skipping '$qualifiedName'${parentEvent != null ? ' in $parentEvent' : ''}, expected '$qualifiedName'");
+      "skipping '$qualifiedName'${parent != null ? ' in $parent' : ''}, expected '$qualifiedName'");
 }
