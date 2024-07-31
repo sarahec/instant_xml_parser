@@ -24,7 +24,7 @@ extension ClassInfo on ClassElement {
   InterfaceType get type => thisType;
 
   /// Constant name to use for this tag
-  String get constantName => typeName + 'Name';
+  String get constantName => '${typeName}Name';
 
   /// Constructor using this class' fields
   ConstructorElement get constructor =>
