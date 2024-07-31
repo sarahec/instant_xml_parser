@@ -42,18 +42,18 @@ name: example
 description: Annotates data classes for XML deserialization
 
 environment:
-  sdk: '>=2.10.0 <3.0.0'
+  sdk: '>=3.4.0 <3.0.0'
 
 dependencies:
-  ixp_runtime: ^0.9.0
-  logging: ^0.11.4
+  ixp_runtime: ^1.2.0
+  logging: ^1.2.0
   xml: ^4.4.0
 
 dev_dependencies:
-  build_runner: ^1.0.0
-  build_test: ^0.10.3
-  instant_xml_parser: ^0.9.0
-  test: ^1.14.4
+  build_runner: ^2.4.11
+  build_test: ^2.2.2
+  instant_xml_parser: ^1.2.0
+  test: ^1.25.8
 ```
 
 ### Generate your parser from the command line:
