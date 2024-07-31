@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const AsyncCoreLibrary = 'dart:async';
 const AsyncLibrary = 'package:async/async.dart';
 const Logging = 'package:logging/logging.dart';
 const Runtime = 'package:ixp_runtime/ixp_runtime.dart';

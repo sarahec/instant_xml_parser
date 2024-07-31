@@ -141,7 +141,6 @@ class MethodGenerator {
     ..returns = TypeReference((b) => b // Future<SomeType>
       ..symbol = 'Future'
       ..isNullable = false
-      ..url = uri.AsyncCoreLibrary
       ..types.add(TypeReference((b) => b
         ..symbol = method.typeName
         ..isNullable = false))));
