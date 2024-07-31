@@ -63,8 +63,7 @@ class FieldInfo {
       type.isDartCoreString);
 
   /// True if this field is a ```Uri``` (used to convert via ```Uri.parse```)
-  bool get isUri =>
-      element.type.getDisplayString(withNullability: false) == 'Uri';
+  bool get isUri => typeName == 'Uri';
 
   /// True if this field should come from ```XmlTextEvent```
   bool get isXmlTextField =>
@@ -87,5 +86,5 @@ class FieldInfo {
       : element.type;
 
   /// Field type as String
-  String get typeName => type.getDisplayString(withNullability: false);
+  String get typeName => type.element?.name ?? type.getDisplayString();
 }
