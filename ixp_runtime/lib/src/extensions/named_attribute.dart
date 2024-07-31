@@ -78,9 +78,9 @@ extension AttributeExtension on XmlStartElementEvent {
   /// [converter] A function of the form `T Function(String)` that parses
   /// the string to an object. Not needed for any of the primitive types or
   /// `Uri`. (See [autoConverter])
-  /// [fallback] If supplied, returns this value if the attribute is not found.
+  /// [missingValue] returns this value if the attribute is not found.
   Future<T?> optionalAttribute<T>(String attributeName,
-      {Converter<T>? convert, T? fallback}) async {
+      {Converter<T>? convert, T? missingValue}) async {
     convert = convert ?? autoConverter(T);
     try {
       return convert(attributes
@@ -89,7 +89,7 @@ extension AttributeExtension on XmlStartElementEvent {
               (_stripNamespace(a.name) == attributeName))
           .value);
     } catch (_) {
-      return fallback;
+      return missingValue;
     }
   }
 

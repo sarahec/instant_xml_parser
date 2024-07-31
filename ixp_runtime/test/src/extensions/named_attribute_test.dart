@@ -37,6 +37,6 @@ void main() {
   test('fallback value', () async {
     final events = generateEventStream(Stream.value('<a id="1" />'));
     final a = await events.next as XmlStartElementEvent;
-    expect(await a.optionalAttribute('bar', fallback: 'hi'), equals('hi'));
+    expect(await a.optionalAttribute('bar', missingValue: 'hi'), equals('hi'));
   });
 }

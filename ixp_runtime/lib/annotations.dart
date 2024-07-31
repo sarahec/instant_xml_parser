@@ -118,13 +118,13 @@ class ifMatches {
 /// `
 /// class Circuit {
 ///   @ifMatches(r'(on|1)')
-///   @otherwise(false)
+///   @missingValue(false)
 ///   bool power;
 /// `
-class otherwise<T> {
+class missingValue<T> {
   final T value;
 
-  const otherwise(this.value);
+  const missingValue(this.value);
 }
 
 /// Specifies the XML tag for a class.

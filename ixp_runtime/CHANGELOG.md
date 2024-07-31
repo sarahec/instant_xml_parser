@@ -1,5 +1,21 @@
 # Runtime changelog
 
+## 1.3.0
+
+Better support for missing attributes. They can be nullable or have a fallback value when missing.
+
+```dart
+class Circuit {
+  final bool verified; // required, `MissingAttribute` thrown if not found
+
+  @ifMatches(r'(on|1)')
+  @missingValue(false)
+  final bool power;   // optional (by way of @missingValue), `false` if not found
+
+  final bool? tested; // optional, `null` if not found
+};
+```
+
 ## 1.2.0
 
 Set minimum SDK to 3.4. Removed `ancestor` extension and test as it's included in current `xml`.
