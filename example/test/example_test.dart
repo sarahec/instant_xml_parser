@@ -19,11 +19,12 @@ import 'package:test/test.dart';
 import 'package:xml/xml_events.dart';
 
 void main() {
-  StreamQueue<XmlEvent> _eventsFrom(String xml) => StreamQueue(Stream.value(xml)
-      .toXmlEvents()
-      .withParentEvents()
-      .normalizeEvents()
-      .flatten());
+  StreamQueue<XmlEvent> eventQueueFrom(String xml) =>
+      StreamQueue(Stream.value(xml)
+          .toXmlEvents()
+          .withParentEvents()
+          .normalizeEvents()
+          .flatten());
 
   Logger.root.onRecord.listen((record) {
     print('${record.loggerName} ${record.time}: ${record.message}');
@@ -33,13 +34,13 @@ void main() {
     setUp(() => Logger.root.level = Level.INFO);
 
     test('EmptyTag', () async {
-      final events = _eventsFrom('<empty/>');
+      final events = eventQueueFrom('<empty/>');
       final emptyTag = await extractEmptyTag(events);
       expect(emptyTag, isA<EmptyTag>());
     });
 
     test('core attributes', () async {
-      final eventsFrom = _eventsFrom(
+      final eventsFrom = eventQueueFrom(
           '<attributesTest name="foo" count="999" temperature="22.1" active="1" />');
       final attributesTag = await extractAttributesTag(eventsFrom);
       expect(attributesTag, isA<AttributesTag>());
@@ -50,20 +51,20 @@ void main() {
     });
 
     test('missing attribute', () async {
-      final eventsFrom = _eventsFrom('<attributesTest />');
+      final eventsFrom = eventQueueFrom('<attributesTest />');
       expect(extractAttributesTag(eventsFrom),
           throwsA(TypeMatcher<MissingAttribute>()));
     });
 
     test('NameTag', () async {
-      final events = _eventsFrom('<identification name="bar"/>');
+      final events = eventQueueFrom('<identification name="bar"/>');
       final nameTag = await extractNameTag(events);
       expect(nameTag, isA<NameTag>());
       expect(nameTag.name, equals('bar'));
     });
 
     test('Registration (nested)', () async {
-      final events = _eventsFrom(
+      final events = eventQueueFrom(
           '<registration age="36"><identification name="bar"/><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309"/></registration>');
       try {
         final registration = await extractRegistration(events);
@@ -78,7 +79,7 @@ void main() {
     });
 
     test('address book', () async {
-      final events = _eventsFrom(
+      final events = eventQueueFrom(
           '<addressBook><ContactInfo email="alice@example.com">Birthday: April 1</ContactInfo><ContactInfo email="bob@example.com">Birthday: Oct 31</ContactInfo></addressBook>');
       final addressBook = await extractAddressBook(events);
       expect(addressBook, isNotNull);
@@ -93,7 +94,7 @@ void main() {
   group('integration', () {
     test('homogeneous events', () async {
       final events =
-          _eventsFrom('<notebook><note>a</note><note>b</note></notebook>');
+          eventQueueFrom('<notebook><note>a</note><note>b</note></notebook>');
       final notebook = await extractNotebook(events);
       expect(notebook, isNotNull);
       expect(notebook.notes.length, equals(2));
@@ -101,7 +102,7 @@ void main() {
 
     test('mixed sequence', () async {
       // Logger.root.level = Level.ALL;
-      final events = _eventsFrom(
+      final events = eventQueueFrom(
           '<test><registration age="36"><identification name="bar" /><ContactInfo email="foo@bar.dev" phone="+1-213-867-5309" /></registration><attributesTest name="foo" count="999" temperature="22.1" active="1" /></test>');
       final registration = await extractRegistration(events);
       expect(registration, isNotNull, reason: 'registration');
