@@ -1,5 +1,9 @@
 # Runtime changelog
 
+## 1.2.0
+
+Set minimum SDK to 3.4. Removed `ancestor` extension and test as it's included in current `xml`.
+
 ## 0.9.0
 
 - First release to pub.dev
