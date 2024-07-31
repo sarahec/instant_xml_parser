@@ -104,7 +104,7 @@ class TextFieldGenerator {
         : '''} else { 
       $missingValueAction;''';
 
-    final textOf = '(await events.peek as XmlTextEvent).text';
+    final textOf = '(await events.peek as XmlTextEvent).value';
 
     final optionalConversion = element.field.hasConversion
         ? '${element.field.conversion}($textOf)'
