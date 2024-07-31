@@ -13,7 +13,6 @@
 // limitations under the License.
 library parse_generator;
 
-import 'package:analyzer/dart/analysis/results.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:instant_xml_parser/ixp_core.dart';
