@@ -13,8 +13,4 @@
 # limitations under the License.
 
 analyzer:
-  errors:
-    constant_identifier_names: ignore
-    no_leading_underscores_for_local_identifiers: ignore
-    prefer_typing_uninitialized_variables: ignore
 include: package:lints/recommended.yaml
