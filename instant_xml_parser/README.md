@@ -50,10 +50,10 @@ dependencies:
   xml: ^4.4.0
 
 dev_dependencies:
-  build_runner: ^2.4.11
+  build_runner: ^2.4.9
   build_test: ^2.2.2
   instant_xml_parser: ^1.2.1
-  test: ^1.25.8
+  test: ^1.25.7
 ```
 
 ### Generate your parser from the command line:

@@ -28,11 +28,11 @@ dependencies:
   xml: ^6.5.0
 
 dev_dependencies:
-  build_runner: ^2.4.11
+  build_runner: ^2.4.9
   build_test: ^2.2.2
   instant_xml_parser: ^1.2.1
   lints: ^4.0.0
-  test: ^1.25.8
+  test: ^1.25.7
 
 # When developing, use latest versions in project.
 # Use this when you have published packages and want to keep working on them.
