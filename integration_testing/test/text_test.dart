@@ -3,7 +3,7 @@ import 'package:integration_testing/text.parser.dart';
 import 'package:ixp_runtime/ixp_runtime.dart';
 import 'package:test/test.dart';
 
-// Copyright 2021 Google LLC
+// Copyright 2021, 2024 Google LLC and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

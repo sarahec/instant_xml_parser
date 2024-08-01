@@ -1,5 +1,5 @@
-# 
-# Copyright 2020 Google LLC
+#
+# Copyright 2020, 2024 Google LLC and contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ builders:
   generator:
     import: "package:instant_xml_parser/instant_xml_parser.dart"
     builder_factories: ["parserBuilder"]
-    build_extensions: {".dart": [".parser.dart"]}
+    build_extensions: { ".dart": [".parser.dart"] }
     auto_apply: dependents
     build_to: source
     applies_builders: ["source_gen|library_builder"]

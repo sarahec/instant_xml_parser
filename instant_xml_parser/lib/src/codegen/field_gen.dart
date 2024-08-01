@@ -3,7 +3,7 @@
 /// Don't confuse the name "Generator" here with the generators used by
 /// ```source_gen```, these generate code fragments for use within a parser.
 
-// Copyright 2020 Google LLC
+// Copyright 2020, 2024 Google LLC and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

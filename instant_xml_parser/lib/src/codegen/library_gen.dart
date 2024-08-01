@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2020, 2024 Google LLC and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import 'package:instant_xml_parser/ixp_core.dart';
 import 'package:instant_xml_parser/src/import_uris.dart';
 import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
-
 
 /// Emits one parser file.
 

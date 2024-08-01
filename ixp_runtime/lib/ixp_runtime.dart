@@ -24,7 +24,7 @@
 /// You will need to call these yourself if your input isn't a
 /// `Stream<String>`.
 
-// Copyright 2020 Google LLC
+// Copyright 2020, 2024 Google LLC and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

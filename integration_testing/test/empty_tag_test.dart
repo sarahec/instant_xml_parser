@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import 'package:integration_testing/empty_tag.dart';
 import 'package:integration_testing/empty_tag.parser.dart';
 
-// Copyright 2021 Google LLC
+// Copyright 2021, 2024 Google LLC and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
