@@ -18,6 +18,8 @@
 ///
 /// These support expressions such as `find(startTag(named('Foo')))` and
 /// `textElement(inside(tag))`.
+library;
+
 import 'package:xml/xml_events.dart';
 // ignore: implementation_imports
 import 'package:xml/src/xml_events/utils/named.dart';

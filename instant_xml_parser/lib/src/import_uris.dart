@@ -1,4 +1,5 @@
 /// URIs for importing the packages used in the generated parsers.
+library;
 
 // Copyright 2020, 2024 Google LLC and contributors
 //

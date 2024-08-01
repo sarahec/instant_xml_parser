@@ -23,6 +23,7 @@
 ///
 /// You will need to call these yourself if your input isn't a
 /// `Stream<String>`.
+library runtime;
 
 // Copyright 2020, 2024 Google LLC and contributors
 //
@@ -37,8 +38,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-library runtime;
 
 export 'src/conversion.dart';
 export 'src/extensions/consume.dart';
