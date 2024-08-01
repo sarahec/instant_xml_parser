@@ -15,7 +15,7 @@
 part of 'multi_part.dart';
 
 class Fruit extends Produce {
-  Fruit(String name) : super(name);
+  Fruit(super.name);
 }
 
 @tag('apple')

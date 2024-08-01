@@ -22,5 +22,5 @@ abstract class Foo {
 
 @tag('bar')
 class Bar extends Foo {
-  Bar(name) : super(name);
+  Bar(super.name);
 }
