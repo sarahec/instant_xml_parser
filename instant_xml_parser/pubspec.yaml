@@ -28,7 +28,7 @@ dependencies:
   code_builder: ^4.10.0
   collection: ^1.19.0
   dart_style: ^2.3.6
-  ixp_runtime: ^1.2.0
+  ixp_runtime: ^1.3.0
   logging: ^1.2.0
   meta: ^1.15.0
   recase: ^4.1.0
