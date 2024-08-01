@@ -26,16 +26,16 @@ class AnnotationReader {
     if (found == null) return null;
     dynamic result;
     switch (type) {
-      case bool:
+      case const (bool):
         result = found.getField(field)?.toIntValue();
         break;
-      case double:
+      case const (double):
         result = found.getField(field)?.toDoubleValue();
         break;
-      case int:
+      case const (int):
         result = found.getField(field)?.toIntValue();
         break;
-      case Type:
+      case const (Type):
         result = found.getField(field)?.toTypeValue();
         break;
       default:
