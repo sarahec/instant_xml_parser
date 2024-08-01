@@ -17,8 +17,9 @@ import 'package:ixp_runtime/annotations.dart';
 @tag('identification')
 class NameTag {
   final String name;
-  final int? id;
+  final String? nickname;
+  final int id;
   final bool registered;
 
-  NameTag(this.name, this.registered, this.id);
+  NameTag(this.name, this.nickname, this.registered, [this.id = -1]);
 }

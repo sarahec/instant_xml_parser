@@ -19,8 +19,9 @@ import 'package:integration_testing/attributes.parser.dart';
 void main() {
   test('all present', () async {
     final nameTag = await extractNameTag(generateEventStream(
-        Stream.value('<identification name="Frank" registered="1" id="2" />')));
+        Stream.value('<identification name="Frank" nickname="Rrrr" registered="1" id="2" />')));
     expect(nameTag.name, equals('Frank'));
+    expect(nameTag.nickname, equals('Rrrr'));
     expect(nameTag.registered, isTrue);
     expect(nameTag.id, equals(2));
   });
@@ -28,7 +29,7 @@ void main() {
   test('default values', () async {
     final nameTag = await extractNameTag(generateEventStream(
         Stream.value('<identification name="Frank" registered="1" />')));
-    expect(nameTag.id, isNull);
+    expect(nameTag.id, equals(-1));
   });
 
   test('missing required', () async {
