@@ -14,12 +14,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart';
-import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'package:instant_xml_parser/ixp_core.dart';
-
-final _log = Logger('SourceInfo');
 
 /// Per-file information used by the parser.
 extension SourceInfo on LibraryReader {
