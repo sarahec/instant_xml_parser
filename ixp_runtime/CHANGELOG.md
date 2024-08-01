@@ -1,5 +1,9 @@
 # Runtime changelog
 
+## 1.2.1
+
+Fix lints (including generated code), add CONTRIBUTORS, and update documentation.
+
 ## 1.2.0
 
 Set minimum SDK to 3.4. Removed `ancestor` extension and test as it's included in current `xml`.

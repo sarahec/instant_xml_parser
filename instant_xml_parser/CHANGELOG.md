@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+Fix lints (including generated code), add CONTRIBUTORS, and update documentation.
+
 ## 1.2.0
 
 Updated for Dart 3.4. No changes to the generated output except it doesn't import `dart:core` anymore.

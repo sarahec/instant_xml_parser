@@ -45,14 +45,14 @@ environment:
   sdk: '>=3.4.0 <3.0.0'
 
 dependencies:
-  ixp_runtime: ^1.2.0
+  ixp_runtime: ^1.2.1
   logging: ^1.2.0
   xml: ^4.4.0
 
 dev_dependencies:
   build_runner: ^2.4.11
   build_test: ^2.2.2
-  instant_xml_parser: ^1.2.0
+  instant_xml_parser: ^1.2.1
   test: ^1.25.8
 ```
 
@@ -101,6 +101,21 @@ import 'package:xml/xml_events.dart';
 * Classes: Annotate a class definition with ```@tag('qualified_name')``` to generate a parsing method
 * Classes: Classes referenced from other classes automatically call that parsing method
 * Subclasses: Subclass to implement alternate tags (e.g. if a field can take ```<a1>```, ```<a2>```, or ```<a3>```, give these a common superclass and use it)
+* Fields as attributes: you can define an optional attribute by marking the field as nullable or providing a default value in the constructor.
+
+### Example
+
+```dart
+@tag('identification')
+class NameTag {
+  final String name;
+  final String? nickname; // optional attribute
+  final int id; // optional attribute with dafault -1 (see constructor)
+  final bool registered;
+
+  NameTag(this.name, this.nickname, this.registered, [this.id = -1]);
+}
+```
 
 ## Limitations
 

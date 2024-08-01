@@ -23,14 +23,14 @@ environment:
 
 dependencies:
   async: ^2.11.0
-  ixp_runtime: ^1.2.0
+  ixp_runtime: ^1.2.1
   logging: ^1.2.0
   xml: ^6.5.0
 
 dev_dependencies:
   build_runner: ^2.4.11
   build_test: ^2.2.2
-  instant_xml_parser: ^1.2.0
+  instant_xml_parser: ^1.2.1
   lints: ^4.0.0
   test: ^1.25.8
 
